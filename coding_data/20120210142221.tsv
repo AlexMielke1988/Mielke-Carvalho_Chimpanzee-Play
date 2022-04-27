@@ -1,0 +1,34 @@
+Observation id	20120210142221								
+									
+Media file(s)									
+									
+Player #1	G:/Oxford/Videos/Bossou videos/20120210142221_PAB20.mp4								
+									
+Observation date	2020-04-30 12:53:27								
+									
+Description	Check where this video comes from, seems to be parallel to  67df6cd9-86cc-46bd-a262-35da00cdcd22 								
+									
+Time offset (s)	0.0								
+									
+independent variables									
+variable	value								
+Observer	Alex								
+Group	Bossou								
+Date/Time	2000-01-01T00:00:00								
+Contains play	yes								
+Coded	yes								
+									
+Time	Media file path	Total length	FPS	Subject	Behavior	Behavioral category	Modifier 1	Comment	Status
+1472.163	G:/Oxford/Videos/Bossou videos/20120210142221_PAB20.mp4	4249.460	25.0		Start		None		POINT
+1474.661	G:/Oxford/Videos/Bossou videos/20120210142221_PAB20.mp4	4249.460	25.0		Start		None		POINT
+1474.662	G:/Oxford/Videos/Bossou videos/20120210142221_PAB20.mp4	4249.460	25.0		Comment	Other		play or threat?	POINT
+1474.662	G:/Oxford/Videos/Bossou videos/20120210142221_PAB20.mp4	4249.460	25.0		End	End	None		POINT
+2462.351	G:/Oxford/Videos/Bossou videos/20120210142221_PAB20.mp4	4249.460	25.0		Start		None		POINT
+2493.601	G:/Oxford/Videos/Bossou videos/20120210142221_PAB20.mp4	4249.460	25.0		Start		None		POINT
+2493.602	G:/Oxford/Videos/Bossou videos/20120210142221_PAB20.mp4	4249.460	25.0		End	End	None		POINT
+2517.107	G:/Oxford/Videos/Bossou videos/20120210142221_PAB20.mp4	4249.460	25.0		Start		None		POINT
+2540.854	G:/Oxford/Videos/Bossou videos/20120210142221_PAB20.mp4	4249.460	25.0		Start		None		POINT
+2540.855	G:/Oxford/Videos/Bossou videos/20120210142221_PAB20.mp4	4249.460	25.0		End	End	None		POINT
+3678.271	G:/Oxford/Videos/Bossou videos/20120210142221_PAB20.mp4	4249.460	25.0		Start		None		POINT
+3703.523	G:/Oxford/Videos/Bossou videos/20120210142221_PAB20.mp4	4249.460	25.0		Start		None		POINT
+3703.524	G:/Oxford/Videos/Bossou videos/20120210142221_PAB20.mp4	4249.460	25.0		End	End	None		POINT

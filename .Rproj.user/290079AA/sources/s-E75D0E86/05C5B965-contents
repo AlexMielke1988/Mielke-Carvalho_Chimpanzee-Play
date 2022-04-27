@@ -1,0 +1,528 @@
+library(tidyverse)
+library(stringr)
+library(arrangements)
+library(picante)
+library(parallel)
+library(doParallel)
+library(igraph)
+library(keras)
+library(tidytext)
+library(tidyfast)
+library(widyr)
+devtools::load_all(path = "R/")
+
+#### set folder path where all tsv files are stored
+file.paths <- "C:/Users/Alex/Documents/GitHub/CCCPP/Coding/Output/"
+# find file paths
+dfiles <- sort(list.files(path = file.paths, full.names = T))
+
+# Read Video-Level Data Into R, Basic Cleaning ----------------------------
+video.data <- lapply(dfiles, function(i) {
+  # read and skip meta information
+  xx <- read_tsv(i, skip = 20)
+  # clear column names
+  colnames(xx) <- gsub(colnames(xx), pattern = " ", replacement = "_", fixed = T)
+  # order by time
+  xx <- xx[order(xx$Time), ]
+  # clean file path name
+  xx$Media_file_path <- gsub(xx$Media_file_path, pattern = file.paths, replacement = "", fixed = T)
+  xx$Media_file_path <- gsub(xx$Media_file_path, pattern = ".mp4", replacement = "", fixed = T)
+  xx$Media_file_path <- gsub(xx$Media_file_path, pattern = ".dv", replacement = "", fixed = T)
+  # exclude unnecessary behavioural codes and columns
+  xx <- xx[xx$Behavior != "Start", ]
+  xx <- xx[xx$Behavior != "Solo Play", ]
+  xx <- xx[xx$Behavior != "Comment", ]
+  xx <- xx %>% select(-Total_length, -FPS, -Status)
+  
+  # determine bouts by the 'End' element - everything before 'End' counts as one bout
+  xx <- xx %>%
+    mutate(play.bout = (Behavior == "End")) %>%
+    group_by(play.bout) %>%
+    mutate(bout.nr = cumsum(as.numeric(play.bout))) %>%
+    ungroup() %>%
+    mutate(bout.nr = cumsum(bout.nr)) %>%
+    select(-play.bout)
+  xx$bout.nr <- match(xx$bout.nr, unique(xx$bout.nr))
+  xx$bout.nr[xx$Behavior == "End"] <- xx$bout.nr[xx$Behavior == "End"] - 1
+  
+  # add all together
+  xx <- xx %>% 
+    unite(bout.nr, Media_file_path, bout.nr, sep = "_", remove = FALSE)
+  return(xx)
+})
+
+# remove videos that do not actually provide data, because no play was observed
+video.data <- video.data[sapply(video.data, ncol) == 15]
+# add all videos together
+video.data <- bind_rows(video.data)
+
+
+# Take The Row-By-Row Video Data And Make Bout Summary --------------------
+bout.summary <- lapply(unique(video.data$bout.nr), function(x) {
+  # select bout data, remove unneeded elements
+  set.data <- filter(video.data, bout.nr == x, !Behavior %in% c("Non-Play", "Comment", "Start"))
+  # order by time
+  set.data <- set.data[order(set.data$Time), ]
+  # if there is no data in this, remove
+  if (nrow(set.data) == 0) {
+    return()
+  }
+  # if there is data, prepare summary
+  xx <- data.frame(
+    bout.nr = x,
+    video.id = unique(set.data$Media_file_path),
+    players = paste(sort(unique(unlist(strsplit(set.data$Modifier_1[set.data$Behavior == "Players"], split = ",", fixed = T)))), collapse = ","),
+    initiator = set.data$Subject[min(which(set.data$Behavior == "Play Element"))],
+    nr.players = length(sort(unique(unlist(strsplit(set.data$Modifier_1[set.data$Behavior == "Players"], split = ",", fixed = T))))),
+    start.observed = set.data$Modifier_2[1],
+    start.time = set.data$Time[2],
+    end.time = max(set.data$Time[set.data$Behavior == "End"]),
+    duration = set.data$Time[nrow(set.data)] - set.data$Time[2],
+    play.elements = sum(set.data$Behavior == "Play Element"),
+    end = as.numeric("End" %in% set.data$Behavior),
+    intervention = as.numeric("Intervention" %in% set.data$Behavior)
+  )
+  # determine whether end was observed
+  xx$end.observed <- NA
+  xx$end.outcome <- NA
+  if (xx$end == 1) {
+    xx$end.observed <- set.data$Modifier_2[which(set.data$Behavior == "End")][length(set.data$Modifier_2[which(set.data$Behavior == "End")])]
+  }
+  if (xx$end == 1) {
+    xx$end.outcome <- set.data$Modifier_1[which(set.data$Behavior == "End")][length(set.data$Modifier_1[which(set.data$Behavior == "End")])]
+  }
+  if (xx$start.observed == "No") {
+    xx$initiator <- NA
+  }
+  return(xx)
+})
+bout.summary <- bind_rows(bout.summary)
+
+
+elements <- sort(as.vector(unlist(c(
+  read.csv("C:/Users/Alex/Documents/GitHub/CCCPP/Coding/BORIS modifiers/contact_extended.txt", header = F),
+  read.csv("C:/Users/Alex/Documents/GitHub/CCCPP/Coding/BORIS modifiers/contact_short.txt", header = F),
+  read.csv("C:/Users/Alex/Documents/GitHub/CCCPP/Coding/BORIS modifiers/noncontact_extended.txt", header = F),
+  read.csv("C:/Users/Alex/Documents/GitHub/CCCPP/Coding/BORIS modifiers/noncontact_short.txt", header = F),
+  read.csv("C:/Users/Alex/Documents/GitHub/CCCPP/Coding/BORIS modifiers/social object.txt", header = F),
+  "Break"
+))))
+elements <- elements[elements != "Ignore"]
+elements <- elements[elements != "Break"]
+
+remove <- sapply(unique(video.data$bout.nr), function(x){
+  nrow(filter(video.data, bout.nr == x, !Behavior %in% c("Non-Play", "Comment", "Start", "End", "Players", "Intervention"))) == 0
+})
+remove <- unique(video.data$bout.nr)[remove]
+if(length(remove)>0){
+  video.data = filter(video.data, video.data$bout.nr!= remove)
+}
+
+video.data = filter(video.data, video.data$bout.nr!= remove)
+
+bout.data <- lapply(unique(video.data$bout.nr), function(x) {
+  # select bout and sort by subject and time
+  set.data <- filter(video.data, bout.nr == x, !Behavior %in% c("Non-Play", "Comment", "Start", "End", "Players", "Intervention")) %>% 
+    arrange(Subject, Time)
+  # vector with focals
+  focal <- set.data$Subject
+  # bout nr
+  bout.nr <- sub(".*/", "", unique(set.data$bout.nr))
+  # vector with time
+  Time <- set.data$Time
+  # put elements into list
+  bout.elements <- list()
+  for (i in 1:nrow(set.data)) {
+    yy <- as.vector(unlist(strsplit(unlist(set.data[i, ]), split = ",", fixed = T)))
+    yy <- intersect(yy, elements)
+    bout.elements[[i]] <- yy
+  }
+  # elements that co-occur in event are combined by % symbol
+  bout.elements <- sapply(bout.elements, paste, collapse = "%")
+  # empty cells (i.e. those not containing a recognised element) get NA
+  bout.elements[bout.elements == ""] <- NA
+  return(data.frame(focal, bout.nr, Time, bout.elements))
+})
+# combine all bouts into one frame
+bout.data <- bind_rows(bout.data)
+# create individual-level bout identifier
+bout.data$bout.nr.focal <- bout.data %>%
+  unite(bout.nr, bout.nr, focal, sep = "_", remove = T) %>%
+  select(bout.nr)
+bout.data$bout.nr.focal <- as.vector(bout.data$bout.nr.focal$bout.nr)
+
+# create list that has one vector of elements per individual-bout
+elements.bout <- lapply(unique(bout.data$bout.nr.focal), function(x) {
+  set.data <- filter(bout.data, bout.nr.focal == x)
+  return(set.data$bout.elements)
+})
+
+# create list that has one vector of times per individual-bout
+elements.time <- lapply(unique(bout.data$bout.nr.focal), function(x) {
+  set.data <- filter(bout.data, bout.nr.focal == x)
+  return(set.data$Time)
+})
+
+# create list of focal ID per individual-bout
+bout.focal <- lapply(unique(bout.data$bout.nr.focal), function(x) {
+  set.data <- filter(bout.data, bout.nr.focal == x)
+  return(unique(set.data$focal))
+})
+
+# create list of bout ID per individual-bout
+bout.id <- lapply(unique(bout.data$bout.nr.focal), function(x) {
+  set.data <- filter(bout.data, bout.nr.focal == x)
+  return(unique(set.data$bout.nr))
+})
+
+# name element-list and time-list using individual-bout id
+names(elements.bout) <- unique(bout.data$bout.nr.focal)
+names(elements.time) <- unique(bout.data$bout.nr.focal)
+
+
+####### At this point (27/02/21) some behaviours are still very rare (fewer than 5 times), so I combine them with less rare behaviours
+# set threshould
+threshold <- 20
+# unlist elements
+unlisted_elements_table <- table(unlist.vector(elements.bout))
+# detect elements below threshold
+rare_elements <- unlisted_elements_table[unlisted_elements_table <= threshold]
+# show rare elements to replace
+rare_elements_replace <- element_table %>% 
+  filter(elements %in% names(rare_elements))
+# go through rare elements and change them
+for(i in seq_along(rare_elements_replace$elements)){
+  if(rare_elements_replace$potential_replacement[i]!= '-'){
+    elements.bout <- change.elements(
+      elements.to.change = rare_elements_replace$elements[i], 
+      new = rare_elements_replace$potential_replacement[i], 
+      elem.bout = elements.bout)
+  }
+}
+
+############ Repeat the same thing again in case some elements got missed
+unlisted_elements_table <- table(unlist.vector(elements.bout))
+# detect elements below threshold
+rare_elements <- unlisted_elements_table[unlisted_elements_table <= threshold]
+# show rare elements to replace
+rare_elements_replace <- element_table %>% 
+  filter(elements %in% names(rare_elements))
+# go through rare elements and change them
+for(i in seq_along(rare_elements_replace$elements)){
+  if(rare_elements_replace$potential_replacement[i]!= '-'){
+    elements.bout <- change.elements(
+      elements.to.change = rare_elements_replace$elements[i], 
+      new = rare_elements_replace$potential_replacement[i], 
+      elem.bout = elements.bout)
+  }
+}
+
+elements <- intersect(elements, unlist(strsplit(unlist(elements.bout), split = "%", fixed = T)))
+
+
+############# find similar bouts
+
+bout.s = bout.similarity(elem.bout = elements.bout, bout.id = names(elements.bout))
+
+bouts.net = bout.similarity.net(elem.bout = elements.bout,
+                                            bout.id = names(elements.bout),
+                                            cutoff = 0.8,
+                                            representation = 'bout.nr') 
+
+
+
+
+############# Make a dataframe that has all the info for the different element combinations
+
+transitions <- transitions.frame.tidy(elem.bout = elements.bout, elements = elements)
+
+# how often does A lead to B
+transitions$observed.sum <- elem.info(
+  antecedent = transitions$antecedent,
+  descendant = transitions$descendant,
+  elem.bout = elements.bout,
+  it = 20,
+  measure = c("sum")
+)
+
+# joint probability
+transitions$observed.joint.probs <- elem.info(
+  antecedent = transitions$antecedent,
+  descendant = transitions$descendant,
+  elem.bout = elements.bout,
+  it = 20,
+  measure = c("joint.prob")
+)
+
+
+# probability of A leading to B
+transitions$observed.probs <- elem.info(
+  antecedent = transitions$antecedent,
+  descendant = transitions$descendant,
+  elem.bout = elements.bout,
+  it = 20,
+  measure = c("prob")
+)
+
+# Mutual Information of A-->B
+
+transitions$mutual.information <- elem.info(
+  antecedent = transitions$antecedent,
+  descendant = transitions$descendant,
+  elem.bout = elements.bout,
+  it = 20,
+  measure = c("mi")
+)
+
+
+############# Randomize - put all elements together, shuffle, put them back into bouts
+
+randomizations <- randomized.elem.info(
+  elem.bout = elements.bout,
+  antecedent = transitions$antecedent,
+  descendant = transitions$descendant,
+  observed = transitions$observed.probs,
+  it = 5,
+  cores = 10,
+  trials = 100,
+  output = "expected"
+)
+
+
+transitions$expected.sum <- randomizations$sum
+transitions$expected.mi <- randomizations$mi
+transitions$expected.probs <- randomizations$prob
+transitions$expected.sum.bout <- randomizations$sum.bout
+transitions$expected.prob.bout <- randomizations$prob.bout
+transitions$pvalue <- randomizations$pvalue
+transitions$z <- randomizations$z
+transitions$prob.increase <- transitions$observed.probs / transitions$expected.probs
+
+# order by name
+transitions <- transitions[order(transitions$antecedent), ]
+
+
+########## bootstrap the observed data to quantify how robust patterns are
+boot.probabilities <- boot.elements(
+  elem.bout = elements.bout,
+  antecedent = transitions$antecedent,
+  descendant = transitions$descendant,
+  measure = "prob",
+  trials = 100,
+  it = 20,
+  cores = 10,
+  ci.range = c(0.025, 0.975),
+  output = "summary"
+)
+
+######### compare randomized and observed
+transitions$lower.ci <- boot.probabilities$lower.ci
+transitions$upper.ci <- boot.probabilities$upper.ci
+transitions$range.ci <- boot.probabilities$range.ci
+transitions$sd <- boot.probabilities$sd.ci
+transitions$cv <- boot.probabilities$cv.ci
+
+################## insane levels of variation
+plot(transitions$count.antecedent, transitions$range.ci)
+
+#
+# ###################### bag-of-words
+# gap <- c(0, 1)
+# bags <- bag.of.words(elem.bout = elements.bout, elem.time = elements.time, gap = gap)
+#
+# ############# Randomize - put all elements together, shuffle, put them back into bouts
+#
+# randomizations <- randomized.bag.of.words(
+#   elem.bout = elements.bout,
+#   elem.time = elements.time,
+#   observed = bags$observed.probs,
+#   gap = gap,
+#   cores = 10,
+#   trials = 100,
+#   output = "expected"
+# )
+#
+# bags$expected.probs <- randomizations$prob
+# bags$pvalue <- randomizations$pvalue
+# bags$z <- randomizations$z
+# bags$prob.increase <- bags$observed.probs / bags$expected.probs
+#
+#
+# ### bootstrap bag-of-words
+#
+# boot.bags <- boot.bag.of.words(
+#   elem.bout = elements.bout,
+#   elem.time = elements.time,
+#   element = bags$element,
+#   other = bags$other,
+#   measure = "prob",
+#   trials = 100,
+#   gap = gap,
+#   cores = 10,
+#   ci.range = c(0.025, 0.975),
+#   output = "summary"
+# )
+#
+# ######### compare randomized and observed
+# bags$lower.ci <- boot.bags$lower.ci
+# bags$upper.ci <- boot.bags$upper.ci
+# bags$range.ci <- boot.bags$range.ci
+# bags$sd <- boot.bags$sd.ci
+# bags$cv <- boot.bags$cv.ci
+#
+# plot(bags$count.element, bags$sd)
+#
+
+############# log likelihood of real sequence vs shuffled
+#
+# llh.bout <- calculate.llh(
+#   elem.bout = elements.bout,
+#   llh = data.frame(
+#     antecedent = transitions$antecedent,
+#     descendant = transitions$descendant,
+#     probs = transitions$observed.probs
+#   )
+# )
+#
+# llh.ran <- calculate.llh(
+#   elem.bout = elements.bout,
+#   llh = data.frame(
+#     antecedent = transitions$antecedent,
+#     descendant = transitions$descendant,
+#     probs = transitions$prob.descendant
+#   )
+# )
+#
+# llh.ran2 <- calculate.llh(
+#   elem.bout = elements.bout,
+#   llh = data.frame(
+#     antecedent = transitions$antecedent,
+#     descendant = transitions$descendant,
+#     probs = transitions$expected.probs
+#   )
+# )
+#
+# transitions.bout <- transition.applied(
+#   elem.bout = elements.bout,
+#   llh = data.frame(
+#     antecedent = transitions$antecedent,
+#     descendant = transitions$descendant,
+#     probs = transitions$observed.probs
+#   ), it = 100, type = "element"
+# )
+#
+# transitions.ran <- transition.applied(
+#   elem.bout = elements.bout,
+#   llh = data.frame(
+#     antecedent = transitions$antecedent,
+#     descendant = transitions$descendant,
+#     probs = transitions$prob.descendant
+#   ), it = 100
+# )
+#
+# transitions.ran2 <- transition.applied(
+#   elem.bout = elements.bout,
+#   llh = data.frame(
+#     antecedent = transitions$antecedent,
+#     descendant = transitions$descendant,
+#     probs = transitions$expected.probs
+#   ), it = 100
+# )
+# #
+#
+
+############### conditional probability based on two-element combinations
+dyad.trans <- dyad.transition.tidy(elem.bout = elements.bout, it = 100, lvl = 2)
+
+elements.bout.opt <- optim.unlist.vector(elem.bout = elements.bout, it = 20)
+
+
+loo1 <- prediction.leave.one.out(elem.bout = elements.bout, it = 5, cores = 10, lvl = 1, out = 8)
+loo0 <- prediction.leave.one.out(elem.bout = elements.bout, it = 5, cores = 10, lvl = 0, out = 8)
+loo2 <- prediction.leave.one.out(elem.bout = elements.bout, it = 5, cores = 10, lvl = 2, out = 8)
+loo3 <- prediction.leave.one.out(elem.bout = elements.bout, it = 5, cores = 10, lvl = 3, out = 8)
+
+nn1 <- neural.leave.one.out(elem.bout = elements.bout, lvl = 1, total_epochs = 50, cores = 5, it = 1, out = 8, batch_size = 32)
+nn2 <- neural.leave.one.out(elem.bout = elements.bout, lvl = 2, total_epochs = 50, cores = 5, it = 1, out = 8, batch_size = 32)
+nn3 <- neural.leave.one.out(elem.bout = elements.bout, lvl = 3, total_epochs = 50, cores = 5, it = 1, out = 8, batch_size = 32)
+nn4 <- neural.leave.one.out(elem.bout = elements.bout, lvl = 4, total_epochs = 50, cores = 5, it = 1, out = 8, batch_size = 32)
+nn5 <- neural.leave.one.out(elem.bout = elements.bout, lvl = 5, total_epochs = 50, cores = 5, it = 1, out = 8, batch_size = 32)
+
+
+
+#################################################### Find elements with similar usage - this is super dependent on data still
+
+
+similar.cluster.trans <- similiarity.clusters(
+  antecedent = transitions$antecedent,
+  descendant = transitions$descendant,
+  count.antecedent = transitions$count.antecedent,
+  count.descendant = transitions$count.descendant,
+  observed.probs = transitions$observed.probs,
+  mutual.information = transitions$mutual.information,
+  cutoff = 5,
+  measure = c("prob"),
+  facet = T
+)
+
+
+net.plot.trans <- network.plot(
+  elem.bout = elements.bout,
+  elem.time = NULL,
+  edge.weight = "transition",
+  min.prob = 0.05,
+  min.count = 5,
+  significance = 0.01,
+  hide_unconnected = T,
+  link = "weighted",
+  clusters = T,
+  plot.bubbles = F,
+  title = "Transition network",
+  remove_loops = T,
+  gap = NULL, facet = T
+)
+
+#################################################### Make function that finds elements that are highly unpredictable and those that are predictable
+element.use <- usage.stats(element = unique(transitions$antecedent), transitions = transitions, cutoff = 10, sig = 0.05)
+
+element.use[order(-1 * element.use$first.cv), ]
+
+#################################################### Make function that check for increase in mutual information if we know antecedent 1 or not
+
+#################################################### make leave-one-out function to check how well we predict actions in 'new' set
+
+#################################################### somehow make predictor based on all the information
+
+#################################################### For the transitions, check whether shuffling within bout changes conditional probability --> they occur in same bout, but does timing matter?
+xx <- conditionality(elem.bout = elements.bout, it = 10, cores = 10, trials = 100)
+###################### round results, put in better order, somehow figure out how to remove rows with pure NA
+
+#################################################### check MI decay over time
+
+transitions <- transitions.frame(elem.bout = elements.bout, elements = elements)
+transitions$observed.probs <- elem.info(
+  antecedent = transitions$antecedent,
+  descendant = transitions$descendant,
+  elem.bout = elements.bout,
+  n = 1,
+  it = 20,
+  measure = c("prob")
+)
+
+
+gap <- c(-0.025, 1.4)
+bags1 <- bag.of.words(elem.bout = elements.bout, elem.time = elements.time, gap = gap)
+
+
+
+likelihood.est(
+  elem.bout = elements.bout, antecedent = transitions$antecedent,
+  descendant = transitions$descendant, probabilities = transitions$observed.probs, lvl = 1, i = 10
+)
+likelihood.est(
+  elem.bout = elements.bout, antecedent = transitions$antecedent,
+  descendant = transitions$descendant, probabilities = transitions$prob.descendant, lvl = 1, i = 10
+)
+
+
+loo1 <- prediction.leave.one.out(elem.bout = elements.bout, it = 10, cores = 10, lvl = 1, out = round(length(elements.bout) / 25, 0))

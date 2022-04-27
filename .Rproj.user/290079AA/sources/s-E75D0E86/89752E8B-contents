@@ -1,0 +1,224 @@
+
+# 0b_Chimp Import 2 ####
+### Load Packages - ggregplot needs to be called from github
+library(tidyverse);library(data.table); library(reticulate); library(magrittr); library(dtplyr)
+library(ggregplot); library(igraph); library(fs); library(zip); library(cowplot)
+
+### this sets the theme for all plots below
+theme_set(theme_cowplot())
+
+### this creates new folders in the project directory
+dir_create("Intermediate")
+dir_create("Intermediate/AI")
+dir_create("Intermediate/AISolo")
+
+# AI Observations ####
+
+# Importing ####
+
+### this loads all the chimp detections from a zip file
+if(!file.exists("Data/Raw/chimp-detections.pkl")){
+  
+  unzip("Data/Raw/chimp-detections.zip", exdir = "Data/Raw")
+  
+}
+
+### This function needs you to have Python on the computer and run 
+#py_install("pandas") # in case there is an error about 'pandas' not existing
+RawAI <- py_load_object("Data/Raw/chimp-detections.pkl")
+
+### removes everything in the filename behind the first dot
+RawAI %<>% mutate_at("filename", ~.x %>% str_split("[.]") %>% map_chr(1))
+
+### turns all letters to lower, than converts all to CamelCase
+RawAI %<>% as.data.table() %>% 
+  rename_all(tolower) %>% 
+  rename_all(CamelConvert) %>% 
+  select(Filename, Frame_id, Face_id, Year_id)
+
+### gets information on all frames rates from videos file
+FrameRates <- read.csv("Data/video-md.csv")
+
+### again removes everything after dot, converts all captitals to lower and then CamelCase
+FrameRates %<>% rename_all(~.x %>% str_remove("[.]") %>% tolower %>% CamelConvert)
+
+### remove dots
+FrameRates$Filename %<>% str_split("[.]") %>% map_chr(1) 
+
+### this seems to clean some filenames specifically
+FrameRates %<>% mutate_at("Filename", 
+                          ~ifelse(.x %in% c(
+                            "01_ab589317-1b0a-4e35-915c-13b4223d30e1", 
+                            "03_be1d6c28-65cc-4729-9275-573f736975b5", 
+                            "04_362e8a1f-8670-4ffc-8bec-cdca8bb45e9b",
+                            "07_90b3af42-665d-4206-b5d5-3fb5b28aa705",
+                            "09_51b979dc-f18e-4c69-9f95-e509451a7005"), 
+                            .x %>% str_split("_") %>% map_chr(last),
+                            .x))
+
+### this adds together the RawAI and FrameRates tables, by matching Filenames, adding the Videoframerate to RawAI
+RawAI %<>% 
+  left_join(FrameRates %>% dplyr::select(Filename, Videoframerate), 
+            by = "Filename")
+
+### Check RawAI
+RawAI
+
+### Load shot changes file
+ShotChanges <- read.csv("Data/video_shots.csv")
+
+### clean shot changes
+ShotChanges %<>% 
+  mutate_at("video_UID", as.character) %>% 
+  # filter(! video_UID %in% c(
+  #   "01_ab589317-1b0a-4e35-915c-13b4223d30e1", 
+  #   "03_be1d6c28-65cc-4729-9275-573f736975b5", 
+  #   "04_362e8a1f-8670-4ffc-8bec-cdca8bb45e9b",
+  #   "07_90b3af42-665d-4206-b5d5-3fb5b28aa705",
+  #   "09_51b979dc-f18e-4c69-9f95-e509451a7005")) %>% 
+  mutate_at("video_UID",
+            ~ifelse(.x %in% c(
+              "01_ab589317-1b0a-4e35-915c-13b4223d30e1",
+              "03_be1d6c28-65cc-4729-9275-573f736975b5",
+              "04_362e8a1f-8670-4ffc-8bec-cdca8bb45e9b",
+              "07_90b3af42-665d-4206-b5d5-3fb5b28aa705",
+              "09_51b979dc-f18e-4c69-9f95-e509451a7005"),
+              .x %>% str_split("_") %>% map_chr(last),
+              .x))
+
+### this only selects ShotChanges for files that also occur in RawAI
+####had to add some changes, because the original script ('intersect(unique(RawAI$Filename))') doesn't work for this data structure
+
+ShotChanges$video_UID %>% unique %>% intersect(unique(as_tibble(RawAI)$Filename)) -> FileNames
+
+### makes a list with all the shots divided by videos
+FileNames %>% map(~ShotChanges %>% filter(video_UID == .x)) -> 
+  ShotChangeList
+
+### names lists in ShotChangeList
+names(ShotChangeList) <- FileNames
+
+### selects first file name
+i <- FileNames[1]
+
+ShotNamedList <- list()
+
+### this goes through all the files, detects the shots, and turns them into individual information
+#### this takes one hell of a time to run in full
+for(i in FileNames){
+  
+  print(i)
+  
+  ### had to add 'as_tibble' because the other data table format wouldn't allow unnesting
+  SubAI <- as_tibble(RawAI) %>% filter(Filename == i) %>% unnest(Frame_id)
+  
+  SubAI %<>% mutate(Shot = cut(Frame_id, 
+                               labels = ShotChangeList[[i]]$Shot_Number,
+                               breaks = c(ShotChangeList[[i]]$Start_Frame, Inf),
+                               include.lowest = T) %>% 
+                      as.numeric)
+  
+  ShotNamedList[[i]] <- SubAI
+  
+}
+
+### bind all rows as CleanedAI
+CleanedAI <- ShotNamedList %>% bind_rows
+
+### Only takes RawAI rows that don't appear in the shot changes file, and then adds the cleaned data at the bottom
+#### had to add as_tibble again
+as_tibble(RawAI) %>% filter(!Filename %in% FileNames) %>% 
+  unnest(Frame_id) %>% mutate(Shot = 1) %>% 
+  bind_rows(CleanedAI) -> 
+  CleanedAI
+
+CleanedAI %<>% mutate_at("Shot", as.numeric)
+
+CleanedAI %<>% mutate_at("Frame_id", ~.x/Videoframerate)
+
+# Making table ####
+
+### Get Years in data
+CleanedAI$Year_id %>% unique %>% gtools::mixedsort() ->
+  FocalYears
+
+### Set Aggregation rates; can easily increase the number of those for our purposes
+#### I would set this as a sequence between 10sec and 3600 sec by 20 sec increments
+AggregateRates <- c(1,seq(10, 3600, 10))
+
+AMList <- list()
+
+FocalYear <- FocalYears[1]
+
+for(FocalYear in FocalYears){
+  
+  print(FocalYear)
+  
+  ### only take videos from this year
+  CleanedAI %>% filter(Year_id %in% FocalYear) -> YearAI
+  
+  ### make empty list
+  AMList[[which(FocalYears == FocalYear)]] <- list()
+  
+  ### run through the different aggregation rates
+  Iteration <- AggregateRates[1]
+  
+  for(Iteration in AggregateRates){
+    
+    print(Iteration)
+    
+    ### new grouping variable taking all frames within the iteration time window
+    YearAI %<>% 
+      mutate(Group = round((Frame_id + Shot*Iteration)/(Iteration)))
+    
+    ### paste Group not only by time but also Filename
+    YearAI %<>% mutate_at("Group", ~paste0(Filename, ".", .x))
+    
+    ### Unique occurrance of each individual per iteration
+    YearAI %>% select(Group, Face_id) %>% unique -> UniqueAI
+    
+    ### make table of co-occurrence 
+    M1 <- UniqueAI %>% table() %>% as.matrix #  matrix(ncol = nunique(YearAI$Face_id))
+    
+    ### Number of individuals in iteration
+    M1 %>% rowSums() -> NID
+    
+    ### individuals in each iteration
+    GroupDF <- data.frame(GroupSize = NID)
+    GroupDF$Name <- (M1 %>% apply(1, function(a) which(a == 1) %>% names))
+    
+    ### solitary individuals
+    SolitaryDF <- data.frame(
+      Name = colnames(M1),
+      Solo = M1[NID == 1, ] %>% colSums,
+      NObs = M1 %>% colSums
+    ) %>% mutate(PropSolo = Solo/NObs)
+    
+    ### add info on solitary individuals to data
+    SolitaryDF %<>% left_join(GroupDF %>% unnest(Name) %>% group_by(Name) %>% 
+                                summarise_at("GroupSize", mean))
+    ### save solitary time
+    SolitaryDF %>% 
+      saveRDS(file = glue::glue("Intermediate/AISolo/{paste0(FocalYear, '.', Iteration)}.rds"))
+    
+    ### make graph object from incidence matrix
+    SocGraph <- graph_from_incidence_matrix(M1)
+    
+    ### turn into dyadic graph
+    Proj <- bipartite.projection(SocGraph)$proj2
+    
+    ### turn into adjacency matrix
+    AM <- Proj %>% get.adjacency(attr = "weight") %>% as.matrix
+    
+    ### turn into proportions
+    AM %<>% ProportionalMatrix(Observations = colSums(M1))
+    
+    ### put overall occurrence as diagonal in matrix
+    diag(AM) <- table(UniqueAI$Face_id)
+    
+    # AMList[[which(FocalYears == FocalYear)]][[Iteration]] <- AM
+    
+    AM %>% saveRDS(file = glue::glue("Intermediate/AI/{paste0(FocalYear, '.', Iteration)}.rds"))
+    
+  }
+}

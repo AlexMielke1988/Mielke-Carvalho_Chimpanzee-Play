@@ -1,0 +1,225 @@
+Observation id	2013_016															
+																
+Media file(s)																
+																
+Player #1	G:/Oxford/Videos/Bossou videos/2013_016.mp4															
+																
+Observation date	2020-04-29 11:28:33															
+																
+Description	2013_016															
+																
+Time offset (s)	0.0															
+																
+independent variables																
+variable	value															
+Observer	Alex															
+Group	Bossou															
+Date/Time	2000-01-01T00:00:00															
+Contains play	yes															
+Coded	yes															
+																
+Time	Media file path	Total length	FPS	Subject	Behavior	Behavioral category	Modifier 1	Modifier 2	Modifier 3	Modifier 4	Modifier 5	Modifier 6	Modifier 7	Modifier 8	Comment	Status
+19.772	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0		Solo Play	Solo Play										POINT
+21.272	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0		Players	Players	Flanle,Jire	Yes	Flanle,Foaf,Jeje,Jire							POINT
+21.522	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Rake-ground	None	None	None	None	None		POINT
+21.522	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Jire	Out Of Sight	Out of Sight										POINT
+23.272	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	None	None	None	Roll_object	Stone	None		POINT
+24.773	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	None	None	None	Carry_object	Stone	None		POINT
+26.022	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Approach	None	Face_invisible	None	Stone	None		POINT
+28.523	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Swagger	None	Face_invisible	None	Stone	None		POINT
+29.272	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Bipedal	None	Face_invisible	Wave_object	Stone	None		POINT
+30.022	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Out Of Sight	Out of Sight										POINT
+31.271	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Retreat-backwards	None	Face_invisible	None	Stone	None		POINT
+32.022	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Break	Break										POINT
+32.022	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Jire	Break	Break										POINT
+35.022	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Approach	None	Face_invisible	None	None	None		POINT
+36.022	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Bipedal	None	Face_invisible	Pretend-throw_object	Stone	None		POINT
+36.023	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Jire	Play Element	Play Element	None	None	None	Arm-swing	None	None	None	None		POINT
+37.772	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Retreat-backwards	None	Face_invisible	None	Stone	None		POINT
+38.521	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Jire	Play Element	Play Element	None	None	Approach	None	None	None	None	None		POINT
+38.522	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Flee	None	Face_invisible	None	Stone	None		POINT
+39.522	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Jire	Play Element	Play Element	None	None	Follow-Other	None	None	None	None	None		POINT
+39.772	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Retreat	None	Face_invisible	None	Stone	None		POINT
+44.522	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Arm-protect,Retreat-backwards	None	None	None	Stone	None		POINT
+45.025	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Arm-protect,Flee	None	None	None	Stone	None		POINT
+46.522	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Arm-protect,Retreat-backwards	None	None	None	Stone	None		POINT
+48.772	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	None	None	Face_invisible	Wave_object	Stone	None		POINT
+50.273	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	None	Charge	Face_invisible	None	Stone	None		POINT
+50.522	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Jire	Play Element	Play Element	Parry	None	None	None	None	None	None	None		POINT
+50.523	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Flee	None	Face_invisible	Pretend-throw_object	Stone	None		POINT
+51.021	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	None	None	Face_invisible	Throw_object	Stone	None		POINT
+51.773	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Jire	Break	Break										POINT
+52.022	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Break	Break										POINT
+52.522	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	End	End	Avoid	Yes								POINT
+114.525	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0		Solo Play	Solo Play										POINT
+153.772	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0		Players	Players	Flanle,Foaf	Yes	Flanle,Foaf,Jeje,Jire							POINT
+154.272	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Approach	None	Face_invisible	Carry_object	Stone	None		POINT
+154.335	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Break	Break										POINT
+161.271	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Bipedal	None	Face_invisible	Throw_object	Stone	None		POINT
+162.373	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	Ignore	None	None	None	None	None		POINT
+163.022	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Retreat-backwards	None	Face_invisible	None	None	None		POINT
+164.872	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Non-Play	Social Interaction	None	Arm Wave	Flanle	Sender						POINT
+165.022	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Bipedal	None	Face_invisible	Throw_object	Stone	None		POINT
+168.023	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Retreat-backwards	None	Face_invisible	None	None	None		POINT
+169.024	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Break	Break										POINT
+172.022	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	None	Kick-dirt	Face_invisible	None	None	None		POINT
+172.572	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	None	Kick-dirt	Face_invisible	None	None	None		POINT
+173.572	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	None	Kick-dirt	Face_invisible	None	None	None		POINT
+174.274	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	None	None	Face_invisible	Carry_object	Stone	None		POINT
+175.772	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Bipedal,Rock	None	Face_invisible	None	Stone	None		POINT
+176.873	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	Branch-shake	None	None	None	None	None		POINT
+177.623	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	Approach	None	None	None	None	None		POINT
+177.771	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Flee	None	Face_invisible	None	Stone	None		POINT
+178.523	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	None	Feint	Face_invisible	None	Stone	None		POINT
+178.874	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	Hide	None	None	None	None	None		POINT
+179.277	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Retreat-backwards	None	Face_invisible	None	Stone	None		POINT
+179.873	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Break	Break										POINT
+181.773	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Bipedal	None	Face_invisible	Throw_object	Stone	None		POINT
+184.024	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Retreat	None	None	None	None	None		POINT
+187.772	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	None	None	Face_invisible	Pull_object	Stone	None		POINT
+188.373	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	Approach	None	None	None	None	None		POINT
+189.522	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Flee	None	Face_invisible	None	None	None		POINT
+189.623	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	Follow-Other	None	None	None	None	None		POINT
+193.271	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	None	Loud-scratch	Face_invisible	None	None	None		POINT
+194.772	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Flee	None	Play-Face	None	None	None		POINT
+196.772	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	None	Hide-swing	Play-Face	None	None	None		POINT
+197.522	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Climb	None	Play-Face	None	None	None		POINT
+200.372	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Break	Break										POINT
+200.772	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	None	Fall	Face_invisible	None	None	None		POINT
+201.521	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	None	Jump	Face_invisible	None	None	None		POINT
+201.623	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	Bop	None	Face_invisible	None	None	None		POINT
+202.276	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Flee	None	Face_invisible	None	None	None		POINT
+202.373	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Break	Break										POINT
+203.022	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Break	Break										POINT
+212.022	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Walk-stiff	None	Face_invisible	None	None	None		POINT
+212.122	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	Follow-Other	None	None	None	None	None		POINT
+215.373	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Break	Break										POINT
+217.521	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Break	Break										POINT
+219.773	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Approach	None	Face_invisible	None	None	None		POINT
+222.623	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	Follow-Other	None	None	None	None	None		POINT
+223.022	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Arm-protect,Flee	None	Face_invisible	None	None	None		POINT
+224.772	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Out Of Sight	Out of Sight										POINT
+226.772	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Retreat	None	Face_invisible	None	None	None		POINT
+229.374	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Hide	None	None	None	None	None		POINT
+230.021	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	None	Feint	None	None	None	None		POINT
+230.275	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Flee	None	Face_invisible	None	None	None		POINT
+231.337	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Out Of Sight	Out of Sight										POINT
+232.873	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Break	Break										POINT
+236.086	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Break	Break										POINT
+238.586	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	End	End	None	Yes								POINT
+252.902	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0		Players	Players	Flanle,Foaf	Yes	Flanle,Foaf,Jeje,Jire							POINT
+253.403	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Approach	None	Face_invisible	None	None	None		POINT
+256.404	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	None	Kick-dirt	Face_invisible	None	None	None		POINT
+258.152	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Approach	None	Face_invisible	None	None	None		POINT
+259.644	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	Circle-tree,Lead	None	None	None	None	None		POINT
+261.403	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Circle-tree,Follow-Other	None	Face_invisible	None	None	None		POINT
+265.902	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Retreat-backwards	None	Face_invisible	None	None	None		POINT
+267.152	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Approach	None	Face_invisible	None	None	None		POINT
+269.127	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	Circle-tree,Follow-Other	None	None	None	None	None		POINT
+269.902	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Circle-tree,Follow-Other	None	Face_invisible	None	None	None		POINT
+273.902	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Retreat-backwards	None	Face_invisible	None	None	None		POINT
+274.877	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	Follow-Other	None	None	None	None	None		POINT
+275.879	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Break	Break										POINT
+275.902	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Break	Break										POINT
+277.403	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	None	Bow	Face_invisible	None	None	None		POINT
+280.877	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	Follow-Other	None	None	None	None	None		POINT
+280.905	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Retreat-backwards	None	None	None	None	None		POINT
+282.402	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Hide	None	Face_invisible	None	None	None		POINT
+282.903	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Flee	None	Face_invisible	None	None	None		POINT
+284.652	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	None	Head-shake	None	None	None	None		POINT
+285.402	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Follow-Other	None	Face_invisible	None	None	None		POINT
+285.628	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	Circle-tree,Lead	None	None	None	None	None		POINT
+286.401	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Circle-tree,Follow-Other	None	Face_invisible	None	None	None		POINT
+287.902	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Flee	None	Face_invisible	None	None	None		POINT
+288.128	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Break	Break										POINT
+288.152	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Climb	None	Face_invisible	None	None	None		POINT
+289.904	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Break	Break										POINT
+294.656	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	None	Charge	Face_invisible	None	None	None		POINT
+296.368	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	Circle-tree	None	Face_invisible	None	None	None		POINT
+296.402	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Circle-tree,Follow-Other,Run-stiff	None	None	None	None	None		POINT
+297.652	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Flee	None	Face_invisible	None	None	None		POINT
+299.152	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Bipedal	None	Face_invisible	None	None	None		POINT
+299.868	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	Retreat-backwards	None	None	None	None	None		POINT
+302.155	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Follow-Other	None	None	None	None	None		POINT
+303.368	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	Circle-tree,Lead	None	None	None	None	None		POINT
+305.406	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Flee	None	Face_invisible	None	None	None		POINT
+305.905	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	None	Hide-swing	Face_invisible	None	None	None		POINT
+306.118	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Break	Break										POINT
+307.652	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Break	Break										POINT
+313.651	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Branch-shake	None	None	None	None	None		POINT
+315.124	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	Retreat-backwards	None	Face_invisible	None	None	None		POINT
+316.155	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Approach	None	None	None	None	None		POINT
+316.157	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Swing	None	Face_invisible	None	None	None		POINT
+316.906	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Run-stiff	Pass	None	None	None	None		POINT
+317.119	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	Circle-tree	None	Face_invisible	None	None	None		POINT
+319.155	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	None	Feint	Face_invisible	None	None	None		POINT
+320.405	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Circle-tree,Follow-Other,Run-stiff	None	Face_invisible	None	None	None		POINT
+323.906	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Retreat	None	Face_invisible	None	None	None		POINT
+325.116	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	Follow-Other	None	None	None	None	None		POINT
+327.368	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Break	Break										POINT
+328.652	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Break	Break										POINT
+331.402	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Follow-Other	None	Face_invisible	None	None	None		POINT
+331.623	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	Lead	None	None	None	None	None		POINT
+335.483	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	Circle-tree	None	None	None	None	None		POINT
+335.904	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Retreat	None	Face_invisible	None	None	None		POINT
+337.402	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Climb	None	Face_invisible	None	None	None		POINT
+337.653	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	None	Hide-swing	Face_invisible	None	None	None		POINT
+338.905	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Out Of Sight	Out of Sight										POINT
+341.621	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Break	Break										POINT
+341.902	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Swing	None	None	None	None	None		POINT
+342.154	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Branch-shake,Swing	None	Face_invisible	None	None	None		POINT
+344.156	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Swing	Kick-tree	Face_invisible	None	None	None		POINT
+354.152	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Swing	Kick-tree	None	None	None	None		POINT
+354.904	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Branch-shake,Swing	None	Face_invisible	None	None	None		POINT
+356.620	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	Retreat	None	None	None	None	None		POINT
+357.152	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	None	Fall	Face_invisible	None	None	None		POINT
+357.405	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Follow-Other	None	None	None	None	None		POINT
+358.152	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	None	Feint	None	None	None	None		POINT
+358.619	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	None	Feint	Face_invisible	None	None	None		POINT
+358.908	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Flee	None	Face_invisible	None	None	None		POINT
+359.119	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	Follow-Other	None	Face_invisible	None	None	None		POINT
+360.153	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Hide	None	Face_invisible	None	None	None		POINT
+361.119	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Break	Break										POINT
+361.901	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Approach	None	Face_invisible	None	None	None		POINT
+363.904	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Walk-stiff	Pass	Face_invisible	None	None	None		POINT
+364.366	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	Circle-tree	None	None	None	None	None		POINT
+366.871	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Break	Break										POINT
+368.402	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Break	Break										POINT
+373.026	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	None	Kick-tree	None	None	None	None		POINT
+374.276	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Run-stiff	Pass	Face_invisible	None	None	None		POINT
+375.116	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	None	Hit_attempt	Face_invisible	None	None	None		POINT
+375.274	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	Parry	None	None	None	Face_invisible	None	None	None		POINT
+375.868	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	Follow-Other	None	Face_invisible	None	None	None		POINT
+377.272	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Retreat	None	Face_invisible	None	None	None		POINT
+380.022	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Retreat-backwards	None	None	None	None	None	makes weird gesture where he touches his leg and moves hand and leg around	POINT
+380.772	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	None	Feint	Face_invisible	None	None	None		POINT
+380.871	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	None	Hit_attempt	None	None	None	None		POINT
+381.022	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Flee	None	Face_invisible	None	None	None		POINT
+382.522	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Retreat-backwards	None	Face_invisible	None	None	None		POINT
+382.617	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	Follow-Other	None	None	None	None	None		POINT
+383.275	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	None	Feint	Face_invisible	Touch_object	Stone	None		POINT
+384.272	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Flee	None	Face_invisible	None	None	None		POINT
+384.871	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Break	Break										POINT
+385.023	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Break	Break										POINT
+401.798	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Follow-Other	None	Face_invisible	None	None	None		POINT
+402.371	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	Lead	None	Face_invisible	None	None	None		POINT
+405.869	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	None	Somersault	Face_invisible	None	None	None		POINT
+406.870	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	Lie-down	None	None	None	None	None		POINT
+407.551	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Lie-down	None	Face_invisible	None	None	None		POINT
+408.117	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	Grabble/Wrestle	None	None	None	None	None	None	None		POINT
+412.369	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	Hold	None	None	None	None	None	None	None		POINT
+412.550	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	Rump-rub	None	None	None	Face_invisible	None	None	None		POINT
+415.118	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	Hold	None	None	None	Face_invisible	None	None	None		POINT
+417.050	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Break	Break										POINT
+419.121	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Break	Break										POINT
+427.894	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Circle-partner	None	None	None	None	None		POINT
+429.370	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	Hit	None	None	Face_invisible	None	None	None		POINT
+430.396	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Retreat-backwards	None	Face_invisible	None	None	None		POINT
+431.648	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Break	Break										POINT
+431.869	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Break	Break										POINT
+442.621	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Play Element	Play Element	None	None	None	Somersault	None	None	None	None		POINT
+445.644	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	Run-stiff	None	None	None	None	None		POINT
+447.118	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Foaf	Break	Break										POINT
+447.148	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Play Element	Play Element	None	None	None	Arm-swing,Feint	Face_invisible	None	None	None		POINT
+451.398	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	Break	Break										POINT
+453.398	G:/Oxford/Videos/Bossou videos/2013_016.mp4	690.170	25.0	Flanle	End	End	None	Yes								POINT

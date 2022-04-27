@@ -1,0 +1,15 @@
+memory profiling: GC profiling: line profiling: sample.interval=10000
+#File 1: <expr>
+:4575626:8493083:282438800:39:"identical" 1#9 "FUN" "lapply" "sapply" "FUN" "lapply" 1#8 "profvis::profvis" 
+:4575626:8493083:287611072:0:"lapply" "sapply" "FUN" "lapply" 1#8 "profvis::profvis" 
+:4575626:8493083:290364200:0:"identical" 1#9 "FUN" "lapply" "sapply" "FUN" "lapply" 1#8 "profvis::profvis" 
+:4575626:8493083:292922000:0:"FUN" "lapply" "sapply" "FUN" "lapply" 1#8 "profvis::profvis" 
+:4575626:8493083:296978080:0:"identical" 1#9 "FUN" "lapply" "sapply" "FUN" "lapply" 1#8 "profvis::profvis" 
+:4575626:8493083:304029936:0:"lapply" "sapply" "FUN" "lapply" 1#8 "profvis::profvis" 
+:4575626:8493083:308546504:0:"identical" 1#9 "FUN" "lapply" "sapply" "FUN" "lapply" 1#8 "profvis::profvis" 
+:4575626:8493083:308550704:0:"identical" 1#9 "FUN" "lapply" "sapply" "FUN" "lapply" 1#8 "profvis::profvis" 
+:4575626:8493083:310778496:0:1#9 "FUN" "lapply" "sapply" "FUN" "lapply" 1#8 "profvis::profvis" 
+:4575650:8559478:311999576:2:1#12 "FUN" "lapply" "sapply" "FUN" "lapply" 1#11 "profvis::profvis" 
+:4575650:8559478:314989472:0:1#12 "FUN" "lapply" "sapply" "FUN" "lapply" 1#11 "profvis::profvis" 
+:4575650:8559478:319751488:0:"identical" 1#12 "FUN" "lapply" "sapply" "FUN" "lapply" 1#11 "profvis::profvis" 
+:4575650:8559478:323709680:0:"lapply" "sapply" "FUN" "lapply" 1#11 "profvis::profvis" 

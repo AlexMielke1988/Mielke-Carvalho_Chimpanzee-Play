@@ -1,0 +1,301 @@
+#' Tests accuracy of markov transition in predicting next elements by creating transition probabilities for all bouts bar one, and then trying to predict that bout
+#'
+#' @param elem.bout list of vectors of elements. Co-occurring elements are marked by the '%' symbol (e.g., mount%slap).
+#' @param elem.time list of vectors of timings of elements. If set to NULL, the order of elements is used with distance of 1
+#' @param it number of iterations of assignments
+#' @param cores number of cores for parallel randomization (default is 2)
+#' @param type how to determine probability of elements. If 'markov', the first-order transition is used (i.e., based on previous element only); 'null' uses the descendant probability; 'even' gives all elements the same probability; 'dyad' makes probabilities based on previous two elements
+#' @param gap number of elements to each side that should be counted in the same 'bag' as the element; if 'all', use whole bout
+#' @param out number of elements left out per leave-one-out iteration
+#'
+#'
+#' @return Returns the mean value of correct classifications
+#'
+#' @importFrom parallel parLapply
+#' @importFrom parallel mclapply
+#' @importFrom parallel makeCluster
+#' @importFrom parallel detectCores
+#' @importFrom parallel clusterExport
+#' @importFrom parallel stopCluster
+#' @importFrom purrr map transpose
+#' @importFrom igraph graph_from_edgelist edge.attributes get.adjacency
+#'
+#' @author Alex Mielke
+#' @export
+#'
+#' @examples
+#' ###
+prediction.leave.one.out <- function(elem.bout, it = 20, cores = 10, lvl = 1, gap = NULL, elem.time = NULL, out = 1) {
+  training_index.i <- cut(seq_along(elem.bout), out)
+  xx = sample(seq_along(elem.bout))
+  training_index.i <- lapply(unique(training_index.i), function(x) {
+      xx[which(training_index.i == x)]
+    })
+  elem.bout <- elem.bout %>%
+    lapply(str_replace_all, pattern = '-|/|_', replacement = '')
+  elem.bout <- lapply(elem.bout, function(x) {
+    c(x, rep(NA, lvl))
+  })
+
+  elements <- unique(unlist(strsplit(unlist(elem.bout), split = "%")))
+  elements <- elements[!is.na(elements) & !(elements == "NA")]
+
+  mycluster <- makeCluster(cores, type = "PSOCK")
+  # export the relevant information to each core
+  clusterExport(
+    cl = mycluster,
+    c(
+      "elem.bout",
+      "elem.info",
+      "elements",
+      "sum.array",
+      "mean.array",
+      "unlist.list",
+      "unlist.vector",
+      "elem.bout.matrix.tidy",
+      "Reduce",
+      "gap",
+      "bag.of.words",
+      "elem.time",
+      "dyad.transition.tidy",
+      "lvl",
+      "it",
+      "transpose",
+      "map"
+    ),
+    envir = environment()
+  )
+  registerDoParallel(mycluster)
+  clusterCall(mycluster, function() library(tidyverse))
+  clusterCall(mycluster, function() library(tidytext))
+  clusterCall(mycluster, function() library(tidyfast))
+  # run parallel loop
+
+  loo.pred <- parLapply(mycluster, X = training_index.i, function(training_index) {
+    if (is.null(gap)) {
+      boot.train <- elem.bout[-training_index]
+      boot.test <- elem.bout[training_index]
+
+      if (lvl == 0) {
+        llh <- dyad.transition.tidy(elem.bout = boot.train, lvl = 1, it = 1)
+      }
+      if (lvl > 0) {
+        llh <- lapply(1:lvl, function(x) {
+          dyad.transition.tidy(elem.bout = boot.train, lvl = x, it = 20)
+        })
+        names(llh) <- 1:lvl
+      }
+    }
+    if (!is.null(gap)) {
+      boot.train <- elem.bout[-training_index]
+      boot.train <- lapply(boot.train, function(z) {
+        z <- ifelse(z == "NA", NA, z)
+      })
+      boot.test <- elem.bout[training_index]
+      boot.test <- lapply(boot.test, function(z) {
+        z <- ifelse(z == "NA", NA, z)
+      })
+
+      if (is.null(elem.time)) {
+        time.train <- lapply(1:length(boot.train), function(z) {
+          1:length(boot.train[[z]])
+        })
+      }
+      if (!is.null(elem.time)) {
+        time.train <- elem.time[-training_index]
+      }
+
+      llh <- bag.of.words(elem.bout = boot.train, elem.time = time.train, gap = gap)
+      llh$antecedent <- llh$element
+      llh$descendant <- llh$other
+      llh$observed.probs <- ifelse(llh$observed.probs == 0 | is.na(llh$observed.probs), 1 / llh$count.element, llh$observed.probs)
+      llh$count.antecedent <- llh$count.element
+      llh$count <- llh$observed.sum
+      llh$observed.probs[llh$observed.probs < 1 / length(unique(llh$antecedent))] <- 1 / sum(llh$count.antecedent[!duplicated(llh$antecedent)])
+      llh$conditional.probability <- llh$observed.probs
+    }
+    ran.matrixes <- lapply(1:it, function(j) {
+      boot.test <- as.vector(unlist(boot.test))
+      boot.test <- unlist.vector(boot.test)
+      boot.test <- ifelse(boot.test == "NA", NA, boot.test)
+
+      if (length(boot.test) - lvl < 1) {
+        return(NA)
+      }
+      dataset.test <- purrr::map(
+        seq(1, length(boot.test) - lvl, by = 1),
+        ~ list(antecedent = boot.test[.x:(.x + lvl - 1)], descendant = boot.test[.x + lvl])
+      )
+      dataset.test <- purrr::transpose(dataset.test)
+
+      rem <- sapply(dataset.test$antecedent, function(x) {
+        mean(!is.na(x)) != 1
+      }) | sapply(dataset.test$descendant, function(x) {
+        mean(!is.na(x)) != 1
+      })
+      dataset.test$antecedent <- dataset.test$antecedent[!rem]
+      dataset.test$descendant <- dataset.test$descendant[!rem]
+
+      if (is.null(unlist(dataset.test$antecedent)) | is.null(unlist(dataset.test$descendant))) {
+        return(NA)
+      }
+      if (lvl > 0) {
+        ants.probs <- lapply(1:lvl, function(x) {
+          ants <- sapply(llh[[x]]$antecedent, strsplit, split = "%", fixed = T)
+          desc <- sapply(llh[[x]]$descendant, strsplit, split = "%", fixed = T)
+          probs <- llh[[x]]$conditional.probability
+          return(list(antecedent = ants, descendant = desc, probability = probs))
+        })
+
+        ants.probs <- purrr::transpose(ants.probs)
+        ants.probs$antecedent <- unlist(ants.probs$antecedent, recursive = FALSE)
+        ants.probs$descendant <- unlist(ants.probs$descendant, recursive = FALSE)
+        ants.probs$probability <- unlist(ants.probs$probability, recursive = FALSE)
+      }
+      pred <- sapply(1:length(dataset.test$antecedent), function(x) {
+        if (lvl > 0) {
+          ### what is the antecedent depending on the level?
+          x.ants <- lapply(1:lvl, function(y) {
+            rev(rev(unlist(dataset.test$antecedent[x]))[1:y])
+          })
+          ### where are those antecedents in the ants.probs list?
+          x.llhs <- lapply(1:lvl, function(z) {
+            which(sapply(ants.probs$antecedent, function(y) {
+              identical(x.ants[[z]], y)
+            }))
+          })
+          ### which elements are in the positions in question?
+          x.element <- lapply(1:lvl, function(z) {
+            unlist(ants.probs$descendant[x.llhs[[z]]])
+          })
+          ### what are the probabilities of those elements
+          x.chosen <- lapply(1:lvl, function(z) {
+            unlist(ants.probs$probability[x.llhs[[z]]])
+          })
+          non.empty <- sapply(x.element, function(z) {
+            length(z) > 0
+          })
+          x.ants <- x.ants[non.empty]
+          x.llhs <- x.llhs[non.empty]
+          x.element <- x.element[non.empty]
+          x.chosen <- x.chosen[non.empty]
+
+          all.descendants <- unique(unlist(llh[[1]]$descendant))
+          all.descendant.probs <- sapply(all.descendants, function(z){
+            llh[[1]]$prob.descendant[min(which(unlist(llh[[1]]$descendant) == z))]
+          })
+
+          x.element <- c(list(as.vector(all.descendants)), x.element)
+          x.chosen <- c(list(as.vector(all.descendant.probs)), x.chosen)
+
+          x.choices <- lapply(1:length(x.element), function(z) {
+            x.chosen[[z]][match(x.element[[1]], x.element[[z]])]
+          })
+          x.choices <- lapply(x.choices, function(z) {
+            ifelse(is.na(z), min(unlist(x.choices), na.rm = T), z)
+          })
+          x.chosen <- apply(do.call(cbind, x.choices), 1, prod)
+          x.element <- unlist(x.element[1])
+          x.chosen <- x.chosen / sum(x.chosen)
+        }
+
+        if (lvl == 0) {
+          xx <- table(unlist(strsplit(unlist(elem.bout), split = "%")))
+          x.element <- names(xx)
+          x.chosen <- as.numeric(xx)
+          x.chosen <- x.chosen / sum(x.chosen)
+        }
+
+        return(sample(x.element, 1, prob = x.chosen))
+      })
+      outcome <- pred == unlist(dataset.test$descendant)
+      out.ind <- data.frame(unlist(dataset.test$descendant), outcome)
+
+      return(list(mean.res = mean(outcome, na.rm = T),
+                  sample.size = length(boot.train),
+                  expected = unlist(dataset.test$descendant), observed = pred))
+    })
+
+    ran.matrixes <- transpose(ran.matrixes)
+    if (length(ran.matrixes) == 1) {
+      return(list(mean.res = NA, sample.size = NA, expected = NA, observed = NA))
+    }
+    mean.res <- mean(unlist(ran.matrixes$mean.res), na.rm = T)
+    sample.size <- mean(unlist(ran.matrixes$sample.size), na.rm = T)
+    observed <- unlist(ran.matrixes$observed)
+    expected <- unlist(ran.matrixes$expected)
+
+    return(list(accuracy = mean.res,
+                sample.size = sample.size,
+                observed = observed,
+                expected = expected))
+  })
+  stopCluster(mycluster)
+
+  loo_nn <- transpose(loo.pred)
+
+
+  # Evaluation Model Choice -------------------------------------------------
+
+  results <- data.frame(t(table(unlist(loo_nn$expected))))[, 2:3]
+  colnames(results) <- c("element", "expected")
+  results$expected <- round(results$expected / it, 3)
+  obs <- t(table(unlist(loo_nn$observed)))[1, ] / it
+  results$observed <- round(obs[match(results$element, names(obs))], 3)
+  correct <- t(table(unlist(loo_nn$observed)[unlist(loo_nn$observed) == unlist(loo_nn$expected)]))[1, ] / it
+  results$correct <- correct[match(results$element, names(correct))]
+  results$observed <- ifelse(is.na(results$observed), 0, results$observed)
+  results$correct <- ifelse(is.na(results$correct), 0, results$correct)
+  results$true.positive <- round(results$correct / results$expected, 3)
+
+  false.pos <- t(table(unlist(loo_nn$observed)[unlist(loo_nn$observed) != unlist(loo_nn$expected)]))[1, ] / it
+  false.positive <- false.pos[match(results$element, names(false.pos))]
+  false.positive <- ifelse(is.na(false.positive), 0, false.positive)
+  results$false.positive <- round(false.positive / results$observed, 3)
+
+  false.neg <- t(table(unlist(loo_nn$expected)[unlist(loo_nn$observed) != unlist(loo_nn$expected)]))[1, ] / it
+  false.negative <- false.neg[match(results$element, names(false.neg))]
+  false.negative <- ifelse(is.na(false.negative), 0, false.negative)
+  results$false.negative <- round(false.negative / results$expected, 3)
+
+
+  # Misclassification Matrix ------------------------------------------------
+
+  misclass <- data.frame(t(table(unlist(loo_nn$expected),
+                                 unlist(loo_nn$observed))))
+  colnames(misclass) <- c("observed", "expected", 'count')
+  tot.exp <- misclass %>%
+    group_by(expected) %>%
+    summarise(tot.exp = sum(count))
+
+  misclass <- misclass %>%
+    left_join(tot.exp) %>%
+    mutate(misclassification.probability = round(count/tot.exp, 3)) %>%
+    select(-tot.exp)
+
+  mis.matr <- graph_from_edgelist(
+    as.matrix(misclass[,c('expected', 'observed')]),
+    directed = T)
+  edge.attributes(mis.matr)$probability = misclass$misclassification.probability
+  mis.matr <- mis.matr %>% get.adjacency(attr = "probability") %>% as.matrix
+
+  mis.plot <- ggplot(data = misclass,
+         aes(x=expected, y=observed, fill=misclassification.probability)) +
+    geom_tile() +
+    scale_fill_gradient2(low = "white", high = "red",
+                         limit = c(0,max(misclass$misclassification.probability)), space = "Lab",
+                         name=  "Confusion Probability") +
+    theme_minimal() +
+    xlab('expected') +
+    ylab('observed') +
+    theme(axis.text.x = element_text(angle = 45, vjust = 1,
+                                     size = 10, hjust = 1)) +
+    ggtitle(paste(c('Misclassification Heat Map, Level = ',lvl), collapse = ' '))
+
+
+  return(list(accuracy = mean(unlist(loo_nn$accuracy), na.rm = T),
+              sample.size = mean(unlist(loo_nn$sample.size), na.rm = T),
+              element.results = results,
+              confusion.matrix = mis.matr,
+              heatmap = mis.plot))
+}

@@ -1,0 +1,760 @@
+---
+title: " Data Preparation - Chimpanzee Play Sequences Within"
+author: "Alex Mielke"
+date: "`r format(Sys.time(), '%d -%m -%Y')`"
+output:
+  pdf_document: default
+fontsize: 12pt
+spacing: double
+fig_caption: yes
+indent: yes
+geometry: margin=1in
+mainfont: Calibri
+sansfont: Calibri
+monofont: Calibri
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE)
+```
+
+```{r libraries, echo=FALSE, message=FALSE, warning=FALSE}
+# Open Libraries ----------------------------------------------------------
+library(tidyverse)
+library(stringr)
+library(arrangements)
+library(picante)
+library(parallel)
+library(doParallel)
+library(igraph)
+library(knitr)
+library(mclust)
+library(ClusterR)
+library(tidyfast)
+library(tidytext)
+library(kableExtra)
+library(ggraph)
+library(umap)
+set.seed(2804)
+```
+
+## Introduction to Data Preparation
+
+Coding in this script uses a mix of tidyverse and base R functions. I'm sorry.
+
+The video coding for this Project was conducted using BORIS video coding software. The output files are part of the repository. The full Manual for coding is also deposited with other files. BORIS produces a single .tsv file per video. As videos are often over an hour long and can contain multiple bouts, bouts will be marked based on the judgment made while coding. See the Manual for bout definitions. Coding stopped on 02/08/2021 for reasons of time - there are a lot more play bouts available in the Bossou archive, and these will hopefully be added to the analysis as time passes, but for now this has to be sufficient. A summary of the number of bouts, elements, individuals involved etc. follows bellow.
+
+### Read Data
+
+```{r set_file_path, echo=TRUE, message=FALSE, warning=FALSE}
+# Set Folder Path Where Files Are Stored ----------------------------------
+file.paths <- "C:/Users/Alex/Documents/GitHub/Chimp_Play/coding_data/"
+# find file paths
+dfiles <- sort(list.files(path = file.paths, full.names = T))
+```
+
+BORIS produces an output where every marked event has its own row. In the coding scheme, multiple elements can be part of the same event (e.g., you can jump and cry at the same time). At first, unnecessary rows will be removed, bout numbers assigned for each bout in a video, and things are sorted by bout and time.
+
+```{r video_data, echo=TRUE, message=FALSE, warning=TRUE}
+# Read Video-Level Data Into R, Basic Cleaning ----------------------------
+video.data <- lapply(dfiles, function(i) {
+  # read and skip meta information
+  xx <- read_tsv(i, skip = 20)
+  # clear column names
+  colnames(xx) <- gsub(colnames(xx), pattern = " ", replacement = "_", fixed = T)
+  # order by time
+  xx <- xx[order(xx$Time), ]
+  # clean file path name
+  xx$Media_file_path <- gsub(xx$Media_file_path, pattern = file.paths, replacement = "", fixed = T)
+  xx$Media_file_path <- gsub(xx$Media_file_path, pattern = ".mp4", replacement = "", fixed = T)
+  xx$Media_file_path <- gsub(xx$Media_file_path, pattern = ".dv", replacement = "", fixed = T)
+  # exclude unnecessary behavioural codes and columns
+  xx <- xx[xx$Behavior != "Start", ]
+  xx <- xx[xx$Behavior != "Solo Play", ]
+  xx <- xx[xx$Behavior != "Comment", ]
+  xx <- xx %>% select(-Total_length, -FPS, -Status)
+  
+  # determine bouts by the 'End' element - everything before 'End' counts as one bout
+  xx <- xx %>%
+    mutate(play.bout = (Behavior == "End")) %>%
+    group_by(play.bout) %>%
+    mutate(bout.nr = cumsum(as.numeric(play.bout))) %>%
+    ungroup() %>%
+    mutate(bout.nr = cumsum(bout.nr)) %>%
+    select(-play.bout)
+  xx$bout.nr <- match(xx$bout.nr, unique(xx$bout.nr))
+  xx$bout.nr[xx$Behavior == "End"] <- xx$bout.nr[xx$Behavior == "End"] - 1
+  
+  # add all together
+  xx <- xx %>% 
+    unite(bout.nr, Media_file_path, bout.nr, sep = "_", remove = FALSE)
+  return(xx)
+})
+
+# remove videos that do not actually provide data, because no play was observed
+video.data <- video.data[sapply(video.data, ncol) == 15]
+# add all videos together
+video.data <- bind_rows(video.data)
+```
+
+### Bout-Level Summary and Descriptives
+
+To get a better understanding of our data, we produce bout-level summaries of who participated in a play bout, how many elements were produced, who started it, and so on.
+
+```{r bout_summary, echo=TRUE, message=TRUE, warning=TRUE}
+# Take The Row-By-Row Video Data And Make Bout Summary --------------------
+bout.summary <- lapply(unique(video.data$bout.nr), function(x) {
+  # select bout data, remove unneeded elements
+  set.data <- filter(video.data, bout.nr == x, !Behavior %in% c("Non-Play", "Comment", "Start"))
+  # order by time
+  set.data <- set.data[order(set.data$Time), ]
+  # if there is no data in this, remove
+  if (nrow(set.data) == 0) {
+    return()
+  }
+  # if there is data, prepare summary
+  xx <- data.frame(
+    bout.nr = x,
+    video.id = unique(set.data$Media_file_path),
+    players = paste(sort(unique(unlist(strsplit(set.data$Modifier_1[set.data$Behavior == "Players"], split = ",", fixed = T)))), collapse = ","),
+    initiator = set.data$Subject[min(which(set.data$Behavior == "Play Element"))],
+    nr.players = length(sort(unique(unlist(strsplit(set.data$Modifier_1[set.data$Behavior == "Players"], split = ",", fixed = T))))),
+    start.observed = set.data$Modifier_2[1],
+    start.time = set.data$Time[2],
+    end.time = max(set.data$Time[set.data$Behavior == "End"]),
+    duration = set.data$Time[nrow(set.data)] - set.data$Time[2],
+    play.elements = sum(set.data$Behavior == "Play Element"),
+    end = as.numeric("End" %in% set.data$Behavior),
+    intervention = as.numeric("Intervention" %in% set.data$Behavior)
+  )
+  # determine whether end was observed
+  xx$end.observed <- NA
+  xx$end.outcome <- NA
+  if (xx$end == 1) {
+    xx$end.observed <- set.data$Modifier_2[which(set.data$Behavior == "End")][length(set.data$Modifier_2[which(set.data$Behavior == "End")])]
+  }
+  if (xx$end == 1) {
+    xx$end.outcome <- set.data$Modifier_1[which(set.data$Behavior == "End")][length(set.data$Modifier_1[which(set.data$Behavior == "End")])]
+  }
+  if (xx$start.observed == "No") {
+    xx$initiator <- NA
+  }
+  return(xx)
+})
+bout.summary <- bind_rows(bout.summary)
+```
+
+Data are separated by bout and ID and analysed as sequence of all elements of an individual within that bout. This leads us currently to have `r nrow(bout.summary)` bouts across `r length(unique(bout.summary$video.id))` videos in which play has been identified containing between `r min(bout.summary$play.elements)` and `r max(bout.summary$play.elements)` (mean = `r round(mean(bout.summary$play.elements), 1)` ) elements per bout. Videos are currently distributed across the years 2009-2013. A total of `r length(unique(unlist(strsplit(bout.summary$players, split = ','))))` individuals were observed playing at least once.
+
+
+
+## Pre-Processing of Elements and Bouts
+
+### Pre-Processing of Elements
+
+With this dataset, we face three main challenges: 
+
+* At this point (`r Sys.Date()`) some behaviours are still very rare (fewer than 5 occurrences), so we combine them with less rare behaviours that are very similar in movement patterns (e.g., Flail-contact is integrated in Hit) or several of them are combined into one (e.g., most of the object-directed behaviours become one called 'Explore_object'). Once more data become available for some of these, this decision should be reconsidered case-by-case. The key for which behaviours should be combined was determined a priori and can be found in the repository.
+
+* Elements fall into two categories: some are one-off events with a clear start and finish (e.g., jump) or repeated with a finite number of events (e.g., drum an object). These are easy to understand. More difficult are elements that accompany other elements (e.g., standing bipedally). While they have a start and end time, there is theoretically an infinite number of other elements that can occur in this time frame, and the continuous element will be credited every single time this happens. Thus, even though an individual only chooses to stand up bipedally once, the code *Bipedal* might be selected 15 times due to the other actions happening in this time frame. Because of this, some of these elements (*Approach*, *Bipedal*, *Retreat*, *Hold*...) occur at much higher rates than others. There are different ways of dealing with this imbalance. Here, we choose to only count elements one time, at the beginning of a a sequence, if they: a) occur multiple times in a row, and b) co-occur with other elements. Under these circumstances, only the first occurrence is kept, and all others discarded.
+
+* Elements can occur together in the same event. This is different from human verbal language, for example, where words happen one at a time in a clear sequence. However, a chimpanzee can *Hold* a partner, *Hit* them with the other hand, and *Kick* them at the same time. For sequence analysis, this is sub-optimal. What we do here is that every time elements co-occur in the same event (marked by *%* in the data, e.g., *Hold%Hit%Kick*), we randomly change the order of these elements, and repeat the random assignment many times (e.g., 100 times). All transition probabilities are therefore the result of this randomization process. This means that there will be a large amount of noise in the data (chimpanzees will probably process these sequences differently from this). However, as the actual order is unclear, and we do not have enough data to treat combinations as elements of their own (e.g., treat *Hold%Kick* as a distinct element), this seems the most meaningful approach.
+
+In the subsequent steps, we will prepare the elements  - by replacing rare elements with more common ones and treating continuous elements as short elements. For all analysis, transition probabilities are determined by permutation of co-occurring elements.
+
+### Pre-Processing of Bouts
+
+For this analysis, we only consider sequences within individuals during the same bouts. This is obviously artificial - like trying to predict a conversation while ignoring that there are multiple participants. However, as with linguistic analysis, this artificial step, while hampering long-term prediction, makes short-term prediction easier and allows us whether there is any structure at all at this point. We also, for now, ignore the duration of events and elements - the information is available, but will not be used here for now. Thus, each individual bout is just a string of elements that an individual performed within the play bout. Breaks by the individual (marked using the *Break* code in the data) are transformed into *NA* - any transition including an *NA* is removed later on. What happens before and after breaks and at initiation of play bouts will be part of a later publication, as will be transitions between individuals.
+
+#### Load Elements
+```{r load_elements, echo=TRUE, message=FALSE, warning=TRUE}
+# get elements and their possible replacements from the .csv file in the repository
+element_table <- 
+  read_csv("C:/Users/Alex/Documents/GitHub/Chimp_Play/elements.csv")
+elements <- element_table$elements
+```
+
+```{r remove_empty_bouts, echo=TRUE, message=TRUE, warning=TRUE}
+# remove bouts that do not contain any of the elements specified above
+remove <- sapply(unique(video.data$bout.nr), function(x){
+  nrow(filter(video.data, bout.nr == x, !Behavior %in% c("Non-Play", "Comment", "Start", "End", "Players", "Intervention"))) == 0
+})
+remove <- unique(video.data$bout.nr)[remove]
+if(length(remove)>0){
+  video.data = filter(video.data, video.data$bout.nr!= remove)
+}
+```
+
+#### Prepare Individual-Level Bouts
+
+What we want to end up with is a list that contains all individuals' sequences of elements within each bout. We want other lists that contain the respective information on the Time, the Individual, and which bout this was taken from, for later processing.
+
+```{r bout_prepare, echo=TRUE, message=TRUE, warning=TRUE}
+# go through each bout, remove useless information
+bout.data <- lapply(unique(video.data$bout.nr), function(x) {
+  # select bout and sort by subject and time
+  set.data <- filter(video.data, bout.nr == x, !Behavior %in% c("Non-Play", "Comment", "Start", "End", "Players", "Intervention")) %>% 
+    arrange(Subject, Time)
+  # vector with focals
+  focal <- set.data$Subject
+  # bout nr
+  bout.nr <- sub(".*/", "", unique(set.data$bout.nr))
+  # vector with time
+  Time <- set.data$Time
+  # put elements into list
+  bout.elements <- list()
+  for (i in 1:nrow(set.data)) {
+    yy <- as.vector(unlist(strsplit(unlist(set.data[i, ]), split = ",", fixed = T)))
+    yy <- intersect(yy, elements)
+    bout.elements[[i]] <- yy
+  }
+  # elements that co-occur in event are combined by % symbol
+  bout.elements <- sapply(bout.elements, paste, collapse = "%")
+  # empty cells (i.e. those not containing a recognised element) get NA
+  bout.elements[bout.elements == ""] <- NA
+  return(data.frame(focal, bout.nr, Time, bout.elements))
+})
+# combine all bouts into one frame
+bout.data <- bind_rows(bout.data)
+# create individual-level bout identifier
+bout.data$bout.nr.focal <- bout.data %>%
+  unite(bout.nr, bout.nr, focal, sep = "_", remove = T) %>%
+  select(bout.nr)
+bout.data$bout.nr.focal <- as.vector(bout.data$bout.nr.focal$bout.nr)
+
+# create list that has one vector of elements per individual-bout
+elements.bout <- lapply(unique(bout.data$bout.nr.focal), function(x) {
+  set.data <- filter(bout.data, bout.nr.focal == x)
+  return(set.data$bout.elements)
+})
+
+# create list that has one vector of times per individual-bout
+elements.time <- lapply(unique(bout.data$bout.nr.focal), function(x) {
+  set.data <- filter(bout.data, bout.nr.focal == x)
+  return(set.data$Time)
+})
+
+# create list of focal ID per individual-bout
+bout.focal <- lapply(unique(bout.data$bout.nr.focal), function(x) {
+  set.data <- filter(bout.data, bout.nr.focal == x)
+  return(unique(set.data$focal))
+})
+
+# create list of bout ID per individual-bout
+bout.id <- lapply(unique(bout.data$bout.nr.focal), function(x) {
+  set.data <- filter(bout.data, bout.nr.focal == x)
+  return(unique(set.data$bout.nr))
+})
+
+# name element-list and time-list using individual-bout id
+names(elements.bout) <- unique(bout.data$bout.nr.focal)
+names(elements.time) <- unique(bout.data$bout.nr.focal)
+```
+
+Now, we should be left with four objects: 
+
++ *elements.bout*, a list named with the individual-bout IDs, containing all the elements performed by the focal player in this bout, ordered in sequence.
++ *elements.time*, another list, named with the individual-bout IDs, containing all corresponding time stamps
++ *bout.focal*, another list, containing the corresponding focal IDs
++ *bout.id*, another list, containing the corresponding bout IDs
+
+We now have `r length(elements.bout)` individual-bouts and `r length(unlist(elements.bout))` events. The next steps will be to determine and replace rare elements, and to handle the continuous elements.
+
+### Replace rare elements
+
+First we need to set a threshold for what determines a 'rare' element. Here, we will use elements that occur at least **20** times. All elements falling below this threshold will be changed to their potential replacement, as determined a priori.
+
+The following function allows for fast replacement of elements. All functions can be found in the repository.
+
+```{r change_elements_function, echo=TRUE, message=TRUE, warning=TRUE}
+source('C:/Users/Alex/Documents/GitHub/CCCPP/Analysis/PlaySeq/R/change_elements.R')
+```
+
+We also need a function that takes the co-occurring elements apart to be counted (or for other purposes later). Remember, co-occurring elements are separated by the % symbol.
+
+```{r unlist_vector_function, echo=TRUE, message=TRUE, warning=TRUE}
+source('C:/Users/Alex/Documents/GitHub/CCCPP/Analysis/PlaySeq/R/unlist_vector.R')
+```
+
+
+Now, we need to find out which elements occur fewer than the set number of times. There are a few elements that do not have a natural replacement and will be retained despite being rare.
+
+```{r count_elements, echo=TRUE, message=TRUE, warning=TRUE}
+# set threshould
+threshold <- 20
+# unlist elements
+unlisted_elements_table <- table(unlist.vector(elements.bout))
+# detect elements below threshold
+rare_elements <- unlisted_elements_table[unlisted_elements_table <= threshold]
+# show rare elements to replace
+rare_elements_replace <- element_table %>% 
+  filter(elements %in% names(rare_elements))
+# go through rare elements and change them
+for(i in seq_along(rare_elements_replace$elements)){
+  if(rare_elements_replace$potential_replacement[i]!= '-'){
+    elements.bout <- change.elements(
+      elements.to.change = rare_elements_replace$elements[i], 
+      new = rare_elements_replace$potential_replacement[i], 
+      elem.bout = elements.bout)
+  }
+}
+
+############ Repeat the same thing again in case some elements got missed
+unlisted_elements_table <- table(unlist.vector(elements.bout))
+# detect elements below threshold
+rare_elements <- unlisted_elements_table[unlisted_elements_table <= threshold]
+# show rare elements to replace
+rare_elements_replace <- element_table %>% 
+  filter(elements %in% names(rare_elements))
+# go through rare elements and change them
+for(i in seq_along(rare_elements_replace$elements)){
+  if(rare_elements_replace$potential_replacement[i]!= '-'){
+    elements.bout <- change.elements(
+      elements.to.change = rare_elements_replace$elements[i], 
+      new = rare_elements_replace$potential_replacement[i], 
+      elem.bout = elements.bout)
+  }
+}
+```
+
+
+#### Check Distribution after removal of rare elements
+
+After removing the rare elements, we have reduced the number of individual elements from `r length(element_table$elements)` to `r length(unique(unlist.vector(elements.bout)))` elements. Their distribution does not follow Zipf's power law (Figure 1), but this might be mainly because of the way we have aggregated and disaggregated them - there is no a priori reason to think that retreating backwards or forwards should be different elements. Please note that this is the distribution of elements before controlling for the over-occurrence of some continuous elements (next step).
+
+
+```{r zipf_plot, fig.align='center', fig.width=10, fig.height=8, message=F, echo = TRUE, cache = FALSE, fig.cap = "Distribution of Element Occurrences. Blue is the observed distribution in this dataset, red the expected distribution under Zipf's Law. This distribution does not yet control for the over-exposure of some continuous elements."}
+# source Zipf's Plot function
+source('C:/Users/Alex/Documents/GitHub/CCCPP/Analysis/PlaySeq/R/zipfs_plot.R')
+# How often does each element occur?
+unlisted_elements_table <- table(unlist.vector(elements.bout))
+# Data frame containing words and their frequency
+word_count <- data.frame(t(unlisted_elements_table)) %>% 
+  select(-1) %>% 
+  rename('element' = Var2, 'count' = Freq) %>% 
+  arrange(desc(count))
+zipfs_plot <- zipf.plot(element = word_count$element, 
+                        occurrance = word_count$count,
+                        zipf = TRUE, 
+                        title = 'Distribution of Element Frequencies')
+zipfs_plot$zipf.plot
+```
+
+### Remove continuous elements from combinations
+
+After we have removed elements at the low end of the scale, it is worth also checking why some elements occur at much higher frequency than others. The seven most common elements (`r word_count$element[1:7]`) all share the fact that they are continuous and therefore are noted every time a change occurs while they are active. This is hard to explain from a language perspective, but easy if you imagine a musical piece on the piano: sometimes one note is held while others are played. In play, a chimpanzee can go bipedal, but then do all kinds of other actions while the *Bipedal* is marked at every change in event. This is not optimal. Ideally, we want a sequence that reflects when individuals made the choice to use a specific element - thus, they first go bipedal, then they do all the other things.
+What we do in this case is that we use a function that goes through each bout, finds cases where one of those seven elements occurs multiple times in a row, and only retains the first case in which they are observed. If they stop doing the continuous action (e.g., stop fleeing, then start again) the element is counted again. Here is an example of what such a sequence looks like, with *Bipedal* here occurring three times in a row.
+
+```{r}
+knitr::kable(t(elements.bout[[1]]), align = 'l')
+```
+
+Here is a function that removes those serial occurrences of the same elements. As the time stamps would potentially be mixed if we would not account for them, they will be changed accordingly.
+
+```{r remove_serial_function, echo=TRUE, message=TRUE, warning=TRUE}
+source('C:/Users/Alex/Documents/GitHub/CCCPP/Analysis/PlaySeq/R/remove_serial.R')
+```
+
+Now that we have this function, we want it to go over all the data for each of the continuous elements and adjust them.
+
+```{r remove_serial, echo=TRUE, message=TRUE, warning=TRUE}
+for(i in word_count$element[1:7]){
+ serial.removed <- remove.serial(elem.bout = elements.bout, elem.time = elements.time, to.remove = as.character(i), move.first = TRUE)
+ elements.bout <- serial.removed$elements
+ elements.time <- serial.removed$times
+}
+
+```
+
+If we look at the sequence from before, we can see that *Bipedal* now only occurs once - in the beginning of the sequence. Thus, instead of the player going bipedal, then being bipedal and hitting, then being bipedal and arm raising; they are now considered to go bipedal, then hit the partner, then raise their arm.
+
+```{r}
+knitr::kable(t(elements.bout[[1]]), align = 'l')
+```
+
+Repeating the distribution plot (Figure 2), we can see that now, none of the elements has an excessive occurrence probability any more.
+
+```{r zipf_plot_after, fig.align='center', fig.width=10, fig.height=8, message=F, echo = TRUE, cache = FALSE, fig.cap = "Distribution of Element Occurrences. This distribution controls for the over-exposure of some continuous elements."}
+# source Zipf's Plot function
+
+# How often does each element occur?
+unlisted_elements_table <- table(unlist.vector(elements.bout))
+# Data frame containing words and their frequency
+word_count <- data.frame(t(unlisted_elements_table)) %>% 
+  select(-1) %>% 
+  rename('element' = Var2, 'count' = Freq) %>% 
+  arrange(desc(count))
+zipfs_plot <- zipf.plot(element = word_count$element, 
+                        occurrance = word_count$count,
+                        zipf = FALSE, 
+                        title = 'Distribution of Element Frequencies')
+zipfs_plot$zipf.plot
+```
+
+
+After all this pre-processing, these are the usage statistics for the elements in this dataset.
+
+```{r usage_stats}
+knitr::kable(word_count %>% 
+               mutate(frequency = round(count/sum(count), 3)))
+```
+
+
+### Conclusion
+
+This step concludes our data pre-processing. The play elements are now separated by individual bouts, order in their sequence of occurrence, with co-occurring elements marked with the '%' symbol to account for this anomaly in structure later. Rare elements have been combined with similar elements to make the analyses more robust. Continuous elements (usually movement-related), which occurred at high frequencies because they can overlap with other elements, have been handled so that only their first occurrence in a continuous sequence is counted. Time stamps, focal, and bout ID have been saved. The element data now look roughly like this:
+
+```{r}
+knitr::kable(t(elements.bout[[14]]), align = 'l')
+```
+
+After this pre-processing, we will move over to the analysis, to answer some questions about play sequences based on this dataset.
+
+
+
+
+## Introduction to Analysis
+
+The data should now be prepared as described in the Data Preparation above.
+
+This study is designed to answer whether there are predictable transitions between elements in chimpanzee play, and whether these transitions form discernable 'games'. These are the hypotheses and predictions of the study.
+
+
+### Hypothesis 1: Sequences are not used randomly, but some elements follow each other predictably
+
+-   **Prediction 1.1**: *Some elements are consistently more likely to follow specific antecedents than would be expected at random.*
+-   **Prediction 1.2**: *Using the probabilities of each element and each transition to 'predict' which element will appear next, we can achieve classification accuracy that exceeds random assignment.*
+-   **Prediction 1.3**: *Higher-order sequences (AB --> C rather than A --> B) further improve our ability to predict what action comes next.* 
+-   **Prediction 1.4**: *Sequences are not commutative: A --> B does not automatically imply B --> A.*
+
+
+### Hypothesis 2: We can detect 'games' as clusters of elements that are often used together and can be replaced for each other 
+
+
+-   **Prediction 2.1**: *Using the transition probabilities, we can identify clusters of elements that have similar transition probabilities with all other elements (i.e., act as synonyms).*
+-   **Prediction 2.2**: *Modelling a network with elements as nodes and significant transition probabilities as edges, we can we detect a clear cluster structure of elements that are likely to follow each other but not transition into other elements.*
+-   **Prediction 2.3**: *The similarity and transition clusters overlap; i.e., we have clusters of elements that happen together and lead to similar outcomes.*
+
+
+To test the first hypothesis, we will look at transition probabilities between elements, test whether some of these are more likely than predicted if transitions were random. We will then use the probabilities at different orders (e.g., 0th order is the element probability; 1st order is the probability that A follows B; 2nd order is the probability than C follows A+B; etc) to see whether increasing information about the elements preceding an event (henceforth *antecedents*) will allow us more accurate predictions of the *descendants*. 
+
+
+## Transition probabilities
+
+The transition probability between an *antecedent* and *descendant* is defined by the number of times the *descendant* follows the *antecedent*, divided by the number of times the *antecedent* is observed with any element following. The *antecedent* in this dataset can be a single element, but can also be n-grams of different order (e.g., *Hit* is first order, *Hit+Slap* is second order, *Hit+Slap+Tickle* is third order etc). We restrict ourselves to simple, one element *descendants*. If play elements are predictable, then we would see that the probabilities to move from some *antecedents* to some *descendants* are higher than expected by chance, given the base occurrence probability of each of the elements. 
+
+### Preliminary considerations and limitations
+
+There are a couple of aspects to keep in mind:
+
+* For some events, we do not know the exact order of elements because they co-occur. As described in the data preparation, we go around this problem by randomly assigning order, calculating all probabilities, saving them, and then doing the same thing again with a different random assignment (i.e., *permutations*). This is time consuming in terms of calculations and there is obviously a lot of noise added this way, but sometimes there is no reason to assign primacy to one element over another. Other options would be a bag-of-words approach (rather than calculate transition probabilities, we calculate probabilities than B follows A within x time steps), a random choice of one of the co-occurring elements, or fixing the order within co-occurrence based on transition probabilities outside of co-occurrence (if A usually follows B, then A%B is constantly assigned B - A). These approaches will be accessible in the resulting R package, and will at least in part be used in a supplementary to allow for comparison between approaches; here, we focus on the permutation approach.
+
+* We largely ignore durations of elements, and we reduced the impact of continuous elements in the pre-processing.
+
+* We assume that the elements we defined are meaningfully different from each other. This might not be the case: the difference between *Retreat* (walking away from partner), *Flee* (running away from partner), and *Retreat Backwards* (walking away from partner while looking at them) might be contrived. We will get some inkling of this in the second part of the analysis, when we compare the usage distance between elements.
+
+* Given that these data come from the Bossou chimpanzees, the age distribution of players is not particularly 'normal' for a chimpanzee group - there is essentially no play between same-aged juvenile or subadult partners. We also do not control for the fact that some transitions might differ between age groups or even individuals. This is a very preliminary analysis - considerably more data would be necessary to avoid the rather excessive amount of pseudo-replication in this dataset. This cannot be helped at this point.
+
+* We have to assume not only that the defined elements are somewhat meaningful, but also that the coding was done in a reliable and replicable way. I have tried to make all definitions as transparent as possible (see repository), but due to time pressures, the pandemic, and the complex nature of the coding scheme, it was not possible to get inter-rater reliability for the coding.
+
+* Lastly, please keep in mind that upwards of 5000 transitions in this dataset is very little for some of the analyses presented here - in linguistic analysis, where n-gram transitions are usually employed, several millions of transitions are used. Again, this cannot be helped - where possible, we present results including uncertainties, and the permutation and bootstrapping approaches should allow us to discriminate between spurious and reliable transition patterns. However, as this dataset grows, there is a chance that some of the patterns change.
+
+
+### Transitions
+
+#### Summary statistics
+
+For all *antecedent* - *descendant* combinations, we present two summary statistics:
+
+- **observed.sum** - number of times the *descendant* follows the *antecedent*
+- **observed.probs** - conditional probability; number of times the *antecedent* - *descendant* combination is observed, divided by *all observed transitions of the antecedent*
+
+The main statistics for most of the analyses will be the conditional probability (*observed.probs*). The functions also allow for the calculation of *mutual information* and *joint probability* of the combination, but we do not present these here as they are less central. 
+
+```{r transitions, echo=TRUE, message=TRUE, warning=TRUE}
+source('C:/Users/Alex/Documents/GitHub/CCCPP/Analysis/PlaySeq/R/transitions_frame_tidy.R')
+source('C:/Users/Alex/Documents/GitHub/CCCPP/Analysis/PlaySeq/R/element_bout_matrix_tidy.R')
+source('C:/Users/Alex/Documents/GitHub/CCCPP/Analysis/PlaySeq/R/elem_info.R')
+source('C:/Users/Alex/Documents/GitHub/CCCPP/Analysis/PlaySeq/R/unlist_list.R')
+transitions <- transitions.frame.tidy(elem.bout = elements.bout)
+
+# how often does A lead to B
+transitions$observed.sum <- elem.info(
+  antecedent = transitions$antecedent,
+  descendant = transitions$descendant,
+  elem.bout = elements.bout,
+  it = 100,
+  measure = c("sum")
+)
+
+# probability of A leading to B
+transitions$observed.probs <- round(elem.info(
+  antecedent = transitions$antecedent,
+  descendant = transitions$descendant,
+  elem.bout = elements.bout,
+  it = 100,
+  measure = c("prob")
+), 3)
+
+```
+
+We visualise the output of the transitions data frame by showing the head of the table and the overall distribution of observed conditional transition probabilities. There are overall `r nrow(transitions)` transitions that were observed at least one time. The histogram shows that most elements are followed by a number of different *descendants* - only `r nrow(transitions %>% filter(observed.probs > 0.3))` transitions constituted more than 1/3 of all possible transitions of that *antecedent*. At the same time, each element was observed to be followed by between `r range(table(transitions$antecedent))[1]` and `r range(table(transitions$antecedent))[2]` elements. Thus, there is no very tight coupling between any two elements. This might indicate random assignment - any elements could be followed by any other. However, it might also mean situation-specific responses that are tailored to the players' own previous action and the partners' reaction. To work this out, we look at which elements follow each other more than expected.
+
+```{r}
+knitr::kable(transitions %>% select(antecedent, descendant, count.antecedent, count.descendant, observed.sum, observed.probs) %>% head(10))
+```
+
+```{r transition_distributions, fig.align='center', fig.width=10, fig.height=8, message=F, echo = TRUE, cache = FALSE, fig.cap = "Distribution of Conditional Transition Probabilities"}
+
+ggplot(transitions, aes(x = observed.probs)) +
+  geom_histogram(fill = 'grey', bins = 50) + theme_classic() + xlab('Conditional Transition Probabilities')
+```
+
+#### Robustness of transitions
+Before statistically testing which conditional probabilities are statistically meaningful, it makes sense to visualize how robust they are. We are working with very small samples - many transitions will be based on a small number of events. For example, if an element only occurs 10 times, even at random assignment, the transition probabilities to all descendants will be at least 0.1. However, each new or missing data point would dramatically change this pattern. This is not optimal. To check this, we bootstrap the transition probabilities: by repeatedly taking random subsets of bouts (1000 iterations, random sampling with replacement), we can create an interval around the observed transition probabilities, and check how broad those intervals are. We plot the coefficient of variance for the 1000 bootstraps against the number of times the descendant was observed. What we see is that for some rare elements, the transition probabilities become volatile. Transition probabilities of rare elements will therefore be interpreted with caution, and elements will be filtered to exclude rare or highly volatile transitions.
+
+```{r boot_plot, fig.align='center', fig.width=6, fig.height=4, message=F, echo = F, cache = TRUE}
+source('C:/Users/Alex/Documents/GitHub/CCCPP/Analysis/PlaySeq/R/boot_elements.R')
+source('C:/Users/Alex/Documents/GitHub/CCCPP/Analysis/PlaySeq/R/mean_array.R')
+source('C:/Users/Alex/Documents/GitHub/CCCPP/Analysis/PlaySeq/R/randomize_bouts.R')
+source('C:/Users/Alex/Documents/GitHub/CCCPP/Analysis/PlaySeq/R/randomize_elem_info.R')
+boot.probabilities <- boot.elements(
+  elem.bout = elements.bout,
+  antecedent = transitions$antecedent,
+  descendant = transitions$descendant,
+  measure = "prob", 
+  trials = 100, 
+  it = 20
+)
+
+######### compare randomized and observed
+transitions$lower.ci <- boot.probabilities$lower.ci
+transitions$upper.ci <- boot.probabilities$upper.ci
+transitions$range.ci <- boot.probabilities$range.ci
+transitions$sd <- boot.probabilities$sd.ci
+transitions$cv <- boot.probabilities$cv.ci
+
+ggplot(data = transitions, aes(x = count.antecedent, y = range.ci)) +
+  geom_point() +
+  theme_classic() +
+  ggtitle("Plotting range of bootstrap values against element occurrence") +
+  ylab("Range Credible Interval") +
+  xlab("Count Element")
+
+```
+
+#### Randomization approach
+
+To test which elements follow which others, we have to create a null model of 'expected' transitions. To do this, we repeatedly randomize the order of elements across bouts: while the number of elements per bout and the position of breaks in the game are kept the same, we randomly assign which element occurs where in which bout. Thus, two elements are considered to transition significantly if the combination is observed more often than would be expected if play elements were just strung together at random. We run 1000 randomisations (plus 10 random assignments of co-occurring elements for relevant events) to create the expected distribution for each transition and compare whether the observed transition probability falls within this distribution or not. To compare the observed and expected values, we provide a p-value (how many of the 1000 randomisations show higher transition probabilities than observed), a z-value (how many standard deviations larger than the expected probabilities were observed values), and the ratio of observed and expected probabilities (e.g., a probability increase of 2 means that the observed probability was twice as large as the expected probability). Because of the large number of randomisations, this function is parallelised.
+
+```{r randomization_transitions, echo=TRUE, message=TRUE, warning=TRUE, cache=FALSE}
+source('C:/Users/Alex/Documents/GitHub/CCCPP/Analysis/PlaySeq/R/randomize_elem_info.R')
+source('C:/Users/Alex/Documents/GitHub/CCCPP/Analysis/PlaySeq/R/mean_array.R')
+source('C:/Users/Alex/Documents/GitHub/CCCPP/Analysis/PlaySeq/R/randomize_bouts.R')
+randomizations <- randomized.elem.info(
+  elem.bout = elements.bout,
+  antecedent = transitions$antecedent,
+  descendant = transitions$descendant,
+  observed = transitions$observed.probs,
+  it = 10,
+  cores = 10,
+  trials = 100,
+  type = "across",
+  output = "expected"
+)
+
+
+transitions$expected.sum <- randomizations$sum
+transitions$expected.probs <- round(randomizations$prob, 3)
+transitions$pvalue <- round(randomizations$pvalue, 3)
+transitions$z <- round(randomizations$z, 3)
+transitions$prob.increase <- round(transitions$observed.probs / transitions$expected.probs, 3)
+
+```
+
+In total, `r transitions %>% filter(pvalue <=0.01) %>% filter(observed.sum > 5) %>% nrow` transitions were significant at 0.01 level and occurred at least 5 times (i.e., we can be very certain that the observed transition probability was outside the expected probability range). This constitutes `r round((transitions %>% filter(pvalue <=0.01) %>% filter(observed.sum > 5) %>% nrow) / (transitions %>% nrow), 4) * 100`% of all observed, and `r round((transitions %>% filter(pvalue <=0.01) %>% nrow) / (length(unique(transitions$antecedent))^2), 4) * 100`% of all possible transitions. 
+Below is a table of all significant transitions, organised by their increase in probability compared to expected. As can be seen, many of those are *repeated actions* - if we see a chimpanzee player drum a tree, we can be fairly certain that the next move will also involve drumming a tree. Almost all possible elements (`r transitions %>% filter(pvalue <=0.01) %>% filter(observed.sum > 5) %>% select(antecedent) %>% unique %>% nrow` out of `r transitions %>% select(antecedent) %>% unique %>% nrow`) showed at least one significant transition, ranging from `r transitions %>% filter(pvalue <=0.01) %>% filter(observed.sum > 5) %>% select(antecedent) %>% table %>% range %>% head(1)` to `r transitions %>% filter(pvalue <=0.01) %>% filter(observed.sum > 5) %>% select(antecedent) %>% table %>% range %>% tail(1)`. We will explore these connections further later-on when discussing network clusters of transitions - for now, this result confirms our first prediction: There are reliably predictable transition rules between play elements.      
+
+```{r}
+knitr::kable(transitions %>% 
+               select(antecedent, descendant, observed.sum, observed.probs, expected.probs, pvalue, z, prob.increase) %>% 
+               filter(pvalue<=0.01) %>% 
+               filter(observed.sum > 3) %>% 
+               arrange(desc(prob.increase)))
+```
+
+```{r prob_increase_distributions, fig.align='center', fig.width=10, fig.height=8, message=F, echo = TRUE, cache = FALSE, fig.cap = "Distribution of Ratio of Observed and Expected Probabilities"}
+
+ggplot(transitions, aes(x = prob.increase)) +
+  geom_histogram(fill = 'grey', bins = 50) + 
+  geom_vline(mapping = aes(xintercept = 1), linetype = 2) + 
+  theme_classic() + 
+  xlab('Ratio Observed/Expected Probabilities')
+```
+
+#### Transitions by element
+
+```{r element_stats, echo = F, cache=TRUE}
+source('C:/Users/Alex/Documents/GitHub/CCCPP/Analysis/PlaySeq/R/usage_stats.R')
+element.use <- usage.stats(
+  element = unique(transitions$antecedent), 
+  antecedent = transitions$antecedent,  
+  descendant = transitions$descendant,
+  count.antecedent = transitions$count.antecedent,
+  count.descendant = transitions$count.descendant,
+  observed.probs = transitions$observed.probs,
+  expected.probs = transitions$expected.probs,
+  pvalue = transitions$pvalue,
+  cutoff = 5, 
+  sig = 0.01)
+
+element.stats <- transitions[!duplicated(transitions$antecedent),]
+element.stats <- element.stats[,c('antecedent', 'count.antecedent', "prob.antecedent")]
+element.stats$prob.antecedent = round(element.stats$prob.antecedent,3)
+
+element.use %>% 
+  select(element, count, preceding, following) %>% 
+  kbl() %>%
+  kable_paper(full_width = T) %>%
+  column_spec(3, width = "20em") %>% 
+  column_spec(4, width = "20em")
+
+```
+
+In total, this study considered `r nrow(element.use)` play elements for which sufficient occurrences were available. Elements occurred between `r min(element.use$count)` (for the element `r element.use$element[element.use$count == min(element.use$count)]`) and `r max(element.use$count)` (for the element `r element.use$element[element.use$count == max(element.use$count)]`). As in many other fields (such as linguistics), a small number of elements occurred at high frequencies (Zipf's law), while a large number of elements occurred infrequently. The occurrence frequency distribution is provided in Figure 1 [this would probably go into the supplementary in the paper], with element-level usage statistics provided in Table 1.
+To understand whether transitions are random or follow Markov processes (i.e., the choice of the descendant is effected by the identity of the antecedent), we need two pieces of information: on one hand, the unconditional probability of the descendant occurring anywhere in the dataset ($P(B)$; as displayed above); on the other, the conditional probability of the descendant occurring given that a certain element is the antecedent ($P(A \mid B)$). Two elements are independent if $P(A \mid B)$ = $P(B)$ , so information about A does not provide additional information about what B will be. If $P(A \mid B)$ > $P(B)$, then the presence of A makes B more likely, while if $P(A \mid B)$ < $P(B)$, A reduces the probability of B occurring. The conditional probabilities between A and B can be asymmetric: $P(A \mid B)$ and $P(B \mid A)$ can take very different values. For example, the element *Slap-ground* can have a low unconditional probability of occurrence (`r element.stats$prob.antecedent[element.stats$antecedent == 'Slap-ground']`), but it becomes very likely when the individual was just observed making a *Bow* (conditional probability = `r round(transitions$observed.probs[transitions$descendant == 'Slap-ground' & transitions$antecedent == 'Bow'], 3)`). This is a probability increase by `r round(transitions$prob.increase[transitions$descendant == 'Slap-ground' & transitions$antecedent == 'Bow'], 1)`. Thus, we can be reasonably sure that *Slap-ground* and *Bow* are connected.
+
+
+#### Transitions probabilities applied
+
+One approach to understand the predictability of transitions rules is to apply the probabilities, derived from a subset of the data, to an 'unknown' data set and explore how well the former predicts the latter. We will test the amount of predictability by applying the transition probabilities directly, going through the bouts of the dataset one by one, to create the probabilities for all other bouts, and then predict the elements of the bout one by one ('leave-one-out'). So, let's say we know that the first element in a bout is *Approach*. We then use the probabilities to predict the second element and record whether this prediction was correct. We then take the actual next element to predict the third, and so on. This approach assumes that there are linear connections between elements; deep learning will be used at a later stage to detect non-linear patterns. We will test what the expected correct classification would be (null model) if the descendant element is only determine by the occurrence probability of each element, without taking transition information into account. The difference between this value and the observed prediction accuracy of the models will tell us how much knowledge of the antecedent increases our predictions.
+Aside from using one element as antecedent (describing a Markov Process), we will repeat the procedure using two, three, and four elements as antecedents. If the prediction accuracy under those conditions is higher than for one element, this indicates hierarchical processes - for example, if *hit* leads to *hold* in 10% of the time, but *stare at* plus *hit* leads to *hold* in 80% of the time, then the sequence order adds information. This hierarchical structure is an important component of human syntax and other action systems, but has not been shown for primate interactions.
+Here, we set the 
+
+```{r predictions, echo = F, cache = TRUE}
+source('C:/Users/Alex/Documents/GitHub/CCCPP/Analysis/PlaySeq/R/prediction_loo.R')
+source('C:/Users/Alex/Documents/GitHub/CCCPP/Analysis/PlaySeq/R/bag_of_words.R')
+source('C:/Users/Alex/Documents/GitHub/CCCPP/Analysis/PlaySeq/R/dyad_transition_tidy.R')
+
+loo0 = prediction.leave.one.out(elem.bout = elements.bout, it = 10, cores = 10, lvl = 0, out = 30)
+loo1 = prediction.leave.one.out(elem.bout = elements.bout, it = 10, cores = 10, lvl = 1, out = 30)
+loo2 = prediction.leave.one.out(elem.bout = elements.bout, it = 10, cores = 10, lvl = 2, out = 30)
+loo3 = prediction.leave.one.out(elem.bout = elements.bout, it = 10, cores = 10, lvl = 3, out = 30)
+
+
+prediction.table = data.frame(level = c(0,1,2,3), 
+                              probabilities = c(loo0$accuracy, 
+                                                loo1$accuracy,
+                                                loo2$accuracy,
+                                                loo3$accuracy))
+
+# kable(prediction.table, row.names = F, caption = "Prediction accuracy of applied transitions probabilities at different levels: level 0 is the prediction based on the simple occurrence probability of each element, level 1 has one antecedent element, level 2 has two antecedents, etc", col.names = c('Level', 'Applied Probabilities'), digits = 3)
+
+prediction.table %>% 
+  kbl(digits = 3) %>%
+  kable_paper("hover", full_width = F)
+
+```
+
+
+As we see in Table 3, the null probability of getting a correct classification (based only on element occurrence rates) is about `r round(loo0$accuracy, 3) * 100`%. Using the conditional probability based on one antecedent (A --> B) increases this to `r round(loo1$accuracy, 3) * 100`% accuracy, and based on two antecedents (AB --> C) increases the accuracy to `r round(loo2$accuracy, 3) * 100`%. This is almost a doubling of correct predictions by adding a second layer. These results would probably improve further with increasing sample sizes. These results indicate that a) having knowledge of the preceding element allows us to make more accurate predictions than expected, so non-random connections allow others to adapt to their partner's actions; and b) that having information about more previous elements further improves accuracy, creating the possibility of higher-order sequence effects.
+
+### Commutativity: Directionality of conditional probabilities
+
+In language, the order of words matters. So far, we have shown that there are predictable rules that connect elements - however, there are two ways this could be achieved: if A --> B and B --> A, then two elements are connected but they are commutative (i.e., order does not matter). This would be the case if individuals use some elements in a context together, but how they are strung together is inconsequential. If A --> B but not B --> A, then we have a considerably more complex and ordered system on our hands.
+For this question, we establish the 'expected' level of reciprocity by randomly shuffling elements within bouts 1000 times. Thus, which elements occur together in a bout remains the same, but their order is random, and therefore whether A leads to B or B leads to A is up to chance. We then test whether the reciprocity that we observe (measured as the proportion with which one element was chosen over the other) is different from that in a random system. The results can be found in Table 4.
+
+```{r commutativity, cache = T}
+source('C:/Users/Alex/Documents/GitHub/CCCPP/Analysis/PlaySeq/R/conditionality.R')
+cond.probs <- conditionality(elem.bout = elements.bout, it = 20, cores = 10, trials = 100)
+cond.probs.short <- subset(cond.probs, (p.recip <= 0.05) & (elementA!=elementB))
+
+cond.probs.short <- cond.probs.short[,c('elementA',
+                            'elementB',
+                            'joint.sum',
+                            'conditional.AtoB',
+                            'conditional.BtoA',
+                            'reciprocity',
+                            'expected.reciprocity',
+                            'p.recip')]
+
+kable(cond.probs.short, row.names = F, caption = "Reciprocity of Conditional Probabilities - if reciprocity is 1, one element always follows the other; if it is 0.5, the use is more or less even. Shown only dyads that show significantly low reciprocity at 0.05 level", col.names = c(
+  'Element A',
+  'Element B',
+  'Joint Occurrences',
+  'Conditional Probability A to B',
+  'Conditional Probability B to A',
+  'Reciprocity',
+  'Expected Reciprocity',
+  'p-value Reciprocity'), digits = 3)
+```
+
+As we can see from the table, there were `r nrow(cond.probs.short)` of element combinations that were non-commutative, with some showing strongly one-directional patterns (i.e., A never preceded B or the other way round). However, this is just a subset (`r nrow(cond.probs.short)/nrow(cond.probs) * 100` %) of all dyads that were observed at all, indicating that for most elements, directionality is less important.
+
+
+## Element Clusters - Occurrance of Games
+
+### Similarity between elements in usage
+
+We can analyse the usage statistics of each element in this light. We can do this for each element, by studying which elements are likely antecedents and descendants of that element (Fig.3 for *feint*, showing that it is connect bidirectionally with *circle-tree*, *follow*, *hide*, *retreat*, and precedes *circle-partner* and rarely *press ground*, and follows *hide-swing*). We can also analyse which elements are used in similar ways and whether we find clusters of similar elements. This is similar to the identification of synonyms in language: for example, the words *jump* and *hop* will usually occur in similar situations. We do this by taking the transition probabilities of all elements with all other elements and calculating the distance between elements (Fig. 4). Similarity can be established on the conditional transitions probabilities or mutual information, a measure of how much the presence of one element informs the presence of the other one. Clusters are detected using UMAP dimension reduction algorithm and K-means clustering.
+
+```{r element_plot, fig.align='center', fig.width=10, fig.height=8, message=F, echo = F, cache = TRUE}
+source('C:/Users/Alex/Documents/GitHub/CCCPP/Analysis/PlaySeq/R/element_plot.R')
+element.plot(element = 'Feint', 
+             antecedent = transitions$antecedent, 
+             descendant = transitions$descendant, 
+             count.antecedent = transitions$count.antecedent, 
+             count.descendant = transitions$count.descendant, 
+             observed.probs = transitions$observed.probs, 
+             pvalue = transitions$pvalue, cutoff = 5, sig = 0.01)$plot
+```
+
+
+```{r similarity_plot, fig.align='center', fig.width=10, fig.height=8, message=F, echo = F, cache = FALSE}
+source('C:/Users/Alex/Documents/GitHub/CCCPP/Analysis/PlaySeq/R/similarity_clusters.R')
+similar.cluster <- similiarity.clusters(antecedent = transitions$antecedent, 
+                                        descendant = transitions$descendant, 
+                                        count.antecedent =  transitions$count.antecedent, 
+                                        count.descendant = transitions$count.descendant, 
+                                        observed.probs = transitions$observed.probs,
+                                        mutual.information = transitions$observed.probs,
+                                        cutoff = 5, 
+                                        measure = c("prob"), 
+                                        k = NULL)
+
+similar.cluster$plot.antecedent
+```
+
+What we observe is a relatively good cluster solution (0.49); any solution above 0.3 can be considered to show that there is more similarity within than between clusters. There are `r max(as.numeric(unique(similar.cluster$plot.combined$data$cluster)))` clusters. These are usually composed of elements that involve similar actions. E.g, there is one containing all *push*, *pull*, *wrestle*, *bite* etc, so contact play. Another contains *hanging* and *swinging* of branches, *pulling branches*, *climbing* up etc - play in trees. One contains most of the object-related play, *tug-of-war*, *wave_object* etc. Elements in a cluster show similar usage patterns, so elements that fall into the same cluster can act as 'synonyms' - whether individuals *press down* the partner or *hold* them might not be important for the progression of play. This might also indicate that the coding scheme includes some distinctions that are less relevant for the chimpanzees - for example, *rake ground* and *kick dirt* differ in which limb is used, but might be used the same way (to get the partners attention).
+
+### Transition Networks
+
+Similar usage of some elements is part of the puzzle of how elements are connected, and whether there are 'games' in chimpanzee play. The other question is: if elements show similar usage, *how* are they connected? In Figure 5, we can see a network where the nodes represent the elements and edges represent significant connections. Links are unweighted (they represent whether a significant connection existed) and directed (AB is different from BA), with arrows indicating directionality. For visual reasons, we only include transitions that constitute at least 5% of the transitions of the antecedent, because transitions that occur less frequently than that would have little biological relevance because they would be unpredictable by the partner. Clusters are represented by different colors.
+
+```{r network_plot, fig.align='center', fig.width=10, fig.height=10, message=F, echo = F}
+source('C:/Users/Alex/Documents/GitHub/CCCPP/Analysis/PlaySeq/R/network_plot.R')
+trans.net = network.plot(elem.bout = elements.bout, 
+                         min.prob = 0.1, 
+                         min.count = 5, 
+                         significance = 0.01, 
+                         hide_unconnected = T, 
+                         link = 'weighted', 
+                         clusters = T, 
+                         plot.bubbles = F, 
+                         title = 'Transition Network Play Elements', 
+                         remove_loops = F, 
+                         it = 10)
+
+trans.net$plot
+```
+
+We can see that, similar to the similarity plot, there are clusters of highly connected elements that transition into each other regularly. It becomes clear that there are some elements (*hold*,*bipedal*) that have high usage probability and are at the centre of clusters. In total, `r round(trans.net$within_cluster_transitions[1], 3)*100`% of transitions occurred within clusters, while `r round(trans.net$within_cluster_transitions[2], 3)*100`% would be expected - a `r round(trans.net$within_cluster_transitions[3], 1)` times increase. 
+
+The cluster solutions between the similarity and the transitions networks overlap - indicating that we have a system where elements are used similarly and transition into each other most of the time. This would indicate the presence of games: in a certain situation, there are a number of elements that are appropriate, but which one is used is up to the individual. Comparing the similarity clusters and transition network clusters, we can identify at least 5 'games' or consistent clusters:
+1.    Tree play: Individuals hang or swing of low-hanging branches and kick the partner, step and jump on them, or try to shake them off; while they also pull and shake the branch or sapling.
+2.    Rough-and-Tumble play: Individuals hold, pull, trip, hit, press down the partner or wrestle with them. They parry their hits and push them away.
+3.    Chases: Individuals follow/chase or flee/retreat from partner (depending on the role, often changing),  feint direction changes, hide behind trees or circle tree, or climb up to escape (leading to tree play). They often swing their arm when approaching the other or go bipedal. Approaches roughly fall into this category, but form their own little cluster because they can be modified by the focal walking funny or pirouetting.
+4.    Play invitations: Individuals slap the ground, bop, bow, shake their head, stomp, rock back and forth, drum or kick trees, or loud scratch to get the partner to engage in the play at the start of a bout or when play stops.
+5.    Object play: individuals wave objects, explore them, throw them, roll them, and carry them around.
+
+

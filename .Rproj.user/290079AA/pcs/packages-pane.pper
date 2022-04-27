@@ -1,0 +1,7 @@
+{
+    "installOptions": {
+        "installFromRepository": true,
+        "libraryPath": "C:/Users/Alex/Documents/R/R-4.0.5/library",
+        "installDependencies": true
+    }
+}

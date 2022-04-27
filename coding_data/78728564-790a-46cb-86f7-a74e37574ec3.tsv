@@ -1,0 +1,192 @@
+Observation id	78728564-790a-46cb-86f7-a74e37574ec3															
+																
+Media file(s)																
+																
+Player #1	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv															
+																
+Observation date	2020-09-11 17:53:01															
+																
+Description	78728564-790a-46cb-86f7-a74e37574ec3															
+																
+Time offset (s)	0.0															
+																
+independent variables																
+variable	value															
+Observer	Alex															
+Group	Bossou															
+Date/Time	2000-01-01T00:00:00															
+Contains play	yes															
+Coded	no															
+																
+Time	Media file path	Total length	FPS	Subject	Behavior	Behavioral category	Modifier 1	Modifier 2	Modifier 3	Modifier 4	Modifier 5	Modifier 6	Modifier 7	Modifier 8	Comment	Status
+2147.458	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97		Solo Play	Solo Play										POINT
+2152.630	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97		Players	Players	Flanle,Joya	Yes	Fanle,Fanwaa,Flanle,Foaf,Jeje,Jire,Joya,Pama,Peley,Tua							POINT
+2155.367	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	Retreat	None	None	None	None	None		POINT
+2155.434	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Approach	None	None	None	None	None		POINT
+2156.135	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Non-Play	Social Interaction	Embrace	None	Fanle	Sender						POINT
+2156.867	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	None	None	None	Carry_object	Stick	None		POINT
+2157.403	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Bipedal	None	None	Hit_object	Stick	None		POINT
+2158.036	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	Parry	None	Bipedal,Retreat	None	Face_invisible	None	None	None		POINT
+2159.338	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Bipedal	None	None	Hit_object	Stick	None		POINT
+2159.605	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	Parry	None	Bipedal	None	Face_invisible	None	None	None		POINT
+2160.739	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Bipedal	None	None	Hit_object	Stick	None		POINT
+2161.205	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	Ignore	None	Face_invisible	None	None	None		POINT
+2162.340	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Bipedal	None	None	Hit_object	Stick	None		POINT
+2162.941	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	None	None	Face_invisible	Drop_object	Stick	None		POINT
+2163.375	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Break	Break										POINT
+2169.715	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	None	None	Face_invisible	Drag_object	Stick	None		POINT
+2173.518	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	None	None	Face_invisible	Drop_object	Stick	None		POINT
+2174.518	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Break	Break										POINT
+2175.854	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	End	End	Other Interaction	Yes								POINT
+2208.659	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97		Players	Players	Flanle,Joya	Yes	Fanle,Fanwaa,Flanle,Foaf,Jeje,Jire,Joya,Pama,Peley,Tua							POINT
+2208.659	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Approach	None	None	None	None	None		POINT
+2208.920	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Out Of Sight	Out of Sight										POINT
+2210.789	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	None	None	None	Tug-of-war	Stick	None		POINT
+2211.056	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	None	None	Face_invisible	Tug-of-war	Stick	None		POINT
+2211.824	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	None	None	Face_invisible	Drop_object	Stick	None		POINT
+2212.390	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	None	None	None	Carry_object	Stick	None		POINT
+2212.557	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Out Of Sight	Out of Sight										POINT
+2212.923	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Bipedal	None	None	Throw_object	Stick	None		POINT
+2213.957	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Break	Break										POINT
+2217.662	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	None	None	Face_invisible	Drag_object	Stick	None		POINT
+2219.063	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	None	None	Face_invisible	Drop_object	Stick	None		POINT
+2220.431	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Break	Break										POINT
+2222.333	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Solo Play	Solo Play									Plays with stones	POINT
+2229.673	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Approach	None	None	None	None	None		POINT
+2232.243	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	Retreat	None	Face_invisible	Carry_object	Stone	None		POINT
+2233.477	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	None	None	Face_invisible	Drop_object	Stone	None		POINT
+2235.046	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	None	None	None	Carry_object	None	None		POINT
+2235.646	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	None	None	Face_invisible	Explore_object	Stone	None		POINT
+2236.848	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	Retreat	None	None	None	None	None		POINT
+2237.415	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	None	None	None	Throw_object	Stone	None		POINT
+2238.182	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Break	Break										POINT
+2238.248	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Non-Play	Social Interaction	Embrace	None	Fanle	Sender						POINT
+2240.586	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Bipedal	None	None	Carry_object	None	None		POINT
+2241.019	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	None	None	None	Drop_object	Stone	None		POINT
+2242.787	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	None	None	None	Pretend-throw_object	Stone	None		POINT
+2243.989	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	None	None	None	Drop_object	Stone	None		POINT
+2244.856	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Break	Break										POINT
+2249.661	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Solo Play	Solo Play									"Joya is pulling roots out of the ground for play purposes or gardening
+"	POINT
+2266.624	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	Approach	None	Face_invisible	None	None	None		POINT
+2267.378	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	None	None	Face_invisible	Roll_object	Stone	None		POINT
+2267.644	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	Crouch	None	None	None	None	None		POINT
+2268.313	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Break	Break										POINT
+2271.984	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Break	Break										POINT
+2279.724	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	Approach	None	Face_invisible	None	None	None		POINT
+2280.558	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	Bipedal	Arm-wave	Face_invisible	None	None	None		POINT
+2280.758	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Bop	Reach	Play-Face	None	None	None		POINT
+2281.193	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	Arm-protect,Bipedal	Stomp	Face_invisible	None	None	None		POINT
+2281.860	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Bop	None	Play-Face	None	None	None		POINT
+2282.295	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	Hold	None	Bipedal	None	Play-Face	None	None	None		POINT
+2283.095	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	Shake-off	Bipedal	None	None	None	None	None		POINT
+2283.662	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Bipedal	Arm-swing	Play-Face	None	None	None		POINT
+2283.828	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	Arm-protect,Bipedal,Retreat-backwards	None	None	None	None	None		POINT
+2284.262	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	Hold	None	None	None	Play-Face	None	None	None		POINT
+2284.329	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	Hold	None	Bipedal	None	None	None	None	None		POINT
+2285.564	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Bipedal,Retreat-backwards	None	None	None	None	None		POINT
+2285.890	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97		Intervention	Intervention	Disrupt	Tua								POINT
+2285.896	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	Retreat	None	None	None	None	None		POINT
+2286.163	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Break	Break										POINT
+2286.265	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Break	Break										POINT
+2287.065	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	End	End	Intervention	Yes								POINT
+2347.526	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Solo Play	Solo Play										POINT
+2351.062	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97		Players	Players	Flanle,Joya	Yes	Fanle,Fanwaa,Flanle,Foaf,Jeje,Jire,Joya,Pama,Peley,Tua							POINT
+2351.074	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Approach	None	Face_invisible	None	None	None		POINT
+2351.930	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	None	None	None	Drum_object	Stone	None		POINT
+2354.700	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	Bipedal	None	None	Carry_object	Stone	None		POINT
+2358.528	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	None	Slap-ground	Face_invisible	None	Stone	None		POINT
+2359.030	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	None	None	Face_invisible	Grab_object	Stone	None		POINT
+2359.296	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	None	None	None	Drop_object	Stone	None		POINT
+2360.264	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	Retreat	None	Face_invisible	None	None	None		POINT
+2361.265	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	None	None	None	Take_object	Stone	None		POINT
+2362.466	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Bipedal	None	None	Throw_object	Stone	None		POINT
+2363.634	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Retreat-backwards	None	None	None	None	None		POINT
+2364.502	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	Follow-Other	None	Face_invisible	None	None	None		POINT
+2365.737	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	None	None	Face_invisible	Drag_object	Stick	None		POINT
+2366.470	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	None	None	None	Grab_object	Stone	None		POINT
+2367.104	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	None	None	Face_invisible	Drum_object	Stick	None		POINT
+2367.671	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Non-Play	Social Interaction	Embrace	None	Fanle	Sender						POINT
+2367.671	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	Hide	None	Face_invisible	None	None	None		POINT
+2367.871	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	None	None	None	Wave_object	Stone	None		POINT
+2368.492	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Bipedal	None	None	Throw_object	Stone	None		POINT
+2370.240	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	None	None	None	Grab_object	Stone	None		POINT
+2371.675	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Bipedal,Swagger	None	None	None	Stone	None		POINT
+2372.942	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Bipedal	None	None	Throw_object	Stone	None		POINT
+2375.545	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Break	Break										POINT
+2376.148	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97		Players	Players	Flanle,Joya,Peley	Yes	Fanle,Fanwaa,Flanle,Foaf,Jeje,Jire,Joya,Pama,Peley,Tua							POINT
+2377.766	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Peley	Play Element	Play Element	None	None	Approach	None	Face_invisible	None	None	Joya		POINT
+2377.849	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	None	None	None	Carry_object	Stone	None		POINT
+2377.882	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97		Intervention	Intervention	Join	Peley								POINT
+2378.532	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Peley	Play Element	Play Element	None	None	Follow-Other	None	Face_invisible	None	None	Joya		POINT
+2378.650	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Retreat	None	None	None	Stone	Peley		POINT
+2378.849	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Flee	None	Face_invisible	Drop_object	Stone	Peley		POINT
+2380.884	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Bipedal	Drum-Tree	None	None	None	Peley		POINT
+2381.718	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Retreat	None	Face_invisible	None	None	Peley		POINT
+2385.023	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	Follow-Other	None	Face_invisible	None	None	Joya		POINT
+2386.010	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Out Of Sight	Out of Sight										POINT
+2390.194	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Retreat	None	Face_invisible	None	None	Peley		POINT
+2390.394	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	Hide	None	Face_invisible	None	None	Joya		POINT
+2390.845	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Peley	Play Element	Play Element	Hold	None	None	None	Face_invisible	None	None	Joya		POINT
+2391.126	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	None	Bow	Face_invisible	None	None	Peley		POINT
+2391.479	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Peley	Play Element	Play Element	None	None	Follow-Other	None	Face_invisible	None	None	Joya		POINT
+2391.794	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Bipedal	Arm-swing	Face_invisible	None	None	Peley		POINT
+2392.380	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Peley	Play Element	Play Element	Parry	None	None	None	Face_invisible	None	None	Joya		POINT
+2392.528	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Bipedal	Arm-wave	Face_invisible	None	None	Peley		POINT
+2393.228	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Retreat-backwards	None	Face_invisible	None	None	Peley		POINT
+2393.381	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Peley	Out Of Sight	Out of Sight										POINT
+2393.728	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Out Of Sight	Out of Sight										POINT
+2395.030	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Retreat	None	Face_invisible	None	None	Peley		POINT
+2395.165	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	None	Charge	Face_invisible	None	None	Joya		POINT
+2395.284	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Peley	Play Element	Play Element	None	None	Follow-Other	None	None	None	None	Joya		POINT
+2395.930	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	None	Hide-swing	Face_invisible	None	None	Peley		POINT
+2396.598	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	None	Feint	Face_invisible	None	None	Peley		POINT
+2396.731	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Flee	None	Face_invisible	None	None	Peley		POINT
+2397.635	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	Follow-Other	None	Face_invisible	None	None	Joya		POINT
+2398.633	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	None	Drum-Tree	Face_invisible	None	None	Peley		POINT
+2398.833	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Hide	None	Face_invisible	None	None	Peley		POINT
+2399.404	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	None	None	None	Carry_object	Stone	Joya		POINT
+2399.835	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Hide	Feint	Face_invisible	None	None	Peley		POINT
+2400.187	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Peley	Play Element	Play Element	None	None	None	Feint	Face_invisible	None	None	Joya		POINT
+2400.389	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Flee	None	Face_invisible	None	None	Peley		POINT
+2400.672	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	None	None	None	Drum_object	None	Joya		POINT
+2400.754	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Peley	Play Element	Play Element	None	None	Follow-Other	None	None	None	None	Joya		POINT
+2401.505	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Break	Break										POINT
+2402.073	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97		Players	Players	Joya,Peley	Yes	Fanle,Fanwaa,Flanle,Foaf,Jeje,Jire,Joya,Pama,Peley,Tua							POINT
+2403.124	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Retreat-backwards	None	Play-Face	None	None	Peley		POINT
+2403.658	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Peley	Out Of Sight	Out of Sight										POINT
+2404.125	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Out Of Sight	Out of Sight										POINT
+2404.526	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Peley	Break	Break										POINT
+2405.060	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Peley	Non-Play	Social Interaction	Touch	None	Joya	Sender						POINT
+2406.529	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Break	Break										POINT
+2408.396	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97		End	End	Other Interaction	Yes								POINT
+2423.212	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97		Players	Players	Flanle,Joya	Yes	Fanle,Fanwaa,Flanle,Foaf,Jeje,Jire,Joya,Pama,Peley,Tua							POINT
+2423.545	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	Approach	None	Face_invisible	None	None	None		POINT
+2424.807	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Ignore	None	Face_invisible	None	None	None		POINT
+2425.313	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	None	Hide-swing	None	None	None	None		POINT
+2428.115	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	Bipedal,Branch-shake	None	None	None	None	None		POINT
+2431.119	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	Approach	None	None	None	None	None		POINT
+2435.290	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	None	Kick-dirt	None	None	None	None		POINT
+2440.762	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	None	Kick-dirt	None	None	None	None		POINT
+2441.863	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	None	Kick-dirt	None	None	None	None		POINT
+2442.659	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	None	Kick-dirt	None	None	None	None		POINT
+2443.327	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	None	Kick-dirt	None	None	None	None		POINT
+2443.827	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	Retreat	None	Face_invisible	None	None	None		POINT
+2444.627	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Break	Break										POINT
+2451.567	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Play Element	Play Element	None	None	Bipedal,Branch-pull	None	None	None	None	None		POINT
+2454.238	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	Break	Break										POINT
+2454.238	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Flanle	End	End	Ignore	Yes								POINT
+2578.182	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97		Players	Players	Joya,Tua	Yes	Fanle,Fanwaa,Flanle,Foaf,Jeje,Jire,Joya,Pama,Peley,Tua							POINT
+2579.081	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Approach	None	None	None	None	None		POINT
+2581.651	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Tua	Play Element	Play Element	None	None	Approach	None	Face_invisible	None	None	None		POINT
+2582.585	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Bipedal,Hide	None	Face_invisible	None	None	None		POINT
+2585.788	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Bipedal,Hide	None	None	None	None	None		POINT
+2586.755	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	None	Feint	None	None	None	None		POINT
+2587.522	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Retreat	None	Face_invisible	None	None	None		POINT
+2587.556	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Tua	Play Element	Play Element	None	None	Follow-Other	None	Face_invisible	None	None	None		POINT
+2587.690	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	None	Feint	Face_invisible	None	None	None		POINT
+2588.223	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Play Element	Play Element	None	None	Flee	None	None	None	None	None		POINT
+2589.825	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Tua	Play Element	Play Element	None	None	Chase	None	None	None	None	None		POINT
+2592.293	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Tua	Break	Break										POINT
+2592.861	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Joya	Break	Break										POINT
+2594.696	G:/Oxford/Videos/Bossou videos/2012/621ca99d-105f-48ff-99a8-427931088dc7/78728564-790a-46cb-86f7-a74e37574ec3.dv	4662.060	29.97	Tua	End	End	None	Yes								POINT

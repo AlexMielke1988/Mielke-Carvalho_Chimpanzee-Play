@@ -1,0 +1,1 @@
+"0","kable(element.stats, row.names = F, caption = ""Element-level occurrence statistics for the dataset: For each element, we show the number and probability of occurrence; and the number and probability of bouts it appeared in at least once"", col.names = c('Element', 'Occurrence Count', 'Occurrence Probability', 'Number of Bouts', 'Probability of Bouts'))"

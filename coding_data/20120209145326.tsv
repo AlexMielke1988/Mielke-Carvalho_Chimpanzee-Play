@@ -1,0 +1,204 @@
+Observation id	20120209145326															
+																
+Media file(s)																
+																
+Player #1	G:/Oxford/Videos/Bossou videos/20120209145326.mp4															
+																
+Observation date	2020-04-30 13:35:52															
+																
+Description	 d9d77271-3a02-4122-b972-69cece34bcb2 															
+																
+Time offset (s)	0.0															
+																
+independent variables																
+variable	value															
+Observer	Alex															
+Group	Bossou															
+Date/Time	2000-01-01T00:00:00															
+Contains play	yes															
+Coded	yes															
+																
+Time	Media file path	Total length	FPS	Subject	Behavior	Behavioral category	Modifier 1	Modifier 2	Modifier 3	Modifier 4	Modifier 5	Modifier 6	Modifier 7	Modifier 8	Comment	Status
+317.350	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0		Players	Players	Flanle,Joya	Yes	Fana,Fanle,Fanwaa,Flanle,Foaf,Jeje,Jire,Joya,Pama,Peley,Tua							POINT
+318.122	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Approach	None	Face_invisible	None	None	None		POINT
+322.122	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Bipedal	None	Face_invisible	Wave_object	Stone	None		POINT
+322.372	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Retreat-backwards	None	None	None	None	None		POINT
+322.872	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Out Of Sight	Out of Sight										POINT
+323.122	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Bipedal,Retreat-backwards	Arm-swing	None	None	Stone	None		POINT
+325.122	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Bipedal	None	Face_invisible	Roll_object	Stone	None		POINT
+326.122	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Swagger	Arm-swing	None	None	None	None		POINT
+327.371	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	None	None	Face_invisible	Bite_object,Carry_object	Nut	None		POINT
+328.872	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	None	None	Face_invisible	Carry_object	Nut	None		POINT
+329.622	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Bipedal,Rock	None	Face_invisible	None	Nut	None		POINT
+330.371	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Out Of Sight	Out of Sight										POINT
+334.872	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Retreat	None	Face_invisible	Carry_object	Stone	None		POINT
+335.372	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Follow-Other	None	None	None	None	None		POINT
+335.622	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Retreat	None	Face_invisible	Roll_object	Stone	None		POINT
+338.381	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	None	Arm-swing,Charge	Face_invisible	None	None	None		POINT
+338.882	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Retreat-backwards	None	Face_invisible	None	None	None		POINT
+339.132	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Retreat-backwards	Arm-swing	None	None	None	None		POINT
+339.382	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Follow-Other	None	Face_invisible	None	None	None		POINT
+339.883	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Flee	None	None	None	None	None		POINT
+340.382	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	None	Arm-swing,Feint	None	None	None	None		POINT
+340.631	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Flee	None	None	None	None	None		POINT
+342.632	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	None	Feint	Face_invisible	None	None	None		POINT
+343.382	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Follow-Other	None	None	None	None	Joya		POINT
+343.382	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Intervention	Intervention	Disrupt	Jeje								POINT
+343.632	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Jeje	Play Element	Play Element	None	None	Approach	None	None	None	None	Joya		POINT
+343.632	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Players	Players	Flanle,Jeje,Joya	Yes	Fana,Fanle,Fanwaa,Flanle,Foaf,Jeje,Jire,Joya,Pama,Peley,Tua							POINT
+343.882	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	None	Press-ground	Face_invisible	None	None	Jeje		POINT
+344.133	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Retreat-backwards	None	Face_invisible	None	None	Jeje		POINT
+344.381	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Break	Break										POINT
+345.131	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Retreat-backwards	None	None	None	None	Jeje		POINT
+345.131	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Jeje	Play Element	Play Element	None	None	Follow-Other	None	None	None	None	None		POINT
+345.382	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Retreat	None	Face_invisible	None	None	Jeje		POINT
+346.881	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	None	None	Face_invisible	Carry_object	Stone	Jeje		POINT
+347.132	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Break	Break										POINT
+347.132	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Bipedal,Retreat-backwards	None	Face_invisible	Carry_object	Stone	Jeje		POINT
+347.883	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Bipedal	Feint	Face_invisible	None	Stone	Jeje		POINT
+348.383	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Flee	None	Face_invisible	None	Stone	Jeje		POINT
+349.383	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Jeje	Play Element	Play Element	None	None	Approach	None	Face_invisible	None	None	Flanle		POINT
+349.632	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Break	Break										POINT
+350.131	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Arm-protect,Retreat-backwards	None	None	None	None	Jeje		POINT
+352.382	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Break	Break										POINT
+352.382	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Jeje	Break	Break										POINT
+355.242	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0		End	End	Unknown	Yes								POINT
+849.302	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0		Players	Players	Jeje,Joya	Yes	Fana,Fanle,Fanwaa,Flanle,Foaf,Jeje,Jire,Joya,Pama,Peley,Tua							POINT
+851.102	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Bipedal	None	Play-Face	Grab_object	Stone	None		POINT
+851.851	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Bipedal	None	Play-Face	Throw_object	Stone	None		POINT
+852.102	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Jeje	Play Element	Play Element	None	None	Retreat	None	Face_invisible	None	None	None		POINT
+853.352	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Break	Break										POINT
+853.602	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Jeje	Break	Break										POINT
+855.852	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	End	End	Ignore	Yes								POINT
+880.303	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0		Players	Players	Flanle,Joya	Yes	Fana,Fanle,Fanwaa,Flanle,Foaf,Jeje,Jire,Joya,Pama,Peley,Tua							POINT
+881.562	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Approach	None	Face_invisible	None	None	None		POINT
+882.313	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Out Of Sight	Out of Sight										POINT
+882.562	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Bipedal,Rock	Arm-swing	Face_invisible	None	Stone	None		POINT
+884.312	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Approach,Swagger	Arm-swing	Face_invisible	None	Stone	None		POINT
+884.313	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Bipedal,Rock	None	Face_invisible	Wave_object	Stone	None		POINT
+886.063	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Approach,Swagger	Arm-raise	Face_invisible	None	Stone	None		POINT
+886.813	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Bipedal	Drum-Tree	Face_invisible	None	None	None		POINT
+887.563	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Flee	None	Face_invisible	None	Stone	None		POINT
+888.563	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Hide	None	None	None	Stone	None		POINT
+888.814	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Swagger	Arm-swing	Face_invisible	None	Stone	None		POINT
+890.313	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Swagger	None	Face_invisible	None	Stone	None		POINT
+891.062	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	None	Arm-swing	Face_invisible	None	Stone	None		POINT
+893.813	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Break	Break										POINT
+894.563	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	None	None	None	Bite_object	Stone	None		POINT
+899.063	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	None	Reach	None	Bite_object	Stone	None		POINT
+899.562	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Follow-Other	Reach	Face_invisible	None	Stone	None		POINT
+899.812	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Bipedal	Hit_attempt	Face_invisible	None	Stone	None		POINT
+899.812	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Approach	None	Play-Face	None	None	None		POINT
+900.062	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	None	Flail	None	None	Stone	None		POINT
+900.312	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	Hold	None	None	None	Face_invisible	None	None	None		POINT
+900.813	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	Shake-off	None	None	Face_invisible	None	Stone	None		POINT
+901.313	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Flee	None	Face_invisible	None	None	None		POINT
+902.062	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Out Of Sight	Out of Sight										POINT
+902.063	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Break	Break										POINT
+903.062	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Break	Break										POINT
+903.313	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	End	End	Flee	Yes								POINT
+1059.413	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0		Players	Players	Flanle,Joya	Yes	Fana,Fanle,Fanwaa,Flanle,Foaf,Jeje,Jire,Joya,Pama,Peley,Tua							POINT
+1062.413	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Bipedal	Drum-Tree	Face_invisible	None	None	None		POINT
+1062.662	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Bipedal	Drum-Tree	Face_invisible	None	None	None		POINT
+1064.623	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Approach	None	None	None	None	None		POINT
+1065.374	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Bipedal	None	Play-Face	None	None	None		POINT
+1065.913	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	None	Hit_attempt	Face_invisible	None	Stone	None		POINT
+1066.413	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	Hit	None	None	Face_invisible	None	Stone	None		POINT
+1067.162	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Bipedal	Hit_attempt	Face_invisible	None	Stone	None		POINT
+1067.373	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	Parry	None	Bipedal	None	Play-Face	None	None	None		POINT
+1067.914	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	Hit	None	None	Face_invisible	None	Stone	None		POINT
+1068.374	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	Hit	Bipedal	None	Play-Face	None	None	None		POINT
+1068.413	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	Parry	None	Bipedal	None	Play-Face	None	Stone	None		POINT
+1069.123	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	Push	Bipedal	None	Play-Face	None	None	None		POINT
+1069.413	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	Hit	Bipedal	None	None	None	Stone	None		POINT
+1069.663	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	Push	Bipedal	None	Play-Face	None	Stone	None		POINT
+1070.124	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	Push	Bipedal	None	Play-Face	None	None	None		POINT
+1070.163	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	Parry	None	None	None	Play-Face	None	Stone	None		POINT
+1070.874	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	Hold	None	Bipedal	None	Play-Face	None	None	None		POINT
+1071.163	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Arm-protect,Retreat	None	Play-Face	None	Stone	None		POINT
+1072.162	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	Shake-off	Bipedal	None	Play-Face	None	Stone	None		POINT
+1072.983	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Retreat	None	Face_invisible	None	Stone	None		POINT
+1074.694	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Swing	Press-ground	None	None	None	None		POINT
+1075.483	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Bipedal,Rock	None	Face_invisible	None	Stone	None		POINT
+1075.694	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Break	Break										POINT
+1076.483	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Break	Break										POINT
+1080.193	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Approach	None	None	None	None	None		POINT
+1081.733	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Bipedal,Retreat	None	Face_invisible	None	Stone	None		POINT
+1081.994	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	None	Reach	None	None	None	None		POINT
+1082.493	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	Hold	None	None	None	None	None	None	None		POINT
+1082.743	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Break	Break										POINT
+1084.782	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Break	Break										POINT
+1085.494	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	End	End	None	Yes								POINT
+1096.243	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0		Players	Players	Flanle,Joya	Yes	Fana,Fanle,Fanwaa,Flanle,Foaf,Jeje,Jire,Joya,Pama,Peley,Tua							POINT
+1097.243	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Approach	None	Face_invisible	None	None	None		POINT
+1097.494	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Hide	None	None	None	None	None		POINT
+1098.412	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Bipedal	Drum-Tree	None	None	None	None		POINT
+1098.493	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Bipedal	Drum-Tree	None	None	None	None		POINT
+1099.184	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Bipedal	Drum-Tree	None	None	None	None		POINT
+1100.184	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Retreat	None	None	None	None	None		POINT
+1100.493	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Bipedal	Hide-swing	Play-Face	None	Nut	None		POINT
+1101.434	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Bipedal,Hide	None	None	None	Stone	None		POINT
+1101.684	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Bipedal,Rock	Arm-swing	None	None	Nut	None		POINT
+1102.434	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Bipedal	Arm-swing	Face_invisible	None	Stone	None		POINT
+1103.933	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Retreat	None	None	None	Stone	None		POINT
+1104.434	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	None	Press-ground	Face_invisible	None	Stone	None		POINT
+1104.684	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Follow-Other	None	None	None	Nut	None		POINT
+1105.183	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Retreat	None	Face_invisible	None	Stone	None		POINT
+1105.434	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Break	Break										POINT
+1106.934	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Bipedal	Drum-Tree	Face_invisible	None	Stone	None		POINT
+1107.683	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Bipedal,Retreat	None	None	None	Stone	None		POINT
+1108.434	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Break	Break										POINT
+1114.684	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	None	Stomp	None	Carry_object	Stone	None		POINT
+1115.934	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Players	Players	Fanle,Flanle,Joya	Yes	Fana,Fanle,Fanwaa,Flanle,Foaf,Jeje,Jire,Joya,Pama,Peley,Tua							POINT
+1116.684	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Retreat	None	Face_invisible	None	None	Joya		POINT
+1116.933	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Bipedal	Arm-swing	None	None	Stone	Fanle		POINT
+1117.184	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Bipedal	None	None	Pretend-throw_object	Stone	Fanle		POINT
+1118.184	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Fanle	Play Element	Play Element	None	None	Retreat	None	None	None	None	None		POINT
+1119.184	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Bipedal	None	None	Wave_object	Stone	Fanle		POINT
+1120.684	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Bipedal	None	None	Wave_object	Stone	Flanle		POINT
+1121.184	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Flee	None	Face_invisible	None	None	Joya		POINT
+1122.423	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Bipedal	None	Face_invisible	Throw_object	Stone	Fanle		POINT
+1122.434	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Break	Break										POINT
+1122.935	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Fanle	Break	Break										POINT
+1123.674	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Break	Break										POINT
+1125.434	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	None	None	None	Take_object	Stone	None		POINT
+1125.934	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Flee	None	None	None	None	None		POINT
+1126.184	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Break	Break										POINT
+1126.924	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	End	End	None	Yes								POINT
+2732.244	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0		Players	Players	Fanle,Flanle,Joya	No	Fana,Fanle,Fanwaa,Flanle,Foaf,Jeje,Jire,Joya,Pama,Peley,Tua							POINT
+2733.494	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Out Of Sight	Out of Sight										POINT
+2733.494	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Out Of Sight	Out of Sight										POINT
+2741.493	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	None	Drum-Tree	None	None	None	Joya		POINT
+2742.744	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Bipedal	Drum-Tree	Face_invisible	None	None	Joya		POINT
+2744.494	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Bipedal	Drum-Tree	Face_invisible	None	None	None		POINT
+2747.244	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	Hold	None	None	None	Face_invisible	None	None	Flanle		POINT
+2747.744	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Out Of Sight	Out of Sight										POINT
+2747.993	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Out Of Sight	Out of Sight										POINT
+2750.244	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Fanle	Play Element	Play Element	None	None	Retreat	None	None	None	None	Joya		POINT
+2750.743	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Retreat	None	None	None	None	Joya		POINT
+2752.244	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Out Of Sight	Out of Sight										POINT
+2752.495	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Follow-Other	None	Face_invisible	None	None	Flanle		POINT
+2753.494	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Fanle	Out Of Sight	Out of Sight										POINT
+2754.244	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Break	Break										POINT
+2756.994	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Fanle	Play Element	Play Element	None	None	Retreat	None	None	None	None	Joya		POINT
+2759.244	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Retreat-backwards	None	Face_invisible	None	None	Fanle		POINT
+2759.744	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Bipedal	None	Face_invisible	None	None	Fanle		POINT
+2760.245	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	None	Drum-Tree,Hide-swing	Face_invisible	None	None	Fanle		POINT
+2761.243	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Bipedal	Arm-swing	None	None	None	Joya		POINT
+2761.494	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Fanle	Play Element	Play Element	None	None	Approach	None	None	None	None	Joya		POINT
+2761.494	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Bipedal	Arm-swing	Face_invisible	None	None	Flanle		POINT
+2761.993	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	Climb	None	Face_invisible	None	None	Fanle		POINT
+2762.244	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Approach	None	Face_invisible	None	None	None		POINT
+2762.494	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Fanle	Play Element	Play Element	None	None	Approach	None	Play-Face	None	None	Joya		POINT
+2762.993	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Fanle	Play Element	Play Element	None	None	Bipedal	Reach	Play-Face	None	None	Joya		POINT
+2763.494	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Fanle	Play Element	Play Element	None	None	Bipedal,Branch-shake	None	Play-Face	None	None	Joya		POINT
+2764.494	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Fanle	Play Element	Play Element	None	None	Retreat	None	None	None	None	Joya		POINT
+2764.494	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	None	Drum-Tree	None	None	None	Joya		POINT
+2765.744	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Play Element	Play Element	None	None	Retreat	None	None	None	None	Joya		POINT
+2766.244	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Fanle	Break	Break										POINT
+2766.993	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Break	Break										POINT
+2766.993	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Flanle	Out Of Sight	Out of Sight										POINT
+2767.744	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Play Element	Play Element	None	None	None	Fall	Face_invisible	None	None	Fanle		POINT
+2768.745	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0	Joya	Break	Break										POINT
+2770.743	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0		End	End	None	Yes								POINT
+2801.962	G:/Oxford/Videos/Bossou videos/20120209145326.mp4	3037.880	25.0		Comment	Other									Play of Flanle and Foaf, but zoomed in too far, can't see	POINT

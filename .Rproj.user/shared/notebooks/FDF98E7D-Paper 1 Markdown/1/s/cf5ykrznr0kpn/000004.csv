@@ -1,0 +1,1 @@
+"0","element.plot(element = 'Feint', antecedent = transitions$antecedent, descendant = transitions$descendant, count.antecedent = transitions$count.antecedent, count.descendant = transitions$count.descendant, observed.probs = transitions$observed.probs, pvalue = transitions$pvalue, cutoff = 5, sig = 0.01)$plot"

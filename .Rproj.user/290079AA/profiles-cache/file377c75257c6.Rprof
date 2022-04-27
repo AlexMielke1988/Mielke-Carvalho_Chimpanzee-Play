@@ -1,0 +1,15 @@
+memory profiling: GC profiling: line profiling: sample.interval=10000
+#File 1: C:/Users/Alex/Documents/GitHub/CCCPP/Analysis/PlaySeq/R/unlist_vector.R
+#File 2: C:/Users/Alex/Documents/GitHub/CCCPP/Analysis/PlaySeq/R/unlist_list.R
+:4008098:6260450:243572840:42:"unlist" 1#19 "FUN" "lapply" 1#18 "unlist.vector" 2#21 "FUN" "lapply" "sapply" 2#20 "unlist.list" "profvis::profvis" 
+:4018972:6450550:247537192:40:"length" "profvis::profvis" 
+:4031856:6683758:252430360:49:"sample.int" "FUN" "lapply" "sapply" 1#28 "unlist.vector" 2#21 "FUN" "lapply" "sapply" 2#20 "unlist.list" "profvis::profvis" 
+:4049482:6981218:258864816:77:"unlist" 1#19 "FUN" "lapply" 1#18 "unlist.vector" 2#21 "FUN" "lapply" "sapply" 2#20 "unlist.list" "profvis::profvis" 
+:4077288:7460366:268948344:108:"FUN" "lapply" "sapply" 1#28 "unlist.vector" 2#21 "FUN" "lapply" "sapply" 2#20 "unlist.list" "profvis::profvis" 
+:4100067:7606460:276477432:1079:"stri_split_boundaries" "str_split" "FUN" "vapply" "fix_replacement" ".f" "purrr::map" "profvis::profvis" 
+:4107151:7608087:278658408:496:"stri_split_boundaries" "str_split" "FUN" "vapply" "fix_replacement" ".f" "purrr::map" "profvis::profvis" 
+:4117120:7610051:281753192:704:"stri_split_boundaries" "str_split" "FUN" "vapply" "fix_replacement" ".f" "purrr::map" "profvis::profvis" 
+:4125545:7611948:284342464:588:"stri_replace_first_regex" ".f" "purrr::map" "profvis::profvis" 
+:4134772:7613767:287211456:653:".f" "purrr::map" "profvis::profvis" 
+:4156919:7664831:290521224:726:"order" "order_proxy" "vec_order" "vec_split_id_order" "compute_groups" "grouped_df" "group_by.data.frame" "count.data.frame" "profvis::profvis" 
+:4171453:7682017:298611040:7956:"parent.frame" "<Anonymous>" "separate.data.frame" "profvis::profvis" 

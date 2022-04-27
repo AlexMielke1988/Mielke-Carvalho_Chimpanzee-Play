@@ -1,0 +1,33 @@
+Observation id	1b99769c-d7bb-48e4-94a2-03822e304aba															
+																
+Media file(s)																
+																
+Player #1	G:/Oxford/Videos/Bossou videos/2010/58b54a12-2dff-49b6-8431-75f3f93b8dbf/1b99769c-d7bb-48e4-94a2-03822e304aba.dv															
+																
+Observation date	2021-05-21 11:38:26															
+																
+Description	1b99769c-d7bb-48e4-94a2-03822e304aba															
+																
+Time offset (s)	0.0															
+																
+independent variables																
+variable	value															
+Observer	Alex															
+Group	Bossou															
+Date/Time	2000-01-01T00:00:00															
+Contains play	yes															
+Coded	no															
+																
+Time	Media file path	Total length	FPS	Subject	Behavior	Behavioral category	Modifier 1	Modifier 2	Modifier 3	Modifier 4	Modifier 5	Modifier 6	Modifier 7	Modifier 8	Comment	Status
+1875.284	G:/Oxford/Videos/Bossou videos/2010/58b54a12-2dff-49b6-8431-75f3f93b8dbf/1b99769c-d7bb-48e4-94a2-03822e304aba.dv	4787.820	29.97		Players	Players	Joya,Tua	Yes	Foaf,Jeje,Jire,Joya,Pama,Peley,Tua							POINT
+1875.550	G:/Oxford/Videos/Bossou videos/2010/58b54a12-2dff-49b6-8431-75f3f93b8dbf/1b99769c-d7bb-48e4-94a2-03822e304aba.dv	4787.820	29.97	Tua	Play Element	Play Element	None	None	Approach	None	Face_invisible	None	None	None		POINT
+1876.818	G:/Oxford/Videos/Bossou videos/2010/58b54a12-2dff-49b6-8431-75f3f93b8dbf/1b99769c-d7bb-48e4-94a2-03822e304aba.dv	4787.820	29.97	Joya	Play Element	Play Element	None	None	Retreat	None	Face_invisible	None	None	None		POINT
+1877.418	G:/Oxford/Videos/Bossou videos/2010/58b54a12-2dff-49b6-8431-75f3f93b8dbf/1b99769c-d7bb-48e4-94a2-03822e304aba.dv	4787.820	29.97	Joya	Play Element	Play Element	None	None	Bipedal	Hide-swing	Face_invisible	None	None	None		POINT
+1877.419	G:/Oxford/Videos/Bossou videos/2010/58b54a12-2dff-49b6-8431-75f3f93b8dbf/1b99769c-d7bb-48e4-94a2-03822e304aba.dv	4787.820	29.97	Tua	Play Element	Play Element	None	None	Follow-Other	None	None	None	None	None		POINT
+1878.120	G:/Oxford/Videos/Bossou videos/2010/58b54a12-2dff-49b6-8431-75f3f93b8dbf/1b99769c-d7bb-48e4-94a2-03822e304aba.dv	4787.820	29.97	Joya	Play Element	Play Element	None	None	Bipedal	Feint	Face_invisible	None	None	None		POINT
+1878.886	G:/Oxford/Videos/Bossou videos/2010/58b54a12-2dff-49b6-8431-75f3f93b8dbf/1b99769c-d7bb-48e4-94a2-03822e304aba.dv	4787.820	29.97	Joya	Play Element	Play Element	None	None	Arm-protect,Bipedal,Retreat	None	Face_invisible	None	None	None		POINT
+1879.254	G:/Oxford/Videos/Bossou videos/2010/58b54a12-2dff-49b6-8431-75f3f93b8dbf/1b99769c-d7bb-48e4-94a2-03822e304aba.dv	4787.820	29.97	Joya	Play Element	Play Element	None	None	Arm-protect,Flee	None	Face_invisible	None	None	None		POINT
+1880.322	G:/Oxford/Videos/Bossou videos/2010/58b54a12-2dff-49b6-8431-75f3f93b8dbf/1b99769c-d7bb-48e4-94a2-03822e304aba.dv	4787.820	29.97	Tua	Play Element	Play Element	None	None	Chase	None	None	None	None	None		POINT
+1883.257	G:/Oxford/Videos/Bossou videos/2010/58b54a12-2dff-49b6-8431-75f3f93b8dbf/1b99769c-d7bb-48e4-94a2-03822e304aba.dv	4787.820	29.97	Tua	Break	Break										POINT
+1883.325	G:/Oxford/Videos/Bossou videos/2010/58b54a12-2dff-49b6-8431-75f3f93b8dbf/1b99769c-d7bb-48e4-94a2-03822e304aba.dv	4787.820	29.97	Joya	Break	Break										POINT
+1884.126	G:/Oxford/Videos/Bossou videos/2010/58b54a12-2dff-49b6-8431-75f3f93b8dbf/1b99769c-d7bb-48e4-94a2-03822e304aba.dv	4787.820	29.97	Joya	End	End	None	Yes								POINT

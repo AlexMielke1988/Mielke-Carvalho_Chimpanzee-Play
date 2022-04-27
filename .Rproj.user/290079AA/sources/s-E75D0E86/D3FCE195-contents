@@ -1,0 +1,83 @@
+#' Checks probabilities of combinations of n elements in the dataset (e.g., lvl = 1: 'slap', lvl = 2: 'mount%slap', lvl = 3: 'mount%slap%scream')
+#'
+#' @param elem.bout list of vectors of elements. Co-occurring elements are marked by the '%' symbol (e.g., mount%slap).
+#' @param lvl size of combinations of previous elements. lvl = 1 (default) means the algorithm finds single element transitions; lvl = 2 takes two previous elements etc
+#' @param it how many iterations of the random splitting of co-occurring elements should be used? If elements never co-occur, this can be set to 1. If there are many co-occurrences, this number should be high, but this will make things slower
+#'
+#' @return Function returns a data frame with the n antecedents (e.g., 'mount%slap'), the descendant (e.g., 'scream') and the joint and conditional probabilities of the antecedent combination and the n-1 combination
+#'
+#' @importFrom stringr str_replace_all
+#' @importFrom tidyverse tibble filter count mutate distinct summarize inner_join
+#' @importFrom tidytext unnest_tokens
+#' @importFrom tidyfast dt_separate
+#'
+#' @author Alex Mielke
+#' @export
+#'
+#' @examples
+#' ###
+dyad.transition.tidy <- function(elem.bout, lvl = 2, it = 100) {
+
+  lvl.new = lvl + 1
+  elem.bout <- elem.bout %>%
+    lapply(str_replace_all, pattern = '-|/|_', replacement = '')
+
+  elements <- sort(unique(unlist(strsplit(as.character(unlist(elem.bout)), split = "%", fixed = T))))
+
+  ran.matrixes <- lapply(1:it, function(j) {
+
+    elem.bout.y <- unlist.list(elem.bout)
+
+    elem.df <-
+      tibble(
+        elem = as.vector(unlist(sapply(elem.bout.y, function(x){paste(x, collapse = ' ')}))))
+
+    elem.bi <- elem.df %>%
+      unnest_tokens(bigram, elem, n = lvl.new, token = 'ngrams', to_lower = FALSE)
+
+    return(data.frame(elem.bi))
+  })
+
+  ran.matrix <- bind_rows(ran.matrixes) %>% as_tibble
+
+  seps <- ran.matrix %>%
+    dt_separate(bigram, sapply(1:lvl.new, function(x){paste(c('col',x), collapse = '_')}), sep = ' ') %>%
+    filter_at(vars(1:lvl.new), all_vars(.%in% elements)) %>% as_tibble
+
+  seps %>% unite(combination, sep = '%') -> ran.matrix
+  seps %>% select(-lvl.new) %>% unite(antecedent, sep = '%') %>% unlist -> ran.matrix$antecedent
+  seps %>% select(lvl.new) %>% unlist -> ran.matrix$descendant
+
+  ran.matrix %>% count(combination, antecedent, descendant, name = 'count') %>% mutate(count = count/it) -> dyad.trans
+
+  # how often does antecedent happen
+  total.possible <-  (ran.matrix %>%
+                        count(antecedent) %>%
+                        summarize(sum(n)))[[1]] / it
+  dyad.trans <- dyad.trans %>%
+    inner_join(ran.matrix %>%
+                 count(antecedent, name = 'count.antecedent') %>%
+                 mutate(count.antecedent = count.antecedent/it), by = 'antecedent') %>%
+    mutate(prob.antecedent = count.antecedent/total.possible) %>%
+    inner_join(ran.matrix %>%
+                 count(descendant, name = 'count.descendant') %>%
+                 mutate(count.descendant = count.descendant/it), by = 'descendant') %>%
+    mutate(prob.descendant = count.descendant/total.possible) %>%
+    mutate(joint.probability = count / sum(count)) %>%
+    mutate(conditional.probability = count/count.antecedent)
+
+  dyad.trans$mutual.information <- log2((dyad.trans$conditional.probability) /
+                                          (dyad.trans$prob.descendant)) / log2(dyad.trans$joint.probability)
+
+  # probability n-1 step
+  combination <- sapply(lapply(dyad.trans$combination, function(x) {
+    unlist(strsplit(x, split = "%", fixed = T))[-1]
+  }), paste, collapse = "%")
+  base.cond <- aggregate(dyad.trans$count, by = list(combination), sum)
+  dyad.trans$Nminus1 <- combination
+  dyad.trans$count.Nminus1 <- base.cond$x[match(combination, base.cond$Group.1)]
+  dyad.trans$prob.Nminus1 <- dyad.trans$count.Nminus1 / sum(base.cond$x)
+
+  dyad.trans$level <- lvl
+  return(dyad.trans)
+}

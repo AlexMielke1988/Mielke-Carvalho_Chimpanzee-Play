@@ -1,0 +1,315 @@
+#' Tests accuracy of transitions to next elements using neural network approach
+#'
+#' @param elem.bout list of vectors of elements. Co-occurring elements are marked by the '%' symbol (e.g., mount%slap).
+#' @param lvl number of antecedents to be considered; e.g., lvl = 1 is Hit, lvl = 2 could be Hit and Jump, lvl = 3 could be Hit and Jump and Run
+#' @param it number of iterations of assignments
+#' @param total_epochs number of training epochs for the neural network
+#' @param cores number of cores for parallel randomization (default is 2)
+#'
+#'
+#' @return Returns the mean value of correct classifications
+#'
+#' @importFrom parallel parLapply
+#' @importFrom parallel mclapply
+#' @importFrom parallel makeCluster
+#' @importFrom parallel detectCores
+#' @importFrom parallel clusterExport
+#' @importFrom parallel stopCluster clusterCall
+#' @importFrom keras fit optimizer_rmsprop layer_lstm layer_dense layer_activation compile evaluate keras_model_sequential
+#' @importFrom purrr map transpose
+#' @importFrom tidyr %>%
+#'
+#' @author Alex Mielke
+#' @export
+#'
+#' @examples
+#' ###
+neural.leave.one.out <- function(elem.bout,
+                                 lvl = 2,
+                                 total_epochs = 100, cores = 5, it = 10, out = 1, batch_size = 32) {
+
+
+  # Set Training Index based on 'out' ---------------------------------------
+
+
+  training_index.i <- cut(seq_along(elem.bout), out)
+  xx = sample(seq_along(elem.bout))
+  training_index.i <- lapply(unique(training_index.i), function(x) {
+    xx[which(training_index.i == x)]
+  })
+
+  elem.bout <- lapply(elem.bout, function(x) {
+    c(x, rep(NA, lvl))
+  })
+  elements <- sort(unique(unlist(strsplit(as.character(unlist(elem.bout)), split = "%", fixed = T))))
+
+
+
+  # Model -------------------------------------------------------------------
+  sample_next_char <- function(preds, temperature = 0.2) {
+    preds <- as.numeric(preds)
+    preds <- log(preds) / temperature
+    exp_preds <- exp(preds)
+    preds <- exp_preds / sum(exp_preds)
+    which.max(t(rmultinom(1, 1, preds)))
+  }
+
+
+
+  # Parallelisation ---------------------------------------------------------
+
+
+  mycluster <- makeCluster(cores, type = "PSOCK")
+  # export the relevant information to each core
+  clusterExport(
+    cl = mycluster,
+    c(
+      "elem.bout",
+      "elements",
+      "optim.unlist.vector",
+      "unlist.vector",
+      "lvl",
+      "total_epochs",
+      "batch_size",
+      "it",
+      "training_index.i",
+      "mean.array",
+      "sample_next_char"
+    ),
+    envir = environment()
+  )
+
+  registerDoParallel(mycluster)
+  clusterCall(mycluster, function() library(keras))
+  clusterCall(mycluster, function() library(purrr))
+
+  loo_nn <- parLapply(mycluster, X = training_index.i, function(training_index) {
+    ran_nn <- lapply(1:it, function(k) {
+      elem.bout.train <- as.vector(unlist(elem.bout))
+      elem.bout.train <- unlist.vector(elem.bout.train)
+      elem.nr <- unlist(lapply(1:length(elem.bout), function(x) {
+        rep(x, length(unlist.vector(elem.bout[[x]])))
+      }))
+      elem.bout.train <- as.numeric(as.factor(elem.bout.train)) - 1
+
+      dataset.train <- purrr::map(
+        seq(1, length(elem.bout.train) - lvl - 1, by = 1),
+        ~ list(antecedent = elem.bout.train[.x:(.x + lvl - 1)], descendant = elem.bout.train[.x + lvl], bout.nr = elem.nr[.x + lvl])
+      )
+      dataset.train <- purrr::transpose(dataset.train)
+
+      rem <- sapply(dataset.train$antecedent, function(x) {
+        mean(!is.na(x)) != 1
+      }) | sapply(dataset.train$descendant, function(x) {
+        mean(!is.na(x)) != 1
+      })
+      dataset.train$antecedent <- dataset.train$antecedent[!rem]
+      dataset.train$descendant <- dataset.train$descendant[!rem]
+      elem.nr <- dataset.train$bout.nr[!rem]
+
+      dataset.train$antecedent <- do.call(rbind, dataset.train$antecedent)
+      dataset.train$descendant <- unlist(dataset.train$descendant)
+      trainy_org <- unlist(dataset.train$descendant)
+      dataset.train$descendant <- to_categorical(dataset.train$descendant, length(elements))
+
+      dataset.test <- dataset.train
+      dataset.test$antecedent <- dataset.train$antecedent[elem.nr %in% training_index, ]
+      dataset.test$descendant <- dataset.train$descendant[elem.nr %in% training_index, ]
+      testy_org <- trainy_org[elem.nr %in% training_index]
+
+      dataset.train$antecedent <- dataset.train$antecedent[!elem.nr %in% training_index, ]
+      dataset.train$descendant <- dataset.train$descendant[!elem.nr %in% training_index, ]
+      trainy_org <- trainy_org[!elem.nr %in% training_index]
+
+      class_weights <- lapply(0:(length(elements) - 1), function(x) {
+        length(which(x == unlist(elem.bout.train)))
+      })
+      class_weights <- lapply(class_weights, function(x) {
+        aa <- (max(unlist(class_weights)) / x)
+        return(aa)
+      })
+      class_weights <- lapply(class_weights, function(x) {
+        min.aa <- min(unlist(class_weights))
+        max.aa <- max(unlist(class_weights))
+        aa <- ((x - min.aa) / (max.aa - min.aa)) * (30 - 1) + 1
+        return(aa)
+      })
+      names(class_weights) <- 0:(length(class_weights) - 1)
+
+
+      model <- keras_model_sequential()
+
+      model %>%
+        layer_embedding(
+          input_dim = length(elements),
+          output_dim = 20,
+          input_length = lvl
+        ) %>%
+        layer_lstm(32) %>%
+        layer_dense(units = length(elements), activation = "softmax")
+
+
+
+      callbacks_list <- list(
+        callback_early_stopping(
+          monitor = "acc",
+          patience = 3
+        )
+      )
+
+
+      model1 <- keras::clone_model(model) %>% keras::compile(
+        loss = "categorical_crossentropy",
+        optimizer = "rmsprop",
+        metrics = c("acc")
+      )
+
+      model1 %>% keras::fit(dataset.train$antecedent, dataset.train$descendant,
+        epochs = total_epochs,
+        batch_size = batch_size,
+        validation_split = 0.2,
+        class_weight = class_weights,
+        callbacks = callbacks_list,
+        verbose = T
+      )
+
+      score <- model1 %>% keras::evaluate(
+        dataset.test$antecedent, dataset.test$descendant,
+        verbose = F
+      )
+      observed.llhs <- model1 %>% predict(dataset.test$antecedent)
+      observed.sampled <- elements[apply(observed.llhs, 1, sample_next_char)]
+      observed.eval <- elements[model1 %>% predict_classes(dataset.test$antecedent) + 1]
+      expected <- elements[testy_org + 1]
+
+      observed.top <- sapply(1:nrow(observed.llhs), function(x) {
+        expected[x] %in% elements[order(observed.llhs[x, ], decreasing = T)][1:3]
+      })
+
+
+      return(list(
+        accuracy.eval = score[2],
+        accuracy.sampled = mean(observed.sampled == expected),
+        accuracy.top = mean(observed.top),
+        sample.size = nrow(dataset.train$descendant),
+        observed.sampled = observed.sampled,
+        observed.eval = observed.eval,
+        expected = expected,
+        observed.llhs = observed.llhs
+      ))
+    })
+
+    ran_nn <- transpose(ran_nn)
+    return(list(
+      accuracy.eval = mean(unlist(ran_nn$accuracy.eval), na.rm = T),
+      accuracy.sampled = mean(unlist(ran_nn$accuracy.sampled), na.rm = T),
+      accuracy.top = mean(unlist(ran_nn$accuracy.top), na.rm = T),
+      sample.size = mean(unlist(ran_nn$sample.size), na.rm = T),
+      observed.sampled = unlist(ran_nn$observed.sampled),
+      observed.eval = unlist(ran_nn$observed.eval),
+      observed.llhs = do.call(rbind, ran_nn$observed.llhs),
+      expected = unlist(ran_nn$expected)
+    ))
+  })
+  stopCluster(mycluster)
+
+  loo_nn <- transpose(loo_nn)
+
+
+  # Evaluation Model Choice -------------------------------------------------
+
+  results <- data.frame(t(table(unlist(loo_nn$expected))))[, 2:3]
+  colnames(results) <- c("element", "expected")
+  results$expected <- round(results$expected / it, 3)
+  obs <- t(table(unlist(loo_nn$observed.eval)))[1, ] / it
+  results$observed <- round(obs[match(results$element, names(obs))], 3)
+  correct <- t(table(unlist(loo_nn$observed.eval)[unlist(loo_nn$observed.eval) == unlist(loo_nn$expected)]))[1, ] / it
+  results$correct <- correct[match(results$element, names(correct))]
+  results$observed <- ifelse(is.na(results$observed), 0, results$observed)
+  results$correct <- ifelse(is.na(results$correct), 0, results$correct)
+  results$true.positive <- round(results$correct / results$expected, 3)
+
+  false.pos <- t(table(unlist(loo_nn$observed.eval)[unlist(loo_nn$observed.eval) != unlist(loo_nn$expected)]))[1, ] / it
+  false.positive <- false.pos[match(results$element, names(false.pos))]
+  false.positive <- ifelse(is.na(false.positive), 0, false.positive)
+  results$false.positive <- round(false.positive / results$observed, 3)
+
+  false.neg <- t(table(unlist(loo_nn$expected)[unlist(loo_nn$observed.eval) != unlist(loo_nn$expected)]))[1, ] / it
+  false.negative <- false.neg[match(results$element, names(false.neg))]
+  false.negative <- ifelse(is.na(false.negative), 0, false.negative)
+  results$false.negative <- round(false.negative / results$expected, 3)
+
+  results.eval <- results
+
+
+  # Evaluation Sampled Choice -------------------------------------------------
+
+  results <- data.frame(t(table(unlist(loo_nn$expected))))[, 2:3]
+  colnames(results) <- c("element", "expected")
+  results$expected <- round(results$expected / it, 3)
+  obs <- t(table(unlist(loo_nn$observed.sampled)))[1, ] / it
+  results$observed <- round(obs[match(results$element, names(obs))], 3)
+  correct <- t(table(unlist(loo_nn$observed.sampled)[unlist(loo_nn$observed.sampled) == unlist(loo_nn$expected)]))[1, ] / it
+  results$correct <- correct[match(results$element, names(correct))]
+  results$observed <- ifelse(is.na(results$observed), 0, results$observed)
+  results$correct <- ifelse(is.na(results$correct), 0, results$correct)
+  results$true.positive <- round(results$correct / results$expected, 3)
+
+  false.pos <- t(table(unlist(loo_nn$observed.sampled)[unlist(loo_nn$observed.sampled) != unlist(loo_nn$expected)]))[1, ] / it
+  false.positive <- false.pos[match(results$element, names(false.pos))]
+  false.positive <- ifelse(is.na(false.positive), 0, false.positive)
+  results$false.positive <- round(false.positive / results$observed, 3)
+
+  false.neg <- t(table(unlist(loo_nn$expected)[unlist(loo_nn$observed.sampled) != unlist(loo_nn$expected)]))[1, ] / it
+  false.negative <- false.neg[match(results$element, names(false.neg))]
+  false.negative <- ifelse(is.na(false.negative), 0, false.negative)
+  results$false.negative <- round(false.negative / results$expected, 3)
+
+  results.sampled <- results
+
+
+  # Misclassification Matrix ------------------------------------------------
+
+  misclass <- data.frame(t(table(unlist(loo_nn$expected),
+                                 unlist(loo_nn$observed))))
+  colnames(misclass) <- c("observed", "expected", 'count')
+  tot.exp <- misclass %>%
+    group_by(expected) %>%
+    summarise(tot.exp = sum(count))
+
+  misclass <- misclass %>%
+    left_join(tot.exp) %>%
+    mutate(misclassification.probability = round(count/tot.exp, 3)) %>%
+    select(-tot.exp)
+
+  mis.matr <- graph_from_edgelist(
+    as.matrix(misclass[,c('expected', 'observed')]),
+    directed = T)
+  edge.attributes(mis.matr)$probability = misclass$misclassification.probability
+  mis.matr <- mis.matr %>% get.adjacency(attr = "probability") %>% as.matrix
+
+  mis.plot <- ggplot(data = misclass,
+                     aes(x=expected, y=observed, fill=misclassification.probability)) +
+    geom_tile() +
+    scale_fill_gradient2(low = "white", high = "red",
+                         limit = c(0,max(misclass$misclassification.probability)), space = "Lab",
+                         name=  "Confusion Probability") +
+    theme_minimal() +
+    xlab('expected') +
+    ylab('observed') +
+    theme(axis.text.x = element_text(angle = 45, vjust = 1,
+                                     size = 10, hjust = 1)) +
+    ggtitle(paste(c('Misclassification Heat Map, Level = ',lvl), collapse = ' '))
+
+
+  return(list(
+    accuracy.eval = mean(unlist(loo_nn$accuracy.eval), na.rm = T),
+    accuracy.sampled = mean(unlist(loo_nn$accuracy.sampled), na.rm = T),
+    accuracy.top = mean(unlist(loo_nn$accuracy.top), na.rm = T),
+    sample.size = mean(unlist(loo_nn$sample.size), na.rm = T),
+    element.results.eval = results.eval,
+    element.results.sampled = results.sampled,
+    confusion.matrix = mis.matr,
+    heatmap = mis.plot
+  ))
+}
