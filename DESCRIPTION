@@ -24,6 +24,7 @@ Imports:
     dendextend,
     dplyr,
     doParallel,
+    e1071,
     ggplot2,
     ggraph,
     igraph,

@@ -22,6 +22,7 @@
 #' @importFrom magrittr %>%
 #' @importFrom tidyr replace_na gather separate unite
 #' @importFrom igraph get.adjacency
+#' @importFrom e1071 naiveBayes
 #'
 #'
 #' @author Alex Mielke
@@ -45,18 +46,17 @@ prediction_loo <- function(elem.bout,
   training_index.i <- lapply(unique(training_index.i), function(x) {
     xx[which(training_index.i == x)]
   })
-
+  
   # clean up elem.bout
   elem.bout <- elem.bout %>%
     lapply(str_replace_all,
-      pattern = "-|/|_",
-      replacement = ""
-    )
+           pattern = "-|/|_",
+           replacement = "")
   # add NA at end of each sequence, depending on number of lvl
   elem.bout <- lapply(elem.bout, function(x) {
     c(x, rep(NA, lvl))
   })
-
+  
   # make sorted list of all elements
   elements <- elem.bout %>%
     unlist(FALSE, FALSE) %>%
@@ -64,7 +64,7 @@ prediction_loo <- function(elem.bout,
     unlist(FALSE, FALSE) %>%
     unique()
   elements <- elements[!is.na(elements) & !(elements == "NA")]
-
+  
   #go parallel
   mycluster <- makeCluster(cores, type = "PSOCK")
   # export the relevant information to each core
@@ -106,415 +106,709 @@ prediction_loo <- function(elem.bout,
   clusterCall(mycluster, function() {
     library(tidyfast)
   })
+  clusterCall(mycluster, function() {
+    library(e1071)
+  })
   # run parallel loop
-
+  
   # go through every index, calculate probabilities for training data (all other bouts), and try to predict within bouts
   loo.pred <-
-    parLapply(mycluster, X = training_index.i, function(training_index) {
-      # if no gap is defined, use transition probabilities
-      if (is.null(gap)) {
-        # define training and test data
-        boot.train <- elem.bout[-training_index]
-        boot.test <- elem.bout[training_index]
-
-        # calculate probabilities for training data
-        # for 0-order (ie each element by itself)
-        llh.0 <- element_combinations(
-          elem.bout = boot.train,
-          lvl = 0,
-          it = 1,
-          ran.method = ran.method
-        )
-
-        if (lvl == 0) {
-          llh <- llh.0
-        }
-        # if higher level, calculate for all lower levels
-        if (lvl > 0) {
-          llh <- lapply(1:lvl, function(x) {
-            element_combinations(
-              elem.bout = boot.train,
-              lvl = x,
-              it = it,
-              ran.method = ran.method
-            )
-          })
-          names(llh) <- 1:lvl
-        }
-      }
-      # if gap is defined, use bag-of-words approach
-      if (!is.null(gap)) {
-        # define training and test datasets, replace 'NA' with actual NAs
-        boot.train <- elem.bout[-training_index]
-        boot.train <- lapply(boot.train, function(z) {
-          z <- ifelse(z == "NA", NA, z)
-        })
-        boot.test <- elem.bout[training_index]
-        boot.test <- lapply(boot.test, function(z) {
-          z <- ifelse(z == "NA", NA, z)
-        })
-
-        # if no elem.time is defined, each element gets its number in sequence
-        if (is.null(elem.time)) {
-          time.train <- lapply(1:length(boot.train), function(z) {
-            1:length(boot.train[[z]])
-          })
-        }
-        # if time is defined, assign it to training data
-        if (!is.null(elem.time)) {
-          time.train <- elem.time[-training_index]
-        }
-
-        # calculate bag of words transitions
-        llh <- bag_of_words(
-          elem.bout = boot.train,
-          elem.time = time.train,
-          gap = gap
-        )
-        # for probabilities that are NA, set 0
-        llh$observed.probs <-
-          ifelse(
-            is.na(llh$observed.probs),
-            0,
-            llh$observed.probs
-          )
-        llh$count <- llh$observed.sum
-        llh$probability.transitions <- llh$observed.probs
-      }
-      # create random matrices
-      ran.matrixes <- lapply(1:trials, function(j) {
-        # unlist test data
-        boot.test <- as.vector(unlist(boot.test))
-        boot.test <- unlist_vector(boot.test, method = ran.method)
-        boot.test <- ifelse(boot.test == "NA", NA, boot.test)
-
-        # if the test data is shorter than the selected level, return NA
-        if (length(boot.test) - lvl < 1) {
-          return(NA)
-        }
-        # create list that splits antecedents and consequents for each event
-        dataset.test <- purrr::map(
-          seq(1, length(boot.test) - lvl, by = 1),
-          ~ list(antecedent = boot.test[.x:(.x + lvl - 1)], consequent = boot.test[.x + lvl])
-        )
-        dataset.test <- purrr::transpose(dataset.test)
-
-        # remove cases where either the antecedent or consequent contains NAs
-        rem <- sapply(dataset.test$antecedent, function(x) {
-          mean(!is.na(x)) != 1
-        }) | sapply(dataset.test$consequent, function(x) {
-          mean(!is.na(x)) != 1
-        })
-        dataset.test$antecedent <- dataset.test$antecedent[!rem]
-        dataset.test$consequent <- dataset.test$consequent[!rem]
-
-        # if afterwards no data are left, return NA
-        if (is.null(unlist(dataset.test$antecedent)) |
-          is.null(unlist(dataset.test$consequent))) {
-          return(NA)
-        }
-        # if the order of interest is higher than 0, determine transition probabilities for all antecedents
-        if (lvl > 0) {
-          # go order by order
-          ants.probs <- lapply(1:lvl, function(x) {
-            # split antecedents
-            ants <-
-              sapply(llh[[x]]$antecedent,
-                strsplit,
-                split = "%",
-                fixed = T
-              )
-            conse <-
-              sapply(llh[[x]]$consequent,
-                strsplit,
-                split = "%",
-                fixed = T
-              )
-            probs <- llh[[x]]$probability.transitions
-            return(list(
-              antecedent = ants,
-              consequent = conse,
-              probability = probs
-            ))
-          })
-
-          # transpose list
-          ants.probs <- purrr::transpose(ants.probs)
-          # unlist list elements
-          ants.probs$antecedent <-
-            unlist(ants.probs$antecedent,
-              recursive = FALSE,
-              use.names = FALSE
-            )
-          ants.probs$consequent <-
-            unlist(ants.probs$consequent,
-              recursive = FALSE,
-              use.names = FALSE
-            )
-          ants.probs$probability <-
-            unlist(ants.probs$probability,
-              recursive = FALSE,
-              use.names = FALSE
-            )
-        }
-        # go through each event of interest, make predictions based on the antecedents and their transition probabilities
-        pred <-
-          lapply(1:length(dataset.test$antecedent), function(x) {
-            if (lvl > 0) {
-              ### what is the antecedent depending on the level?
-              x.ants <- lapply(1:lvl, function(y) {
-                rev(rev(unlist(dataset.test$antecedent[x]))[1:y])
+    parLapply(mycluster,
+              X = training_index.i,
+              function(training_index) {
+                # if no gap is defined, use transition probabilities
+                if (is.null(gap)) {
+                  # define training and test data
+                  boot.train <- elem.bout[-training_index]
+                  boot.test <- elem.bout[training_index]
+                  
+                  # calculate probabilities for training data
+                  # for 0-order (ie each element by itself)
+                  llh.0 <- element_combinations(
+                    elem.bout = boot.train,
+                    lvl = 0,
+                    it = 1,
+                    ran.method = ran.method
+                  )
+                  
+                  if (lvl == 0) {
+                    llh <- llh.0
+                  }
+                  # if higher level, calculate for all lower levels
+                  if (lvl > 0) {
+                    llh <- lapply(1:lvl, function(x) {
+                      element_combinations(
+                        elem.bout = boot.train,
+                        lvl = x,
+                        it = it,
+                        ran.method = ran.method
+                      )
+                    })
+                    names(llh) <- 1:lvl
+                  }
+                  
+                }
+                # if gap is defined, use bag-of-words approach
+                if (!is.null(gap)) {
+                  # define training and test datasets, replace 'NA' with actual NAs
+                  boot.train <- elem.bout[-training_index]
+                  boot.train <- lapply(boot.train, function(z) {
+                    z <- ifelse(z == "NA", NA, z)
+                  })
+                  boot.test <- elem.bout[training_index]
+                  boot.test <- lapply(boot.test, function(z) {
+                    z <- ifelse(z == "NA", NA, z)
+                  })
+                  
+                  # if no elem.time is defined, each element gets its number in sequence
+                  if (is.null(elem.time)) {
+                    time.train <- lapply(1:length(boot.train), function(z) {
+                      1:length(boot.train[[z]])
+                    })
+                  }
+                  # if time is defined, assign it to training data
+                  if (!is.null(elem.time)) {
+                    time.train <- elem.time[-training_index]
+                  }
+                  
+                  # calculate bag of words transitions
+                  llh <- bag_of_words(elem.bout = boot.train,
+                                      elem.time = time.train,
+                                      gap = gap)
+                  # for probabilities that are NA, set 0
+                  llh$observed.probs <-
+                    ifelse(is.na(llh$observed.probs),
+                           0,
+                           llh$observed.probs)
+                  llh$count <- llh$observed.sum
+                  llh$probability.transitions <- llh$observed.probs
+                }
+                # create random matrices
+                ran.matrixes <- lapply(1:trials, function(j) {
+                  # unlist test data
+                  boot.test <- as.vector(unlist(boot.test))
+                  boot.test <-
+                    unlist_vector(boot.test, method = ran.method)
+                  boot.test <-
+                    ifelse(boot.test == "NA", NA, boot.test)
+                  
+                  # if the test data is shorter than the selected level, return NA
+                  if (length(boot.test) - lvl < 1) {
+                    return(NA)
+                  }
+                  # create list that splits antecedents and consequents for each event
+                  dataset.test <- purrr::map(
+                    seq(1, length(boot.test) - lvl, by = 1),
+                    ~ list(antecedent = boot.test[.x:(.x + lvl - 1)], consequent = boot.test[.x + lvl])
+                  )
+                  dataset.test <- purrr::transpose(dataset.test)
+                  
+                  # remove cases where either the antecedent or consequent contains NAs
+                  rem <-
+                    sapply(dataset.test$antecedent, function(x) {
+                      mean(!is.na(x)) != 1
+                    }) | sapply(dataset.test$consequent, function(x) {
+                      mean(!is.na(x)) != 1
+                    })
+                  dataset.test$antecedent <-
+                    dataset.test$antecedent[!rem]
+                  dataset.test$consequent <-
+                    dataset.test$consequent[!rem]
+                  
+                  # if afterwards no data are left, return NA
+                  if (is.null(unlist(dataset.test$antecedent)) |
+                      is.null(unlist(dataset.test$consequent))) {
+                    return(NA)
+                  }
+                  
+                  # prepare data for Naive Bayes classifier
+                  
+                  # make test and training sets
+                  train_sets <- lapply(1:lvl, function(k){
+                    
+                    elem.bout.train <- as.vector(unlist(elem.bout))
+                    elem.bout.train <- unlist_vector(elem.bout.train)
+                    # make sure you keep element number so each antecedent can be associated with the training index
+                    elem.nr <- unlist(lapply(1:length(elem.bout), function(x) {
+                      rep(x, length(unlist_vector(elem.bout[[x]])))
+                    }))
+                    elem.bout.train <- as.character(elem.bout.train)
+                    # create training set for Naive Bayes
+                    
+                    dataset.train <- purrr::map(
+                      seq(1, length(elem.bout.train) - k - 1, by = 1),
+                      ~ list(
+                        antecedent = elem.bout.train[.x:(.x + k - 1)],
+                        consequent = elem.bout.train[.x + k],
+                        bout.nr = elem.nr[.x + k]
+                      )
+                    )
+                    
+                    dataset.train <- purrr::transpose(dataset.train)
+                    
+                    rem <- sapply(dataset.train$antecedent, function(x) {
+                      mean(!is.na(x)) != 1
+                    }) | sapply(dataset.train$consequent, function(x) {
+                      mean(!is.na(x)) != 1
+                    })
+                    dataset.train$antecedent <- dataset.train$antecedent[!rem]
+                    dataset.train$consequent <- dataset.train$consequent[!rem]
+                    elem.nr <- dataset.train$bout.nr[!rem]
+                    
+                    combinations <- lapply(dataset.train$antecedent, function(au){
+                      xx = unlist(au)
+                      lapply((length(xx)):1, function(ku){
+                        paste(xx[ku:length(xx)], collapse = '_')
+                      })
+                    })
+                    
+                    combinations <- purrr::transpose(combinations)
+                    combinations <- lapply(combinations, unlist)
+                    
+                    dataset.train$antecedent <- 
+                      do.call(cbind, combinations) %>% 
+                      as.matrix()
+                    
+                    dataset.train$consequent <- unlist(dataset.train$consequent)
+                    
+                    dataset.test <- dataset.train
+                    dataset.test$antecedent <-
+                      dataset.test$antecedent[elem.nr %in% training_index,]
+                    dataset.test$consequent <-
+                      dataset.test$consequent[elem.nr %in% training_index]
+                    
+                    train.set <-
+                      data.frame(cbind(desc = dataset.train$consequent,
+                                       dataset.train$antecedent)) %>%
+                      mutate_if(is.character, as.factor)
+                    
+                    test.set <- data.frame(cbind(desc = dataset.test$consequent,
+                                                 dataset.test$antecedent)) %>%
+                      mutate_if(is.character, as.factor)
+                    
+                    return(list(
+                      train.set = train.set,
+                      test.set = test.set
+                    ))
+                  })
+                  
+                  
+                  # run naiveBayes algorithm from the e1071 package
+                  model.nb <- lapply(1:(lvl+1), function(y){
+                    y.minus <- y - 1
+                    if(y.minus == 0){
+                      xx <- e1071::naiveBayes(desc ~ rep('o', nrow(train_sets[[y]]$train.set)),
+                                              data = train_sets[[y]]$train.set,
+                                              laplace = 0.01)
+                      return(xx)
+                    }
+                    if(y.minus > 0){
+                      e1071::naiveBayes(desc ~ .,
+                                        data = train_sets[[y.minus]]$train.set,
+                                        laplace = 0.01)
+                    }
+                    
+                  })
+                  
+                  # predict test data based on model
+                  nb.prediction <- lapply(1:(lvl+1), function(y){
+                    y.minus <- y - 1
+                    if(y.minus == 0){
+                      return(predict(model.nb[[y]], rep('o', length(train_sets[[y]]$test.set[,1]))))}
+                    if(y.minus == 1){
+                      return(predict(model.nb[[y]], data.frame(V2 = train_sets[[y.minus]]$test.set[,-1])))}
+                    if(y.minus > 1){
+                      return(predict(model.nb[[y]], data.frame(train_sets[[y.minus]]$test.set[,-1])))}
+                  })
+                  
+                  # store correct classifications
+                  nb.correct <- lapply(1:(lvl+1), function(y){
+                    y.minus <- y - 1
+                    if(y.minus == 0){
+                      return(as.character(nb.prediction[[y]]) == as.character(train_sets[[y]]$test.set[,1]))}
+                    if(y.minus > 0){
+                      return(nb.prediction[[y]] == as.character(train_sets[[y.minus]]$test.set[,1]))}
+                  })
+                  
+                  # if the order of interest is higher than 0, determine transition probabilities for all antecedents
+                  if (lvl > 0) {
+                    # go order by order
+                    ants.probs <- lapply(1:lvl, function(x) {
+                      # split antecedents
+                      ants <-
+                        sapply(llh[[x]]$antecedent,
+                               strsplit,
+                               split = "%",
+                               fixed = T)
+                      conse <-
+                        sapply(llh[[x]]$consequent,
+                               strsplit,
+                               split = "%",
+                               fixed = T)
+                      probs <- llh[[x]]$probability.transitions
+                      return(list(
+                        antecedent = ants,
+                        consequent = conse,
+                        probability = probs
+                      ))
+                    })
+                    
+                    # transpose list
+                    ants.probs <- purrr::transpose(ants.probs)
+                    # unlist list elements
+                    ants.probs$antecedent <-
+                      unlist(ants.probs$antecedent,
+                             recursive = FALSE,
+                             use.names = FALSE)
+                    ants.probs$consequent <-
+                      unlist(ants.probs$consequent,
+                             recursive = FALSE,
+                             use.names = FALSE)
+                    ants.probs$probability <-
+                      unlist(ants.probs$probability,
+                             recursive = FALSE,
+                             use.names = FALSE)
+                  }
+                  # go through each event of interest, make predictions based on the antecedents and their transition probabilities
+                  pred <-
+                    lapply(1:length(dataset.test$antecedent), function(x) {
+                      if (lvl > 0) {
+                        ### what is the antecedent depending on the level?
+                        x.ants <- lapply(1:lvl, function(y) {
+                          rev(rev(unlist(dataset.test$antecedent[x]))[1:y])
+                        })
+                        ### where are those antecedents in the ants.probs list?
+                        x.llhs <- lapply(1:lvl, function(z) {
+                          as.vector(which(sapply(ants.probs$antecedent, function(y) {
+                            identical(x.ants[[z]], y)
+                          })))
+                        })
+                        ### which elements are in the positions in question?
+                        x.element <- lapply(1:lvl, function(z) {
+                          as.vector(unlist(ants.probs$consequent[x.llhs[[z]]]))
+                        })
+                        ### what are the  transition probabilities of those elements
+                        x.chosen <- lapply(1:lvl, function(z) {
+                          as.vector(unlist(ants.probs$probability[x.llhs[[z]]]))
+                        })
+                        # ### are any levels empty, i.e. no cases occur in the training data?
+                        # non.empty <- sapply(x.element, function(z) {
+                        #   length(z) > 0
+                        # })
+                        # x.ants <- x.ants[non.empty]
+                        # x.llhs <- x.llhs[non.empty]
+                        # x.element <- x.element[non.empty]
+                        # x.chosen <- x.chosen[non.empty]
+                        
+                        ### establish baseline probability of each element in 0-order
+                        all.consequents <-
+                          unique(unlist(llh[[1]]$consequent))
+                        all.consequent.probs <-
+                          data.frame(antecedent = all.consequents) %>%
+                          left_join(llh.0) %>%
+                          select(.data$probability.total) %>%
+                          unlist(FALSE, FALSE) %>%
+                          suppressMessages()
+                        
+                        ### combine 0-order with all other orders
+                        x.element <-
+                          c(list(as.vector(all.consequents)), x.element)
+                        x.chosen <-
+                          c(list(as.vector(all.consequent.probs)), x.chosen)
+                        
+                        ### make sure that choices follow same order as elements
+                        x.choices <-
+                          lapply(1:length(x.element), function(z) {
+                            x.chosen[[z]][match(x.element[[1]], x.element[[z]])]
+                          })
+                        ### if choice was never observed (given NA), give it the minimum observed value
+                        x.choices <- lapply(x.choices, function(z) {
+                          ifelse(is.na(z), min(unlist(x.choices), na.rm = T), z)
+                        })
+                        # ### Weight higher order higher, because it is more rare
+                        # x.choices <- lapply(seq_along(x.choices), function(z) {
+                        #   z * x.choices[[z]]
+                        # })
+                        # if(length(x.choices) > 1){x.choices[[1]] = NULL}
+                        # combine the probabilities
+                        if (prediction == 'PPM') {
+                          x.chosen = lapply(1:lvl, function(y) {
+                            xx <-
+                              x.choices[y] %>%
+                              unlist(F, F)
+                            return(xx / sum(xx))
+                          })
+                        }
+                        if (prediction == 'product') {
+                          x.chosen <- lapply(1:lvl, function(y) {
+                            xx <- apply(do.call(cbind, x.choices[1:y]), 1, prod)
+                            return(xx / sum(xx))
+                          })
+                        }
+                        x.element <- unlist(x.element[1])
+                      }
+                      
+                      # for lvl ==0, just use the consequent probabilities
+                      xx.0 <- 
+                        table(
+                          unlist(
+                            strsplit(
+                              unlist(
+                        elem.bout
+                      ), split = "%"), FALSE, FALSE))
+                      x.element.0 <- names(xx.0)
+                      x.chosen.0 <- as.numeric(xx.0)
+                      x.chosen.0 <- x.chosen.0 / sum(x.chosen.0)
+                      
+                      x.chosen <- c(list(x.chosen.0), x.chosen)
+                      
+                      # sample to make predictions
+                      # one element
+                      simple.sample <-
+                        lapply(x.chosen, function(y) {
+                          sample(x.element, 1, prob = y)
+                        })
+                      names(simple.sample) <- 1:lvl
+                      # three elements
+                      triple.sample <-
+                        lapply(x.chosen, function(y) {
+                          sample(x.element, 3, prob = y)
+                        })
+                      names(triple.sample) <- 1:lvl
+                      
+                      # store probabilities
+                      simple.probs <-
+                        lapply(seq_along(x.chosen), function(y) {
+                          x.chosen[[y]][which(x.element == dataset.test$consequent[x])]
+                        })
+                      names(simple.probs) <- 1:lvl
+                      
+                      return(
+                        list(
+                          simple.sample = simple.sample,
+                          triple.sample = triple.sample,
+                          simple.probs = simple.probs
+                        )
+                      )
+                    })
+                  # transpose prediction list
+                  # pred <- purrr::transpose(pred)
+                  # check whether predictions were correct
+                  outcome.simple <-
+                    lapply(seq_along(pred), function(y) {
+                      lapply(pred[[y]]$simple.sample, function(k) {
+                        unlist(k) == dataset.test$consequent[y]
+                      })
+                    }) %>%
+                    purrr::transpose()
+                  # check whether prediction was in top three
+                  outcome.triple <-
+                    lapply(seq_along(pred), function(y) {
+                      lapply(pred[[y]]$triple.sample, function(k) {
+                        dataset.test$consequent[y] %in% k
+                      })
+                    }) %>%
+                    purrr::transpose()
+                  
+                  # save probabilities of true value
+                  probs.expected <-
+                    lapply(seq_along(pred), function(y) {
+                      lapply(pred[[y]]$simple.probs, function(k) {
+                        unlist(k)
+                      })
+                    }) %>%
+                    purrr::transpose() %>%
+                    lapply(unlist)
+                  
+                  all_out <-
+                    lapply(seq_along(outcome.simple), function(y) {
+                      list(
+                        mean.res.single = mean(outcome.simple[[y]] %>% unlist(), na.rm = T),
+                        mean.res.three = mean(outcome.triple[[y]] %>% unlist(), na.rm = T),
+                        sample.size = unlist(dataset.test$consequent) %>% length(),
+                        expected = unlist(dataset.test$consequent),
+                        observed = sapply(purrr::transpose(pred)$simple.sample, function(k)
+                          k[[y]]),
+                        probs.expected = probs.expected[[y]],
+                        nb.prediction = nb.prediction[[y]],
+                        nb.expected = as.character(train_sets[[y]]$test.set[,1]),
+                        nb.correct = nb.correct[[y]]
+                      )
+                    })
+                  names(all_out) <- 0:lvl
+                  
+                  return(all_out)
+                })
+                
+                # transpose all trials
+                ran.matrixes <- transpose(ran.matrixes)
+                # if nothing happened, return NAs
+                if (length(ran.matrixes) == 1) {
+                  return(lapply(1:lvl, function(y) {
+                    list(
+                      mean.res.single = NA,
+                      mean.res.three = NA,
+                      sample.size = NA,
+                      expected = NA,
+                      observed = NA,
+                      probs.expected = NA,
+                      nb.prediction = NA,
+                      nb.expected = NA,
+                      nb.correct = NA
+                    )
+                  }))
+                }
+                # mean correct predictions
+                mean.res.single <-
+                  lapply(seq_along(ran.matrixes), function(y) {
+                    mean(unlist(purrr::transpose(ran.matrixes[[y]])$mean.res.single), na.rm = T)
+                  })
+                # mean correct predictions in top three
+                mean.res.three <-
+                  lapply(seq_along(ran.matrixes), function(y) {
+                    mean(unlist(purrr::transpose(ran.matrixes[[y]])$mean.res.three), na.rm = T)
+                  })
+                #mean sample size
+                sample.size <-
+                  lapply(seq_along(ran.matrixes), function(y) {
+                    mean(unlist(purrr::transpose(ran.matrixes[[y]])$sample.size), na.rm = T)
+                  })
+                # preserve observed and expected values
+                observed <-
+                  lapply(seq_along(ran.matrixes), function(y) {
+                    unlist(purrr::transpose(ran.matrixes[[y]])$observed)
+                  })
+                expected <-
+                  lapply(seq_along(ran.matrixes), function(y) {
+                    unlist(purrr::transpose(ran.matrixes[[y]])$expected)
+                  })
+                probs.expected <-
+                  lapply(seq_along(ran.matrixes), function(y) {
+                    unlist(purrr::transpose(ran.matrixes[[y]])$probs.expected)
+                  })
+                nb.observed <-
+                  lapply(seq_along(ran.matrixes), function(y) {
+                    unlist(purrr::transpose(ran.matrixes[[y]])$nb.prediction)
+                  })
+                nb.expected <-
+                  lapply(seq_along(ran.matrixes), function(y) {
+                    unlist(purrr::transpose(ran.matrixes[[y]])$nb.expected)
+                  })
+                nb.correct <-
+                  lapply(seq_along(ran.matrixes), function(y) {
+                    mean(unlist(purrr::transpose(ran.matrixes[[y]])$nb.correct), na.rm = T)
+                  })
+                
+                all_res <-
+                  lapply(seq_along(ran.matrixes), function(y) {
+                    list(
+                      accuracy = mean.res.single[[y]],
+                      accuracy.top.three = mean.res.three[[y]],
+                      sample.size = sample.size[[y]],
+                      observed = observed[[y]],
+                      expected = expected[[y]],
+                      probs.expected = probs.expected[[y]],
+                      naivebayes.observed = nb.observed[[y]],
+                      naivebayes.expected = nb.expected[[y]],
+                      naivebayes.accuracy = nb.correct[[y]]
+                    )
+                  })
+                names(all_res) <- 0:lvl
+                
+                return(all_res)
               })
-              ### where are those antecedents in the ants.probs list?
-              x.llhs <- lapply(1:lvl, function(z) {
-                as.vector(which(sapply(ants.probs$antecedent, function(y) {
-                  identical(x.ants[[z]], y)
-                })))
-              })
-              ### which elements are in the positions in question?
-              x.element <- lapply(1:lvl, function(z) {
-                as.vector(unlist(ants.probs$consequent[x.llhs[[z]]]))
-              })
-              ### what are the  transition probabilities of those elements
-              x.chosen <- lapply(1:lvl, function(z) {
-                as.vector(unlist(ants.probs$probability[x.llhs[[z]]]))
-              })
-              ### are any levels empty, i.e. no cases occur in the training data?
-              non.empty <- sapply(x.element, function(z) {
-                length(z) > 0
-              })
-              x.ants <- x.ants[non.empty]
-              x.llhs <- x.llhs[non.empty]
-              x.element <- x.element[non.empty]
-              x.chosen <- x.chosen[non.empty]
-
-              ### establish baseline probability of each element in 0-order
-              all.consequents <- unique(unlist(llh[[1]]$consequent))
-              all.consequent.probs <-
-                data.frame(antecedent = all.consequents) %>%
-                left_join(llh.0) %>%
-                select(.data$probability.total) %>%
-                unlist(FALSE, FALSE) %>%
-                suppressMessages()
-
-              ### combine 0-order with all other orders
-              x.element <-
-                c(list(as.vector(all.consequents)), x.element)
-              x.chosen <-
-                c(list(as.vector(all.consequent.probs)), x.chosen)
-
-              ### make sure that choices follow same order as elements
-              x.choices <- lapply(1:length(x.element), function(z) {
-                x.chosen[[z]][match(x.element[[1]], x.element[[z]])]
-              })
-              ### if choice was never observed (given NA), give it the minimum observed value
-              x.choices <- lapply(x.choices, function(z) {
-                ifelse(is.na(z), min(unlist(x.choices), na.rm = T), z)
-              })
-              # ### Weight higher order higher, because it is more rare
-              # x.choices <- lapply(seq_along(x.choices), function(z) {
-              #   z * x.choices[[z]]
-              # })
-              # if(length(x.choices) > 1){x.choices[[1]] = NULL}
-              # combine the probabilities
-              if(prediction == 'PPM'){x.chosen = x.choices[length(x.choices)] %>%
-                unlist(F,F)}
-              if(prediction == 'product'){x.chosen <- apply(do.call(cbind, x.choices), 1, prod)}
-              x.element <- unlist(x.element[1])
-              x.chosen <- x.chosen / sum(x.chosen)
-            }
-
-            # if lvl ==0, just use the descendant probabilities
-            if (lvl == 0) {
-              xx <- table(unlist(strsplit(unlist(
-                elem.bout
-              ), split = "%"), FALSE, FALSE))
-              x.element <- names(xx)
-              x.chosen <- as.numeric(xx)
-              x.chosen <- x.chosen / sum(x.chosen)
-            }
-            # sample to make predictions
-            # one element
-            simple.sample <- sample(x.element, 1, prob = x.chosen)
-            # three elements
-            triple.sample <- sample(x.element, 3, prob = x.chosen)
-
-            return(list(simple.sample = simple.sample, triple.sample = triple.sample))
-          })
-        # transpose prediction list
-        pred <- purrr::transpose(pred)
-        # check whether predictions were correct
-        outcome.simple <-
-          unlist(pred$simple.sample) == unlist(dataset.test$consequent)
-        # check whether prediction was in top three
-        outcome.triple <-
-          sapply(seq_along(pred$triple.sample), function(x) {
-            dataset.test$consequent[x] %in% pred$triple.sample[[x]]
-          })
-        out.simple <-
-          data.frame(unlist(dataset.test$consequent), outcome.simple)
-        out.triple <-
-          data.frame(unlist(dataset.test$consequent), outcome.triple)
-
-        return(
-          list(
-            mean.res.single = mean(outcome.simple, na.rm = T),
-            mean.res.three = mean(outcome.triple, na.rm = T),
-            sample.size = unlist(dataset.test$consequent) %>% length(),
-            expected = unlist(dataset.test$consequent),
-            observed = pred$simple.sample
-          )
-        )
-      })
-
-      # transpose all trials
-      ran.matrixes <- transpose(ran.matrixes)
-      # if nothing happened, return NAs
-      if (length(ran.matrixes) == 1) {
-        return(
-          list(
-            mean.res.single = NA,
-            mean.res.three = NA,
-            sample.size = NA,
-            expected = NA,
-            observed = NA
-          )
-        )
-      }
-      # mean correct predictions
-      mean.res.single <-
-        mean(unlist(ran.matrixes$mean.res.single), na.rm = T)
-      # mean correct predictions in top three
-      mean.res.three <-
-        mean(unlist(ran.matrixes$mean.res.three), na.rm = T)
-      #mean sample size
-      sample.size <- mean(unlist(ran.matrixes$sample.size), na.rm = T)
-      # preserve observed and expected values
-      observed <- unlist(ran.matrixes$observed)
-      expected <- unlist(ran.matrixes$expected)
-
-      return(
-        list(
-          accuracy = mean.res.single,
-          accuracy.top.three = mean.res.three,
-          sample.size = sample.size,
-          observed = observed,
-          expected = expected
-        )
-      )
-    })
   stopCluster(mycluster)
-
+  
   # transpose lists
   loo_nn <- transpose(loo.pred)
-
-
+  
+  
   # Evaluation Model Choice -------------------------------------------------
-
-  # select all elements as data frame and how often they were expected
-  results <- data.frame(t(table(unlist(loo_nn$expected))))[, 2:3]
-  colnames(results) <- c("element", "expected")
-  # account for number of trials
-  results$expected <- round(results$expected / trials, 3)
-  # define observed
-  obs <- t(table(unlist(loo_nn$observed)))[1, ] / trials
-  results$observed <-
-    round(obs[match(results$element, names(obs))], 3)
-  # define correct
-  correct <-
-    t(table(unlist(loo_nn$observed)[unlist(loo_nn$observed) == unlist(loo_nn$expected)]))[1, ] / trials
-  results$correct <- correct[match(results$element, names(correct))]
-
-  # set NA as 0s
-  results$observed <-
-    ifelse(is.na(results$observed), 0, results$observed)
-  results$correct <-
-    ifelse(is.na(results$correct), 0, results$correct)
-  results$true.positive <-
-    round(results$correct / results$expected, 3)
-
-  # determine number of false positions
-  false.pos <-
-    t(table(unlist(loo_nn$observed)[unlist(loo_nn$observed) != unlist(loo_nn$expected)]))[1, ] / trials
-  false.positive <-
-    false.pos[match(results$element, names(false.pos))]
-  false.positive <- ifelse(is.na(false.positive), 0, false.positive)
-  results$false.positive <-
-    round(false.positive / results$observed, 3)
-
-  # define number of false negatives
-  false.neg <-
-    t(table(unlist(loo_nn$expected)[unlist(loo_nn$observed) != unlist(loo_nn$expected)]))[1, ] / trials
-  false.negative <-
-    false.neg[match(results$element, names(false.neg))]
-  false.negative <- ifelse(is.na(false.negative), 0, false.negative)
-  results$false.negative <-
-    round(false.negative / results$expected, 3)
-
-
-  # Misclassification Matrix ------------------------------------------------
-
-  # make misclassification plot
-  misclass <- data.frame(t(table(
-    unlist(loo_nn$expected),
-    unlist(loo_nn$observed)
-  )))
-  colnames(misclass) <- c("observed", "expected", "count")
-  tot.exp <- misclass %>%
-    group_by(.data$expected) %>%
-    summarise(tot.exp = sum(.data$count))
-
-  misclass <- misclass %>%
-    left_join(tot.exp) %>%
-    mutate(misclassification.probability = round(.data$count / tot.exp, 3)) %>%
-    select(-.data$tot.exp) %>%
-    suppressMessages()
-
-  mis.matr <- graph_from_edgelist(as.matrix(misclass[, c("expected", "observed")]),
-    directed = T
-  )
-  edge.attributes(mis.matr)$probability <- misclass$misclassification.probability
-  mis.matr <-
-    mis.matr %>%
-    get.adjacency(attr = "probability") %>%
-    as.matrix()
-
-  mis.plot <- ggplot(
-    data = misclass,
-    aes(x = .data$expected, y = .data$observed, fill = .data$misclassification.probability)
-  ) +
-    geom_tile() +
-    scale_fill_gradient2(
-      low = "white",
-      high = "red",
-      limit = c(0, max(
-        misclass$misclassification.probability
-      )),
-      space = "Lab",
-      name = "Confusion Probability"
+  all_evaluation <- lapply(seq_along(loo_nn), function(y) {
+    loo_nn_x <- purrr::transpose(loo_nn[[y]])
+    # select all elements as data frame and how often they were expected
+    results <-
+      data.frame(t(table(unlist(
+        loo_nn_x$expected
+      ))))[, 2:3]
+    colnames(results) <- c("element", "expected")
+    # account for number of trials
+    results$expected <- round(results$expected / trials, 3)
+    # define observed
+    obs <- t(table(unlist(loo_nn_x$observed)))[1, ] / trials
+    results$observed <-
+      round(obs[match(results$element, names(obs))], 3)
+    # define correct
+    correct <-
+      t(table(unlist(loo_nn_x$observed)[unlist(loo_nn_x$observed) == unlist(loo_nn_x$expected)]))[1, ] / trials
+    results$correct <-
+      correct[match(results$element, names(correct))]
+    
+    # set NA as 0s
+    results$observed <-
+      ifelse(is.na(results$observed), 0, results$observed)
+    results$correct <-
+      ifelse(is.na(results$correct), 0, results$correct)
+    results$true.positive <-
+      round(results$correct / results$expected, 3)
+    
+    # determine number of false positions
+    false.pos <-
+      t(table(unlist(loo_nn_x$observed)[unlist(loo_nn_x$observed) != unlist(loo_nn_x$expected)]))[1, ] / trials
+    false.positive <-
+      false.pos[match(results$element, names(false.pos))]
+    false.positive <-
+      ifelse(is.na(false.positive), 0, false.positive)
+    results$false.positive <-
+      round(false.positive / results$observed, 3)
+    
+    # define number of false negatives
+    false.neg <-
+      t(table(unlist(loo_nn_x$expected)[unlist(loo_nn_x$observed) != unlist(loo_nn_x$expected)]))[1, ] / trials
+    false.negative <-
+      false.neg[match(results$element, names(false.neg))]
+    false.negative <-
+      ifelse(is.na(false.negative), 0, false.negative)
+    results$false.negative <-
+      round(false.negative / results$expected, 3)
+    
+    
+    # Misclassification Matrix ------------------------------------------------
+    
+    # make misclassification plot
+    misclass <- data.frame(t(table(
+      unlist(loo_nn_x$expected),
+      unlist(loo_nn_x$observed)
+    )))
+    colnames(misclass) <- c("observed", "expected", "count")
+    tot.exp <- misclass %>%
+      group_by(.data$expected) %>%
+      summarise(tot.exp = sum(.data$count))
+    
+    misclass <- misclass %>%
+      left_join(tot.exp) %>%
+      mutate(misclassification.probability = round(.data$count / tot.exp, 3)) %>%
+      select(-.data$tot.exp) %>%
+      suppressMessages()
+    
+    mis.matr <-
+      graph_from_edgelist(as.matrix(misclass[, c("expected", "observed")]),
+                          directed = T)
+    edge.attributes(mis.matr)$probability <-
+      misclass$misclassification.probability
+    mis.matr <-
+      mis.matr %>%
+      get.adjacency(attr = "probability") %>%
+      as.matrix()
+    
+    mis.plot <- ggplot(
+      data = misclass,
+      aes(
+        x = .data$expected,
+        y = .data$observed,
+        fill = .data$misclassification.probability
+      )
     ) +
-    theme_minimal() +
-    xlab("expected") +
-    ylab("observed") +
-    theme(axis.text.x = element_text(
-      angle = 45,
-      vjust = 1,
-      size = 10,
-      hjust = 1
-    )) +
-    ggtitle(paste(c(
-      "Misclassification Heat Map, Level = ", lvl
-    ), collapse = " "))
-
-
-  return(
-    list(
-      accuracy = mean(unlist(loo_nn$accuracy), na.rm = T),
-      accuracy.top.three = mean(unlist(loo_nn$accuracy.top.three), na.rm = T),
-      sample.size = mean(unlist(loo_nn$sample.size), na.rm = T),
-      element.results = results,
-      confusion.matrix = mis.matr,
-      heatmap = mis.plot
+      geom_tile() +
+      scale_fill_gradient2(
+        low = "white",
+        high = "red",
+        limit = c(0, max(
+          misclass$misclassification.probability
+        )),
+        space = "Lab",
+        name = "Confusion Probability"
+      ) +
+      theme_minimal() +
+      xlab("expected") +
+      ylab("observed") +
+      theme(axis.text.x = element_text(
+        angle = 45,
+        vjust = 1,
+        size = 10,
+        hjust = 1
+      )) +
+      ggtitle(paste(c(
+        "Misclassification Heat Map, Level = ", y
+      ), collapse = " "))
+    
+    # Misclassification for Naive Bayes
+    
+    misclass.nb <- data.frame(t(table(
+      unlist(loo_nn_x$naivebayes.expected),
+      unlist(loo_nn_x$naivebayes.observed)
+    )))
+    colnames(misclass.nb) <- c("observed", "expected", "count")
+    tot.exp <- misclass.nb %>%
+      group_by(.data$expected) %>%
+      summarise(tot.exp = sum(.data$count))
+    
+    misclass.nb <- misclass.nb %>%
+      left_join(tot.exp) %>%
+      mutate(misclassification.probability = round(.data$count / tot.exp, 3)) %>%
+      select(-.data$tot.exp) %>%
+      suppressMessages()
+    
+    mis.matr.nb <-
+      graph_from_edgelist(as.matrix(misclass.nb[, c("expected", "observed")]),
+                          directed = T)
+    edge.attributes(mis.matr.nb)$probability <-
+      misclass.nb$misclassification.probability
+    mis.matr.nb <-
+      mis.matr.nb %>%
+      get.adjacency(attr = "probability") %>%
+      as.matrix()
+    
+    mis.plot.nb <- ggplot(
+      data = misclass.nb,
+      aes(
+        x = .data$expected,
+        y = .data$observed,
+        fill = .data$misclassification.probability
+      )
+    ) +
+      geom_tile() +
+      scale_fill_gradient2(
+        low = "white",
+        high = "red",
+        limit = c(0, max(
+          misclass.nb$misclassification.probability
+        )),
+        space = "Lab",
+        name = "Confusion Probability"
+      ) +
+      theme_minimal() +
+      xlab("expected") +
+      ylab("observed") +
+      theme(axis.text.x = element_text(
+        angle = 45,
+        vjust = 1,
+        size = 10,
+        hjust = 1
+      )) +
+      ggtitle(paste(c(
+        "Misclassification Heat Map, Level = ", y
+      ), collapse = " "))
+    
+    return(
+      list(
+        accuracy = mean(unlist(loo_nn_x$accuracy), na.rm = T),
+        naivebayes.accuracy = mean(unlist(loo_nn_x$naivebayes.accuracy), na.rm = T),
+        accuracy.top.three = mean(unlist(loo_nn_x$accuracy.top.three), na.rm = T),
+        loglik = sum(log(unlist(
+          loo_nn_x$accuracy
+        ))),
+        sample.size = mean(unlist(loo_nn_x$sample.size), na.rm = T),
+        element.results = results,
+        confusion.matrix = mis.matr,
+        heatmap = mis.plot,
+        naivebayes.confusion.matrix = mis.matr.nb,
+        naivebayes.heatmap = mis.plot.nb
+      )
     )
-  )
+  })
+  
+  names(all_evaluation) <- 0:lvl
+  
+  return(all_evaluation)
 }
