@@ -3691,7 +3691,7 @@ elements. They are also connected to loops: some of the most predictable
 transitions are between an element and itself (e.g., *Kick-dirt*),
 because individuals repeat the action multiple times.
 
-\##Prediction of consequent elements
+## Prediction of consequent elements
 
 One thing that would be important is whether this number of predictable
 transitions indicates that it is easy for individuals to predict which
