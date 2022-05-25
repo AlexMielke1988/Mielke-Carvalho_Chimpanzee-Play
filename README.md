@@ -3854,16 +3854,16 @@ What we observe is a relatively good cluster solution (0.6182128); any
 solution above 0.3 can be considered to show that there is more
 similarity within than between clusters. There are 11 clusters. These
 are usually composed of elements that involve similar actions. E.g,
-there is one containing all *push*, *pull*, *wrestle*, *bite* etc, so
-contact play. Another contains *hanging* and *swinging* of branches,
-*pulling branches*, *climbing* up etc - play in trees. One contains most
-of the object-related play, *tug-of-war*, *wave\_object* etc. Elements
+there is one containing all *push*, *pull*, *hit*, *hold* etc, so
+contact play. Another contains *hanging* from and *climbing* tree,
+*pulling branches*, *bending saplings* etc - play in trees. One contains most
+of the object-related play, *grab-object*, *carry-object* etc. Elements
 in a cluster show similar usage patterns, so elements that fall into the
 same cluster can act as ‘synonyms’ - whether individuals *press down*
 the partner or *hold* them might not be important for the progression of
 play. This might also indicate that the coding scheme includes some
 distinctions that are less relevant for the chimpanzees - for example,
-*rake ground* and *kick dirt* differ in which limb is used, but might be
+*rolling object* and *kick dirt* differ in the presence of an object, but might be
 used the same way (to get the partners attention).
 
 ### Transition Networks
