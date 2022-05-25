@@ -3742,7 +3742,7 @@ Prediction Accuracy Naive Bayes
 <tbody>
 <tr>
 <td style="text-align:right;">
-1
+0
 </td>
 <td style="text-align:right;">
 0.027
@@ -3753,7 +3753,7 @@ Prediction Accuracy Naive Bayes
 </tr>
 <tr>
 <td style="text-align:right;">
-2
+1
 </td>
 <td style="text-align:right;">
 0.057
@@ -3764,7 +3764,7 @@ Prediction Accuracy Naive Bayes
 </tr>
 <tr>
 <td style="text-align:right;">
-3
+2
 </td>
 <td style="text-align:right;">
 0.097
@@ -3775,7 +3775,7 @@ Prediction Accuracy Naive Bayes
 </tr>
 <tr>
 <td style="text-align:right;">
-4
+3
 </td>
 <td style="text-align:right;">
 0.098
