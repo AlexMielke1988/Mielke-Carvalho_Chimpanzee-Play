@@ -12,6 +12,7 @@ prediction_loo(
   lvl = 1,
   gap = NULL,
   elem.time = NULL,
+  prediction = "PPM",
   out = 10,
   ran.method = "random"
 )
@@ -30,6 +31,8 @@ prediction_loo(
 \item{gap}{number of elements to each side that should be counted in the same 'bag' as the element; if 'all', use whole bout}
 
 \item{elem.time}{list of vectors of timings of elements. If set to NULL, the order of elements is used with distance of 1}
+
+\item{prediction}{how should prediction be made? If 'PPM' (Prediction by partial matching), prediction is made based on the highest order for which information is available; if 'product', prediction is made based on the product of all orders.}
 
 \item{out}{number of elements left out per leave-one-out iteration}
 

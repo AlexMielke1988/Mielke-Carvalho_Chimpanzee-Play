@@ -28,7 +28,7 @@
 #' @importFrom tidyr replace_na gather separate unite
 #' @importFrom ggplot2 ggplot geom_label aes ggtitle xlab ylab theme_classic annotate geom_hline coord_fixed scale_size_continuous arrow unit scale_size
 #' @importFrom ggraph ggraph create_layout geom_node_text scale_edge_alpha theme_graph geom_edge_fan geom_node_label geom_edge_link geom_edge_loop circle facet_nodes geom_node_point
-#' @importFrom igraph vertex.attributes vertex.attributes<- add_vertices V edge.attributes edge.attributes<- graph_from_data_frame graph.adjacency delete_edges add_vertices get.data.frame bipartite_mapping cluster_fast_greedy modularity V<- graph_from_edgelist betweenness transitivity hub_score page_rank eigen_centrality strength walktrap.community delete_vertices
+#' @importFrom igraph vertex.attributes vertex.attributes<- add_vertices V edge.attributes edge.attributes<- graph_from_data_frame graph.adjacency delete_edges add_vertices get.data.frame bipartite_mapping cluster_fast_greedy modularity V<- graph_from_edgelist betweenness transitivity hub_score page_rank eigen_centrality strength walktrap.community delete_vertices cluster_optimal
 #' @importFrom grDevices rainbow
 #' @importFrom graphics layout
 #' @importFrom stats complete.cases
@@ -93,7 +93,7 @@ network_plot <- function(elem.bout,
       observed = compare.mat$observed.probs,
       it = it,
       cores = cores,
-      trials = 100,
+      trials = it,
       output = "expected",
       ran.method = ran.method
     )
@@ -121,7 +121,7 @@ network_plot <- function(elem.bout,
       observed = compare.mat$observed.probs,
       gap = gap,
       cores = cores,
-      trials = 100,
+      trials = it,
       output = "expected"
     )
 
@@ -316,7 +316,7 @@ network_plot <- function(elem.bout,
   if (clusters) {
     net.un <- net.graph
     net.community <-
-      walktrap.community(net.un) # other clustering algorithms exist, eg walktrap
+      cluster_optimal(net.un) # other clustering algorithms exist, eg walktrap
     modular <-
       round(modularity(net.community), 2) # modularity measure. Above 0.3 is good modularity
     net.com <- data.frame(

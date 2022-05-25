@@ -7,6 +7,8 @@
 #' @param measure should similarity be calculated based on co-occurrence in same bout ('prob') or point-wise mutual information ('mi')?
 #' @param level Should the correlation/pmi be done on the level of the 'bout' (do two elements co-occur within a bout) or 'bigram' (they follow each other). Default is 'bigram'
 #' @param ran.method for co-occurring elements, how should they be split? Can be 'random' (order is randomised), or 'sample' (randomly choose any)
+#' @param n_epochs how many iterations for the UMAP dimension reduction?
+#' @param trials number of times the cluster detection algorithm should be performed a robust solution
 #'
 #' @return Returns a list with three plots:
 #' plot.antecedent: plot that shows similarity between elements in the conditional probabilities of which elements follow them in transitions
@@ -38,26 +40,31 @@ similiarity_clusters <- function(elem.bout,
                                  facet = FALSE,
                                  it = 10,
                                  level = 'bigram',
-                                 ran.method = 'random') {
+                                 ran.method = 'random',
+                                 n_epochs = 7000,
+                                 trials = 10) {
   # clean element names
   elem.bout <- elem.bout %>%
     lapply(str_replace_all,
            pattern = '-|/|_',
            replacement = '')
-
+  
   # turn each bout into one string where elements are separated by spaces (needed for tidytext package). Repeat based on number of it that was specified
   elem.df <- lapply(1:it, function(x) {
     elem.df <-
-      tibble(elem = as.vector(unlist(sapply(unlist_list(elem.bout,
-                                                        method = ran.method),
-                                            function(x) {
-                                              paste(x, collapse = ' ')
-                                            }))))
+      tibble(elem = as.vector(
+        unlist(
+          sapply(
+            unlist_list(elem.bout,
+                        method = ran.method),
+            function(x) {
+              paste(x, collapse = ' ')
+            }))))
   })
   # bind list
   elem.df <- elem.df %>% bind_rows() %>%
     mutate(bout = seq_along(elem))
-
+  
   # if the level of similarity is set to 'bout', similarity is based on co-occurrence of elements in bouts
   if (level == 'bout') {
     elem.corr = elem.df %>%
@@ -101,14 +108,14 @@ similiarity_clusters <- function(elem.bout,
       ) %>%
       suppressMessages %>%
       mutate(n = .data$n / it)
-
+    
     # count how often elements occur
     elem.sum <- elem.corr %>%
       select(.data$item1,
              .data$n) %>%
       group_by(.data$item1) %>%
       summarise(total.n = sum(.data$n, na.rm = T))
-
+    
     # calculate probabilities
     elem.corr <- elem.corr %>%
       left_join(elem.sum) %>%
@@ -116,7 +123,7 @@ similiarity_clusters <- function(elem.bout,
       arrange(.data$item1, .data$item2) %>%
       suppressMessages()
   }
-
+  
   # for bigram level, do across all bouts and check how often A follows B
   if (level == 'bigram') {
     elem.corr = elem.df %>%
@@ -185,21 +192,21 @@ similiarity_clusters <- function(elem.bout,
       ) %>%
       suppressMessages %>%
       mutate(n = .data$n / it)
-
-
+    
+    
     elem.sum <- elem.corr %>%
       select(.data$item1, .data$n) %>%
       group_by(.data$item1) %>%
       summarise(total.n = sum(.data$n, na.rm = T))
-
+    
     elem.corr <- elem.corr %>%
       left_join(elem.sum) %>%
       mutate(probs = .data$n / .data$total.n) %>%
       arrange(.data$item1,
-              .data$item2) %>% 
+              .data$item2) %>%
       suppressMessages()
   }
-
+  
   if (measure == "mi") {
     matrix.first <- elem.corr %>%
       acast(item1 ~ item2,
@@ -221,7 +228,7 @@ similiarity_clusters <- function(elem.bout,
             drop = TRUE,
             fill = 0) %>% replace_na(0)
   }
-
+  
   if (measure == "count") {
     matrix.first <- elem.corr %>%
       acast(item1 ~ item2,
@@ -230,42 +237,101 @@ similiarity_clusters <- function(elem.bout,
             fill = 0) %>%
       replace_na(0)
   }
-
-
+  
+  matrix.first <- matrix.first %>%
+    dist(method = "manhattan") %>%
+    as.matrix()
+  
   # prepare UMAP algorith
   custom.config <- umap.defaults # set configuration to default
-  custom.config$n_neighbors <- 5 # set the number of nearest neighbours, based on the number of cases - with a maximum value of 15
+  custom.config$n_neighbors <-
+    4 # set the number of nearest neighbours, based on the number of cases - with a maximum value of 15
   custom.config$n_epochs <-
-    3000 # number of epochs for the UMAP algorithm
+    n_epochs # number of epochs for the UMAP algorithm
+  custom.config$init <- 'random' # starting values set to random
+  
+  boot_clus <- lapply(1:trials, function(k) {
+    custom.config$n_epochs <-
+      sample(size = 1, rnorm(10, mean = n_epochs, sd = n_epochs / 10)) # number of epochs for the UMAP algorithm
+    # if there are fewer than 3 modifier levels, set number of components to 2
+    custom.config$n_components <- 2
+    
+    matrix.umap <- umap(
+      matrix.first,
+      random.state = 123,
+      method = 'naive',
+      config = custom.config
+    )
+    
+    
+    max.clus <- min(nrow(matrix.umap$layout) - 1, 20)
+    opt.1 <- lapply(3:max.clus, function(x) {
+      xx <- data.frame(
+        clusters = x,
+        silhouette = cluster::pam(matrix.umap$layout %>%
+                                    as.matrix(), x) %>%
+          cluster::silhouette(full = TRUE) %>%
+          data.frame() %>%
+          select(sil_width) %>%
+          unlist() %>%
+          mean(na.rm = T)
+      )
+      return(xx)
+    }) %>%
+      bind_rows() %>%
+      select(silhouette) %>%
+      unlist(F, F)
+    opt.1 <- c(NA, NA, opt.1)
+    
+    return(which.max(opt.1))
+  })
+  
+  
+  k.1 <- names(boot_clus %>%
+                 unlist() %>%
+                 table)[boot_clus %>%
+                          unlist() %>%
+                          table %>%
+                          which.max] %>%
+    as.numeric()
+  
   custom.config$n_components <- 2
   
-  # with selected number of dimensions, create UMAP solution
-  matrix.umap <- umap(matrix.first,
-                      random.state = 123,
-                      config = custom.config)
-
-  # find best cluster solutions
-  opt.1 <- lapply(3:15, function(x){
-    xx <- data.frame(clusters = x, 
-                     silhouette = cluster::pam(matrix.umap$layout %>%
-                                        dist(method = 'manhattan') %>% 
-                                        as.matrix(), x) %>% 
-                       cluster::silhouette(full = TRUE) %>% 
-                       data.frame() %>% 
-                       select(sil_width) %>% 
-                       unlist() %>% 
-                       mean(na.rm = T))
-    return(xx)
-  }) %>% 
-    bind_rows() %>% 
-    select(silhouette) %>% 
-    unlist(F,F)  
-  opt.1 <- c(NA, NA, opt.1)
-
   
+  matrix.umap <- umap(
+    matrix.first,
+    random.state = 123,
+    method = 'naive',
+    config = custom.config
+  )
+  
+  max.clus <- min(nrow(matrix.umap$layout) - 1, 20)
+  opt.1 <- lapply(2:max.clus, function(x) {
+    xx <- data.frame(
+      clusters = x,
+      silhouette = cluster::pam(matrix.umap$layout %>%
+                                  as.matrix(), x) %>%
+        cluster::silhouette(full = TRUE) %>%
+        data.frame() %>%
+        select(sil_width) %>%
+        unlist() %>%
+        mean(na.rm = T)
+    )
+    return(xx)
+  }) %>%
+    bind_rows() %>%
+    select(silhouette) %>%
+    unlist(F, F)
+  opt.1 <- c(NA, NA, opt.1)
   # select best cluster solution and save it
-  k.1 <- which(opt.1 == max(opt.1, na.rm = T))[1]
-  sil.1 <- opt.1[k.1]
+  
+  sil.1 <- cluster::pam(matrix.umap$layout %>%
+                          as.matrix(), k.1) %>%
+    cluster::silhouette(full = TRUE) %>%
+    data.frame() %>%
+    select(sil_width) %>%
+    unlist() %>%
+    mean(na.rm = T)
   # if k was determined in function call, use that
   if (!is.null(k)) {
     k.1 <- k
@@ -274,20 +340,24 @@ similiarity_clusters <- function(elem.bout,
     sil.1 <- opt.1[k]
   }
   
+  # if no silhouette is better than 0.3, select 1 as best cluster
+  if (sil.1 < 0.3) {
+    k.1 <- 1
+  }
+  
+  if (k.1 == 0) {
+    k.1 <- 1
+  }
   # use K-Means clustering to assign clusters in the data
-  umap.clust.1 <- KMeans_rcpp(
-    as.matrix(matrix.umap$layout),
-    clusters = k.1,
-    num_init = 3000,
-    max_iters = 3000,
-    )
-
+  umap.clust.1 <-
+    cluster::pam(matrix.umap$layout %>%
+                   as.matrix(), k.1)
   # add cluster membership to data
   matrix.1.umap.frame <- data.frame(matrix.umap$layout,
-                                    cluster = as.factor(umap.clust.1$clusters))
+                                    cluster = as.factor(umap.clust.1$clustering))
   matrix.1.umap.frame$element <- rownames(matrix.1.umap.frame)
-
-
+  
+  
   p1 <-
     ggplot(
       matrix.1.umap.frame,
@@ -307,7 +377,7 @@ similiarity_clusters <- function(elem.bout,
     ggtitle(paste(
       c(
         "Similarity; Best cluster solution: ",
-        max(opt.1, na.rm = T),
+        max(round(opt.1, 2), na.rm = T),
         "; number of clusters: ",
         k.1
       ),
@@ -316,7 +386,7 @@ similiarity_clusters <- function(elem.bout,
     theme_classic() +
     xlab("First Dimension") +
     ylab("Second Dimension")
-
+  
   if (facet) {
     p1 <-
       ggplot(
@@ -336,7 +406,7 @@ similiarity_clusters <- function(elem.bout,
       ggtitle(paste(
         c(
           "Similarity; Best cluster solution: ",
-          max(opt.1, na.rm = T),
+          max(round(opt.1, 2), na.rm = T),
           "; number of clusters: ",
           k.1
         ),
@@ -347,7 +417,7 @@ similiarity_clusters <- function(elem.bout,
       ylab("Second Dimension") +
       facet_wrap( ~ .data$cluster, scales = "free")
   }
-
+  
   p2 <- qplot(
     x = 1:length(opt.1),
     y = opt.1,
@@ -360,38 +430,38 @@ similiarity_clusters <- function(elem.bout,
                linetype = 3) +
     ylim(0, min(opt.1) + 50) +
     theme_classic()
-
+  
   #### Dendogram approach
   
   # check if any silhouette is better than 0.3
-
+  
   dend <- matrix.umap$layout %>%
     dist(method = 'manhattan') %>%
     hclust(method = 'average') %>%
     as.dendrogram() %>%
     set("branches_k_color", k = k.1) %>%
     hang.dendrogram(hang = 0.2) %>%
-    ladderize() %>% 
+    ladderize() %>%
     set("labels_cex", c(.65))
-
-
+  
+  
   xx = get_subdendrograms(dend,
                           k = k.1,
                           order_clusters_as_data = TRUE)
-
+  
   dend_cluster <-
     lapply(1:length(xx), function(x) {
-    data.frame(element =
-                 as.matrix(matrix.first[order.dendrogram(xx[[x]]),-5]) %>%
-                 rownames() %>% unlist,
-               cluster = x)
-  }) %>%
+      data.frame(element =
+                   as.matrix(matrix.first[order.dendrogram(xx[[x]]),-5]) %>%
+                   rownames() %>% unlist,
+                 cluster = x)
+    }) %>%
     bind_rows() %>%
     left_join(p1$data, by = c('element' = 'element')) %>%
     select(-.data$X1,-.data$X2) %>%
     arrange(.data$cluster.y)
   colnames(dend_cluster) = c('element', 'dendrogram.cluster', 'k.means.cluster')
-
+  
   return(
     list(
       plot.similarity = p1,

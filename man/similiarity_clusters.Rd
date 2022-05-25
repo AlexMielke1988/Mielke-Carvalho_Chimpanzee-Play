@@ -11,7 +11,9 @@ similiarity_clusters(
   facet = FALSE,
   it = 10,
   level = "bigram",
-  ran.method = "random"
+  ran.method = "random",
+  n_epochs = 7000,
+  trials = 10
 )
 }
 \arguments{
@@ -28,6 +30,10 @@ similiarity_clusters(
 \item{level}{Should the correlation/pmi be done on the level of the 'bout' (do two elements co-occur within a bout) or 'bigram' (they follow each other). Default is 'bigram'}
 
 \item{ran.method}{for co-occurring elements, how should they be split? Can be 'random' (order is randomised), or 'sample' (randomly choose any)}
+
+\item{n_epochs}{how many iterations for the UMAP dimension reduction?}
+
+\item{trials}{number of times the cluster detection algorithm should be performed a robust solution}
 }
 \value{
 Returns a list with three plots:
