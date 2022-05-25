@@ -3784,17 +3784,6 @@ Prediction Accuracy Naive Bayes
 0.318
 </td>
 </tr>
-<tr>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
-0.098
-</td>
-<td style="text-align:right;">
-0.400
-</td>
-</tr>
 </tbody>
 </table>
 
