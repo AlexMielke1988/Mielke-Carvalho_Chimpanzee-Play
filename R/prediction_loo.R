@@ -192,6 +192,10 @@ prediction_loo <- function(elem.bout,
         }
 
 
+
+# Start Repeated Trials ---------------------------------------------------
+
+        
         # create random matrices
         ran.matrixes <- lapply(1:trials, function(j) {
           # unlist test data
@@ -695,8 +699,11 @@ prediction_loo <- function(elem.bout,
                     nb.expected = as.character(train_sets[[y]]$test.set[, 1]),
                     nb.correct = nb.correct[[y]],
                     # SBO
-                    sbo.prediction = sbo_results$prediction[y],
-                    sbo.correct = sbo_results$correct[y]
+                    sbo.prediction = sbo_results$prediction[[y]],
+                    sbo.correct = sbo_results$correct[[y]],
+                    # Forest
+                    rf.prediction = rf.prediction[[y]],
+                    rf.correct = rf.correct[[y]]
                   )
                 )
               }
@@ -717,8 +724,11 @@ prediction_loo <- function(elem.bout,
                     nb.expected = as.character(train_sets[[y.minus]]$test.set[, 1]),
                     nb.correct = nb.correct[[y]],
                     # SBO
-                    sbo.prediction = sbo_results$prediction[y],
-                    sbo.correct = sbo_results$correct[y]
+                    sbo.prediction = sbo_results$prediction[[y]],
+                    sbo.correct = sbo_results$correct[[y]],
+                    # Forest
+                    rf.prediction = rf.prediction[[y]],
+                    rf.correct = rf.correct[[y]]
                   )
                 )
               }
@@ -796,7 +806,7 @@ prediction_loo <- function(elem.bout,
           })
         sbo.observed <-
           lapply(seq_along(ran.matrixes), function(y) {
-            mean(unlist(purrr::transpose(ran.matrixes[[y]])$sbo.prediction), na.rm = T)
+            unlist(purrr::transpose(ran.matrixes[[y]])$sbo.prediction)
           })
         sbo.correct <-
           lapply(seq_along(ran.matrixes), function(y) {
@@ -825,8 +835,8 @@ prediction_loo <- function(elem.bout,
               naivebayes.accuracy = nb.correct[[y]],
               sbo.accuracy = sbo.correct[[y]],
               sbo.observed = sbo.observed[[y]],
-              forest.observed = nb.observed[[y]],
-              forest.accuracy = nb.correct[[y]]
+              forest.observed = rf.observed[[y]],
+              forest.accuracy = rf.correct[[y]]
             )
           })
         names(all_res) <- 0:lvl
@@ -1033,10 +1043,7 @@ prediction_loo <- function(elem.bout,
         confusion.matrix = mis.matr,
         heatmap = mis.plot,
         naivebayes.confusion.matrix = mis.matr.nb,
-        naivebayes.heatmap = mis.plot.nb,
-        naivebayes.loglik = sum(log(unlist(
-          loo_nn_x$naivebayes.probs.expected
-        )))
+        naivebayes.heatmap = mis.plot.nb
       )
     )
   })
