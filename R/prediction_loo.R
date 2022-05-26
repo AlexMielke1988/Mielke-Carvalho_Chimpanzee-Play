@@ -110,6 +110,10 @@ prediction_loo <- function(elem.bout,
   clusterCall(mycluster, function() {
     library(e1071)
   })
+  clusterCall(mycluster, function() {
+    library(sbo)
+  })
+  
   # run parallel loop
 
   # go through every index, calculate probabilities for training data (all other bouts), and try to predict within bouts
@@ -229,6 +233,10 @@ prediction_loo <- function(elem.bout,
 
           # prepare data for Naive Bayes classifier
 
+
+# Naive Bayes Classifier --------------------------------------------------
+
+          
           # make test and training sets
           train_sets <- lapply(1:lvl, function(k) {
             elem.bout.train <- as.vector(unlist(elem.bout))
@@ -360,41 +368,122 @@ prediction_loo <- function(elem.bout,
             }
           })
 
-          nb.probs <- lapply(1:(lvl + 1), function(y) {
+
+
+# Random Forest -----------------------------------------------------------
+          # run random forest algorithm from the ranger package
+          model.rf <- lapply(1:(lvl + 1), function(y) {
             y.minus <- y - 1
             if (y.minus == 0) {
-              raw.probs <-
-                predict(model.nb[[y]], rep("o", length(train_sets[[y]]$test.set[, 1])), type = "raw")
-              outc <-
-                as.character(train_sets[[y]]$test.set[, 1])
+              xx <-
+                ranger::ranger(desc ~ .,
+                                  data = train_sets[[y]]$train.set %>% 
+                                 mutate(V2 = 'o'),
+                               mtry =  1, 
+                               num.trees = 1000, 
+                               importance = 'impurity'
+                )
+              return(xx)
+            }
+            if (y.minus > 0) {
+              ranger::ranger(desc ~ .,
+                             data = train_sets[[y.minus]]$train.set,
+                             mtry =  (ncol(train_sets[[y.minus]]$train.set)-1), 
+                             num.trees = 1000, 
+                             importance = 'impurity'
+              )
+            }
+          })
+          
+          # predict test data based on model
+          rf.prediction <- lapply(1:(lvl + 1), function(y) {
+            y.minus <- y - 1
+            if (y.minus == 0) {
+              return(predict(model.rf[[y]], data.frame(V2 = train_sets[[y]]$test.set[, -1]))$predictions)
             }
             if (y.minus == 1) {
-              raw.probs <-
-                predict(model.nb[[y]],
-                  data.frame(V2 = train_sets[[y.minus]]$test.set[, -1]),
-                  type = "raw"
-                )
-              outc <-
-                as.character(train_sets[[y.minus]]$test.set[, 1])
+              return(predict(model.rf[[y]], data.frame(V2 = train_sets[[y.minus]]$test.set[, -1]))$predictions)
             }
             if (y.minus > 1) {
-              raw.probs <-
-                predict(model.nb[[y]],
-                  data.frame(train_sets[[y.minus]]$test.set[, -1]),
-                  type = "raw"
-                )
-              outc <-
-                as.character(train_sets[[y.minus]]$test.set[, 1])
+              return(predict(model.rf[[y]], data.frame(train_sets[[y.minus]]$test.set[, -1]))$predictions)
             }
-
-            probs.outcome <-
-              sapply(seq_along(outc), function(k) {
-                raw.probs[k, outc[k]]
-              })
-            return(probs.outcome)
           })
+          
+          # store correct classifications
+          rf.correct <- lapply(1:(lvl + 1), function(y) {
+            y.minus <- y - 1
+            if (y.minus == 0) {
+              return(as.character(rf.prediction[[y]]) == as.character(train_sets[[y]]$test.set[, 1]))
+            }
+            if (y.minus > 0) {
+              return(rf.prediction[[y]] == as.character(train_sets[[y.minus]]$test.set[, 1]))
+            }
+          })
+          
+          
 
-          # if the order of interest is higher than 0, determine transition probabilities for all antecedents
+          
+# SBO N-Gram classifier ---------------------------------------------------
+
+          # turn bouts into 'sentences'
+          elem.bout.train.k <- boot.train %>%
+            unlist_list(method = 'random') %>% 
+            lapply(str_replace_all,
+                   pattern = "-|/|_",
+                   replacement = ""
+            ) %>% 
+            lapply(function(x){
+              f = unlist(x) 
+              f[is.na(f)] = '.'
+              return(f)
+            }) %>% 
+            lapply(function(x) {
+              c(x, '.')
+            })
+          # concatenate all bouts, separated by .
+          kgram_bouts <- lapply(elem.bout.train.k, 
+                                function(x){
+                                  paste(unlist(x), collapse = ' ')})
+          kgram_bouts <- kgram_bouts %>% str_c()
+          
+          # make predictor using the sbo package
+          sbo_pr <- sbo_predictor(object = kgram_bouts, # preloaded example dataset
+                             N = lvl, # Train a 3-gram model
+                             dict = target ~ 1, # cover 75% of training corpus
+                             .preprocess = identity, # Preprocessing transformation 
+                             EOS = ".?!:;", # End-Of-Sentence tokens
+                             lambda = 0.2, # Back-off penalization in SBO algorithm
+                             L = 1, # Number of predictions for input
+                             filtered = '<EOS>' # Exclude the <UNK> token from predictions
+          )
+          
+          sbo_results <- lapply(1:(lvl + 1), function(y) {
+            y.minus <- y - 1
+
+            if(y.minus == 0){
+              te.set <- train_sets[[y]]$test.set %>% select(-desc)
+              te.set <- sapply(1:nrow(te.set), function(k) paste(unlist(te.set[k,]), collapse = ' '))
+              
+              prediction <- sapply(te.set, function(k) predict(sbo_pr, input = '')) %>% unlist(F, F)
+              correct <- prediction == train_sets[[y]]$test.set$desc
+            }
+            if(y.minus > 0){
+              te.set <- train_sets[[y.minus]]$test.set %>% select(-desc)
+              te.set <- sapply(1:nrow(te.set), function(k) paste(unlist(te.set[k,]), collapse = ' '))
+              
+              prediction <- sapply(te.set, function(k) predict(sbo_pr, input = k)) %>% unlist(F, F)
+              correct <- prediction == train_sets[[y.minus]]$test.set$desc
+            }
+            return(
+              list(prediction = prediction,
+                   correct = correct)
+              )
+          })
+          names(sbo_results) <- 0:lvl
+          sbo_results <- purrr::transpose(sbo_results)
+
+# N-Gram Interpolation classifier -----------------------------------------
+
 
           # go order by order
           ants.probs <- lapply(1:lvl, function(x) {
@@ -437,6 +526,22 @@ prediction_loo <- function(elem.bout,
               recursive = FALSE,
               use.names = FALSE
             )
+          
+          ### establish baseline probability of each element in 0-order
+          xx.0 <-
+            table(unlist(strsplit(unlist(elem.bout), split = "%"), FALSE, FALSE))
+          x.element.0 <- names(xx.0)
+          x.chosen.0 <- as.numeric(xx.0)
+          x.chosen.0 <- x.chosen.0 / sum(x.chosen.0)
+          
+          all.consequents <-
+            unique(unlist(x.element.0))
+          all.consequent.probs <-
+            data.frame(antecedent = all.consequents) %>%
+            left_join(llh.0) %>%
+            select(.data$probability.total) %>%
+            unlist(FALSE, FALSE) %>%
+            suppressMessages()
 
           # go through each event of interest, make predictions based on the antecedents and their transition probabilities
           pred <-
@@ -467,22 +572,6 @@ prediction_loo <- function(elem.bout,
               # x.llhs <- x.llhs[non.empty]
               # x.element <- x.element[non.empty]
               # x.chosen <- x.chosen[non.empty]
-
-              ### establish baseline probability of each element in 0-order
-              xx.0 <-
-                table(unlist(strsplit(unlist(elem.bout), split = "%"), FALSE, FALSE))
-              x.element.0 <- names(xx.0)
-              x.chosen.0 <- as.numeric(xx.0)
-              x.chosen.0 <- x.chosen.0 / sum(x.chosen.0)
-
-              all.consequents <-
-                unique(unlist(x.element.0))
-              all.consequent.probs <-
-                data.frame(antecedent = all.consequents) %>%
-                left_join(llh.0) %>%
-                select(.data$probability.total) %>%
-                unlist(FALSE, FALSE) %>%
-                suppressMessages()
 
               ### combine 0-order with all other orders
               x.element <-
@@ -592,6 +681,7 @@ prediction_loo <- function(elem.bout,
               if (y.minus == 0) {
                 return(
                   list(
+                    # N Gram
                     mean.res.single = mean(outcome.simple[[y]] %>% unlist(), na.rm = T),
                     mean.res.three = mean(outcome.triple[[y]] %>% unlist(), na.rm = T),
                     sample.size = unlist(dataset.test$consequent) %>% length(),
@@ -599,17 +689,21 @@ prediction_loo <- function(elem.bout,
                     observed = sapply(purrr::transpose(pred)$simple.sample, function(k) {
                       k[[y]]
                     }),
+                    # Naive Bayes
                     probs.expected = probs.expected[[y]],
                     nb.prediction = nb.prediction[[y]],
                     nb.expected = as.character(train_sets[[y]]$test.set[, 1]),
                     nb.correct = nb.correct[[y]],
-                    nb.probs.expected = nb.probs[[y]]
+                    # SBO
+                    sbo.prediction = sbo_results$prediction[y],
+                    sbo.correct = sbo_results$correct[y]
                   )
                 )
               }
               if (y.minus > 0) {
                 return(
                   list(
+                    # N Gram
                     mean.res.single = mean(outcome.simple[[y]] %>% unlist(), na.rm = T),
                     mean.res.three = mean(outcome.triple[[y]] %>% unlist(), na.rm = T),
                     sample.size = unlist(dataset.test$consequent) %>% length(),
@@ -618,10 +712,13 @@ prediction_loo <- function(elem.bout,
                       k[[y]]
                     }),
                     probs.expected = probs.expected[[y]],
+                    # Naive Bayes
                     nb.prediction = nb.prediction[[y]],
                     nb.expected = as.character(train_sets[[y.minus]]$test.set[, 1]),
                     nb.correct = nb.correct[[y]],
-                    nb.probs.expected = nb.probs[[y]]
+                    # SBO
+                    sbo.prediction = sbo_results$prediction[y],
+                    sbo.correct = sbo_results$correct[y]
                   )
                 )
               }
@@ -645,7 +742,10 @@ prediction_loo <- function(elem.bout,
               nb.prediction = NA,
               nb.expected = NA,
               nb.correct = NA,
-              nb.probs.expected = NA
+              sbo.prediction = NA,
+              sbo.correct = NA,
+              rf.prediction = NA,
+              rf.correct = NA
             )
           }))
         }
@@ -694,9 +794,21 @@ prediction_loo <- function(elem.bout,
           lapply(seq_along(ran.matrixes), function(y) {
             mean(unlist(purrr::transpose(ran.matrixes[[y]])$nb.correct), na.rm = T)
           })
-        nb.probs.expected <-
+        sbo.observed <-
           lapply(seq_along(ran.matrixes), function(y) {
-            unlist(purrr::transpose(ran.matrixes[[y]])$nb.probs.expected)
+            mean(unlist(purrr::transpose(ran.matrixes[[y]])$sbo.prediction), na.rm = T)
+          })
+        sbo.correct <-
+          lapply(seq_along(ran.matrixes), function(y) {
+            mean(unlist(purrr::transpose(ran.matrixes[[y]])$sbo.correct), na.rm = T)
+          })
+        rf.observed <-
+          lapply(seq_along(ran.matrixes), function(y) {
+            unlist(purrr::transpose(ran.matrixes[[y]])$rf.prediction)
+          })
+        rf.correct <-
+          lapply(seq_along(ran.matrixes), function(y) {
+            mean(unlist(purrr::transpose(ran.matrixes[[y]])$rf.correct), na.rm = T)
           })
 
         all_res <-
@@ -711,7 +823,10 @@ prediction_loo <- function(elem.bout,
               naivebayes.observed = nb.observed[[y]],
               naivebayes.expected = nb.expected[[y]],
               naivebayes.accuracy = nb.correct[[y]],
-              naivebayes.probs.expected = nb.probs.expected[[y]]
+              sbo.accuracy = sbo.correct[[y]],
+              sbo.observed = sbo.observed[[y]],
+              forest.observed = nb.observed[[y]],
+              forest.accuracy = nb.correct[[y]]
             )
           })
         names(all_res) <- 0:lvl
@@ -907,6 +1022,8 @@ prediction_loo <- function(elem.bout,
       list(
         accuracy = mean(unlist(loo_nn_x$accuracy), na.rm = T),
         naivebayes.accuracy = mean(unlist(loo_nn_x$naivebayes.accuracy), na.rm = T),
+        sbo.accuracy = mean(unlist(loo_nn_x$sbo.accuracy), na.rm = T),
+        forest.accuracy = mean(unlist(loo_nn_x$forest.accuracy), na.rm = T),
         accuracy.top.three = mean(unlist(loo_nn_x$accuracy.top.three), na.rm = T),
         loglik = sum(log(unlist(
           loo_nn_x$probs.expected
