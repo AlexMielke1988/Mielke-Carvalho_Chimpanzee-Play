@@ -23,6 +23,7 @@
 #' @importFrom tidyr replace_na gather separate unite
 #' @importFrom igraph get.adjacency
 #' @importFrom e1071 naiveBayes
+#' @importFrom sbo sbo_predictor
 #'
 #'
 #' @author Alex Mielke
