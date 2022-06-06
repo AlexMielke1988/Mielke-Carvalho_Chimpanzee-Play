@@ -3875,8 +3875,8 @@ Transition Network
 We can see that, similar to the similarity plot, there are clusters of
 highly connected elements that transition into each other regularly. It
 becomes clear that there are some elements (*hold*,*bipedal*) that have
-high usage probability and are at the centre of clusters. In total, 27%
-of transitions occurred within clusters, while 43.5% would be expected -
+high usage probability and are at the centre of clusters. In total, 43.5%
+of transitions occurred within clusters, while 27% would be expected -
 a 1.6 times increase.
 
 Below is a table summarising the cluster assignment for each element for
