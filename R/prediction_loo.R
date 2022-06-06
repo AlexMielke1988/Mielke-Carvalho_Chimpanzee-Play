@@ -216,31 +216,31 @@ prediction_loo <- function(elem.bout,
             ~ list(antecedent = boot.test[.x:(.x + lvl - 1)], consequent = boot.test[.x + lvl])
           )
           dataset.test <- purrr::transpose(dataset.test)
-
+          
           # remove cases where either the antecedent or consequent contains NAs
           rem <-
             sapply(dataset.test$antecedent, function(x) {
               mean(!is.na(x)) != 1
             }) |
-              sapply(dataset.test$consequent, function(x) {
-                mean(!is.na(x)) != 1
-              })
+            sapply(dataset.test$consequent, function(x) {
+              mean(!is.na(x)) != 1
+            })
           dataset.test$antecedent <-
             dataset.test$antecedent[!rem]
           dataset.test$consequent <-
             dataset.test$consequent[!rem]
-
+          
           # if afterwards no data are left, return NA
           if (is.null(unlist(dataset.test$antecedent)) |
-            is.null(unlist(dataset.test$consequent))) {
+              is.null(unlist(dataset.test$consequent))) {
             return(NA)
           }
-
+          
           # prepare data for Naive Bayes classifier
-
-
-# Naive Bayes Classifier --------------------------------------------------
-
+          
+          
+          # Naive Bayes Classifier --------------------------------------------------
+          
           
           # make test and training sets
           train_sets <- lapply(1:lvl, function(k) {
@@ -254,7 +254,7 @@ prediction_loo <- function(elem.bout,
               }))
             elem.bout.train <- as.character(elem.bout.train)
             # create training set for Naive Bayes
-
+            
             dataset.train <- purrr::map(
               seq(1, length(elem.bout.train) - k - 1, by = 1),
               ~ list(
@@ -263,22 +263,22 @@ prediction_loo <- function(elem.bout,
                 bout.nr = elem.nr[.x + k]
               )
             )
-
+            
             dataset.train <- purrr::transpose(dataset.train)
-
+            
             rem <-
               sapply(dataset.train$antecedent, function(x) {
                 mean(!is.na(x)) != 1
               }) |
-                sapply(dataset.train$consequent, function(x) {
-                  mean(!is.na(x)) != 1
-                })
+              sapply(dataset.train$consequent, function(x) {
+                mean(!is.na(x)) != 1
+              })
             dataset.train$antecedent <-
               dataset.train$antecedent[!rem]
             dataset.train$consequent <-
               dataset.train$consequent[!rem]
             elem.nr <- dataset.train$bout.nr[!rem]
-
+            
             # combinations <- lapply(dataset.train$antecedent, function(au){
             #   xx = unlist(au)
             #   lapply((length(xx)):1, function(ku){
@@ -288,64 +288,64 @@ prediction_loo <- function(elem.bout,
             #
             # combinations <- purrr::transpose(combinations)
             # combinations <- lapply(combinations, unlist)
-
+            
             # dataset.train$antecedent <-
             #   do.call(cbind, combinations) %>%
             #   as.matrix()
-
+            
             dataset.train$antecedent <-
               do.call(rbind, dataset.train$antecedent) %>%
               as.matrix()
-
+            
             dataset.train$consequent <-
               unlist(dataset.train$consequent)
-
+            
             dataset.test <- dataset.train
             dataset.test$antecedent <-
               dataset.test$antecedent[elem.nr %in% training_index, ]
             dataset.test$consequent <-
               dataset.test$consequent[elem.nr %in% training_index]
-
+            
             train.set <-
               data.frame(cbind(
                 desc = dataset.train$consequent,
                 dataset.train$antecedent
               )) %>%
               mutate_if(is.character, as.factor)
-
+            
             test.set <-
               data.frame(cbind(
                 desc = dataset.test$consequent,
                 dataset.test$antecedent
               )) %>%
               mutate_if(is.character, as.factor)
-
+            
             return(list(
               train.set = train.set,
               test.set = test.set
             ))
           })
-
-
+          
+          
           # run naiveBayes algorithm from the e1071 package
           model.nb <- lapply(1:(lvl + 1), function(y) {
             y.minus <- y - 1
             if (y.minus == 0) {
               xx <-
                 e1071::naiveBayes(desc ~ rep("o", nrow(train_sets[[y]]$train.set)),
-                  data = train_sets[[y]]$train.set,
-                  laplace = 0.01
+                                  data = train_sets[[y]]$train.set,
+                                  laplace = 0.01
                 )
               return(xx)
             }
             if (y.minus > 0) {
               e1071::naiveBayes(desc ~ .,
-                data = train_sets[[y.minus]]$train.set,
-                laplace = 0.01
+                                data = train_sets[[y.minus]]$train.set,
+                                laplace = 0.01
               )
             }
           })
-
+          
           # predict test data based on model
           nb.prediction <- lapply(1:(lvl + 1), function(y) {
             y.minus <- y - 1
@@ -361,7 +361,7 @@ prediction_loo <- function(elem.bout,
               return(predict(model.nb[[y]], data.frame(train_sets[[y.minus]]$test.set[, -1])))
             }
           })
-
+          
           # store correct classifications
           nb.correct <- lapply(1:(lvl + 1), function(y) {
             y.minus <- y - 1
@@ -372,17 +372,17 @@ prediction_loo <- function(elem.bout,
               return(nb.prediction[[y]] == as.character(train_sets[[y.minus]]$test.set[, 1]))
             }
           })
-
-
-
-# Random Forest -----------------------------------------------------------
+          
+          
+          
+          # Random Forest -----------------------------------------------------------
           # run random forest algorithm from the ranger package
           model.rf <- lapply(1:(lvl + 1), function(y) {
             y.minus <- y - 1
             if (y.minus == 0) {
               xx <-
                 ranger::ranger(desc ~ .,
-                                  data = train_sets[[y]]$train.set %>% 
+                               data = train_sets[[y]]$train.set %>% 
                                  mutate(V2 = 'o'),
                                mtry =  1, 
                                num.trees = 1000, 
@@ -426,10 +426,10 @@ prediction_loo <- function(elem.bout,
           })
           
           
-
           
-# SBO N-Gram classifier ---------------------------------------------------
-
+          
+          # SBO N-Gram classifier ---------------------------------------------------
+          
           # turn bouts into 'sentences'
           elem.bout.train.k <- boot.train %>%
             unlist_list(method = 'random') %>% 
@@ -453,18 +453,18 @@ prediction_loo <- function(elem.bout,
           
           # make predictor using the sbo package
           sbo_pr <- sbo_predictor(object = kgram_bouts, # preloaded example dataset
-                             N = lvl, # Train a 3-gram model
-                             dict = target ~ 1, # cover 75% of training corpus
-                             .preprocess = identity, # Preprocessing transformation 
-                             EOS = ".?!:;", # End-Of-Sentence tokens
-                             lambda = 0.2, # Back-off penalization in SBO algorithm
-                             L = 1, # Number of predictions for input
-                             filtered = '<EOS>' # Exclude the <UNK> token from predictions
+                                  N = lvl, # Train a 3-gram model
+                                  dict = target ~ 1, # cover 75% of training corpus
+                                  .preprocess = identity, # Preprocessing transformation 
+                                  EOS = ".?!:;", # End-Of-Sentence tokens
+                                  lambda = 0.2, # Back-off penalization in SBO algorithm
+                                  L = 1, # Number of predictions for input
+                                  filtered = '<EOS>' # Exclude the <UNK> token from predictions
           )
           
           sbo_results <- lapply(1:(lvl + 1), function(y) {
             y.minus <- y - 1
-
+            
             if(y.minus == 0){
               te.set <- train_sets[[y]]$test.set %>% select(-desc)
               te.set <- sapply(1:nrow(te.set), function(k) paste(unlist(te.set[k,]), collapse = ' '))
@@ -482,28 +482,28 @@ prediction_loo <- function(elem.bout,
             return(
               list(prediction = prediction,
                    correct = correct)
-              )
+            )
           })
           names(sbo_results) <- 0:lvl
           sbo_results <- purrr::transpose(sbo_results)
-
-# N-Gram Interpolation classifier -----------------------------------------
-
-
+          
+          # N-Gram Interpolation classifier -----------------------------------------
+          
+          
           # go order by order
           ants.probs <- lapply(1:lvl, function(x) {
             # split antecedents
             ants <-
               sapply(llh[[x]]$antecedent,
-                strsplit,
-                split = "%",
-                fixed = T
+                     strsplit,
+                     split = "%",
+                     fixed = T
               )
             conse <-
               sapply(llh[[x]]$consequent,
-                strsplit,
-                split = "%",
-                fixed = T
+                     strsplit,
+                     split = "%",
+                     fixed = T
               )
             probs <- llh[[x]]$probability.transitions
             return(list(
@@ -512,24 +512,24 @@ prediction_loo <- function(elem.bout,
               probability = probs
             ))
           })
-
+          
           # transpose list
           ants.probs <- purrr::transpose(ants.probs)
           # unlist list elements
           ants.probs$antecedent <-
             unlist(ants.probs$antecedent,
-              recursive = FALSE,
-              use.names = FALSE
+                   recursive = FALSE,
+                   use.names = FALSE
             )
           ants.probs$consequent <-
             unlist(ants.probs$consequent,
-              recursive = FALSE,
-              use.names = FALSE
+                   recursive = FALSE,
+                   use.names = FALSE
             )
           ants.probs$probability <-
             unlist(ants.probs$probability,
-              recursive = FALSE,
-              use.names = FALSE
+                   recursive = FALSE,
+                   use.names = FALSE
             )
           
           ### establish baseline probability of each element in 0-order
@@ -547,7 +547,7 @@ prediction_loo <- function(elem.bout,
             select(.data$probability.total) %>%
             unlist(FALSE, FALSE) %>%
             suppressMessages()
-
+          
           # go through each event of interest, make predictions based on the antecedents and their transition probabilities
           pred <-
             lapply(1:length(dataset.test$antecedent), function(x) {
@@ -577,13 +577,13 @@ prediction_loo <- function(elem.bout,
               # x.llhs <- x.llhs[non.empty]
               # x.element <- x.element[non.empty]
               # x.chosen <- x.chosen[non.empty]
-
+              
               ### combine 0-order with all other orders
               x.element <-
                 c(list(as.vector(all.consequents)), x.element)
               x.chosen <-
                 c(list(as.vector(all.consequent.probs)), x.chosen)
-
+              
               ### make sure that choices follow same order as elements
               x.choices <-
                 lapply(1:length(x.element), function(z) {
@@ -598,9 +598,9 @@ prediction_loo <- function(elem.bout,
               #   z * x.choices[[z]]
               # })
               # if(length(x.choices) > 1){x.choices[[1]] = NULL}
-
+              
               x.choices <- x.choices[-1]
-
+              
               # combine the probabilities
               if (prediction == "PPM") {
                 x.chosen <- lapply(1:lvl, function(y) {
@@ -617,11 +617,11 @@ prediction_loo <- function(elem.bout,
                 })
               }
               x.element <- unlist(x.element[1])
-
+              
               # for lvl ==0, just use the consequent probabilities
-
+              
               x.chosen <- c(list(x.chosen.0), x.chosen)
-
+              
               # sample to make predictions
               # one element
               simple.sample <-
@@ -635,14 +635,14 @@ prediction_loo <- function(elem.bout,
                   sample(x.element, 3, prob = y)
                 })
               names(triple.sample) <- 0:lvl
-
+              
               # store probabilities
               simple.probs <-
                 lapply(seq_along(x.chosen), function(y) {
                   x.chosen[[y]][which(x.element == dataset.test$consequent[x])]
                 })
               names(simple.probs) <- 0:lvl
-
+              
               return(
                 list(
                   simple.sample = simple.sample,
@@ -669,7 +669,7 @@ prediction_loo <- function(elem.bout,
               })
             }) %>%
             purrr::transpose()
-
+          
           # save probabilities of true value
           probs.expected <-
             lapply(seq_along(pred), function(y) {
@@ -679,7 +679,7 @@ prediction_loo <- function(elem.bout,
             }) %>%
             purrr::transpose() %>%
             lapply(unlist)
-
+          
           all_out <-
             lapply(seq_along(outcome.simple), function(y) {
               y.minus <- y - 1
@@ -735,11 +735,11 @@ prediction_loo <- function(elem.bout,
               }
             })
           names(all_out) <- 0:lvl
-
+          
           return(all_out)
         })
-
-
+        
+        
         ## if nothing happened, return NAs
         if (mean(is.na(unlist(ran.matrixes))) == 1) {
           return(lapply(1:lvl, function(y) {
@@ -760,11 +760,11 @@ prediction_loo <- function(elem.bout,
             )
           }))
         }
-
+        
         # transpose all trials
         ran.matrixes <- transpose(ran.matrixes)
-
-
+        
+        
         # mean correct predictions
         mean.res.single <-
           lapply(seq_along(ran.matrixes), function(y) {
@@ -821,7 +821,7 @@ prediction_loo <- function(elem.bout,
           lapply(seq_along(ran.matrixes), function(y) {
             mean(unlist(purrr::transpose(ran.matrixes[[y]])$rf.correct), na.rm = T)
           })
-
+        
         all_res <-
           lapply(seq_along(ran.matrixes), function(y) {
             list(
@@ -841,20 +841,20 @@ prediction_loo <- function(elem.bout,
             )
           })
         names(all_res) <- 0:lvl
-
+        
         return(all_res)
       }
     )
   stopCluster(mycluster)
-
+  
   # remove empty runs
   
   loo.pred <- loo.pred[sapply(seq_along(loo.pred), function(x){mean(!is.na(unlist(loo.pred[[x]])))})]
   
   # transpose lists
   loo_nn <- purrr::transpose(loo.pred)
-
-
+  
+  
   # Evaluation Model Choice -------------------------------------------------
   all_evaluation <- lapply(seq_along(loo_nn), function(y) {
     loo_nn_x <- purrr::transpose(loo_nn[[y]])
@@ -875,7 +875,7 @@ prediction_loo <- function(elem.bout,
       t(table(unlist(loo_nn_x$observed)[unlist(loo_nn_x$observed) == unlist(loo_nn_x$expected)]))[1, ] / trials
     results$correct <-
       correct[match(results$element, names(correct))]
-
+    
     # set NA as 0s
     results$observed <-
       ifelse(is.na(results$observed), 0, results$observed)
@@ -883,7 +883,7 @@ prediction_loo <- function(elem.bout,
       ifelse(is.na(results$correct), 0, results$correct)
     results$true.positive <-
       round(results$correct / results$expected, 3)
-
+    
     # determine number of false positions
     false.pos <-
       t(table(unlist(loo_nn_x$observed)[unlist(loo_nn_x$observed) != unlist(loo_nn_x$expected)]))[1, ] / trials
@@ -893,7 +893,7 @@ prediction_loo <- function(elem.bout,
       ifelse(is.na(false.positive), 0, false.positive)
     results$false.positive <-
       round(false.positive / results$observed, 3)
-
+    
     # define number of false negatives
     false.neg <-
       t(table(unlist(loo_nn_x$expected)[unlist(loo_nn_x$observed) != unlist(loo_nn_x$expected)]))[1, ] / trials
@@ -903,10 +903,10 @@ prediction_loo <- function(elem.bout,
       ifelse(is.na(false.negative), 0, false.negative)
     results$false.negative <-
       round(false.negative / results$expected, 3)
-
-
+    
+    
     # Misclassification Matrix ------------------------------------------------
-
+    
     # make misclassification plot
     misclass <- data.frame(t(table(
       unlist(loo_nn_x$expected),
@@ -916,16 +916,16 @@ prediction_loo <- function(elem.bout,
     tot.exp <- misclass %>%
       group_by(.data$expected) %>%
       summarise(tot.exp = sum(.data$count))
-
+    
     misclass <- misclass %>%
       left_join(tot.exp) %>%
       mutate(misclassification.probability = round(.data$count / tot.exp, 3)) %>%
       select(-.data$tot.exp) %>%
       suppressMessages()
-
+    
     mis.matr <-
       graph_from_edgelist(as.matrix(misclass[, c("expected", "observed")]),
-        directed = T
+                          directed = T
       )
     edge.attributes(mis.matr)$probability <-
       misclass$misclassification.probability
@@ -933,7 +933,7 @@ prediction_loo <- function(elem.bout,
       mis.matr %>%
       get.adjacency(attr = "probability") %>%
       as.matrix()
-
+    
     mis.plot <- ggplot(
       data = misclass,
       aes(
@@ -964,7 +964,7 @@ prediction_loo <- function(elem.bout,
       ggtitle(paste(c(
         "Misclassification Heat Map, Level = ", y
       ), collapse = " "))
-
+    
     # Misclassification for Naive Bayes
     if (y > 1) {
       misclass.nb <- data.frame(t(table(
@@ -975,16 +975,16 @@ prediction_loo <- function(elem.bout,
       tot.exp <- misclass.nb %>%
         group_by(.data$expected) %>%
         summarise(tot.exp = sum(.data$count))
-
+      
       misclass.nb <- misclass.nb %>%
         left_join(tot.exp) %>%
         mutate(misclassification.probability = round(.data$count / tot.exp, 3)) %>%
         select(-.data$tot.exp) %>%
         suppressMessages()
-
+      
       mis.matr.nb <-
         graph_from_edgelist(as.matrix(misclass.nb[, c("expected", "observed")]),
-          directed = T
+                            directed = T
         )
       edge.attributes(mis.matr.nb)$probability <-
         misclass.nb$misclassification.probability
@@ -992,7 +992,7 @@ prediction_loo <- function(elem.bout,
         mis.matr.nb %>%
         get.adjacency(attr = "probability") %>%
         as.matrix()
-
+      
       mis.plot.nb <- ggplot(
         data = misclass.nb,
         aes(
@@ -1028,7 +1028,7 @@ prediction_loo <- function(elem.bout,
       mis.matr.nb <- NA
       mis.plot.nb <- NA
     }
-
+    
     return(
       list(
         accuracy = mean(unlist(loo_nn_x$accuracy), na.rm = T),
@@ -1048,8 +1048,8 @@ prediction_loo <- function(elem.bout,
       )
     )
   })
-
+  
   names(all_evaluation) <- 0:lvl
-
+  
   return(all_evaluation)
 }
