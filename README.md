@@ -3745,10 +3745,10 @@ Prediction Accuracy Naive Bayes
 0
 </td>
 <td style="text-align:right;">
-0.027
+0.030
 </td>
 <td style="text-align:right;">
-0.089
+0.086
 </td>
 </tr>
 <tr>
@@ -3759,7 +3759,7 @@ Prediction Accuracy Naive Bayes
 0.057
 </td>
 <td style="text-align:right;">
-0.176
+0.153
 </td>
 </tr>
 <tr>
@@ -3767,10 +3767,10 @@ Prediction Accuracy Naive Bayes
 2
 </td>
 <td style="text-align:right;">
-0.097
+0.105
 </td>
 <td style="text-align:right;">
-0.242
+0.247
 </td>
 </tr>
 <tr>
@@ -3778,10 +3778,10 @@ Prediction Accuracy Naive Bayes
 3
 </td>
 <td style="text-align:right;">
-0.098
+0.105
 </td>
 <td style="text-align:right;">
-0.318
+0.308
 </td>
 </tr>
 </tbody>
