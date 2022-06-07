@@ -3788,13 +3788,14 @@ Prediction Accuracy Naive Bayes
 </table>
 
 As we see in Table 3, the null probability of getting a correct
-classification (based only on element occurrence rates) is about 2.7%.
+classification (based only on element occurrence rates) is about 3.0% for the n-gram classifier (which randomly chooses a consequent based on their occurrence probabilities) or 8.6% for the Naive Bayes classifier (which simply chooses the most common element for each prediction).
 Using the conditional probability based on one antecedent (A –&gt; B)
 increases this to 5.7% accuracy, and based on two antecedents (AB –&gt;
-C) increases the accuracy to 9.7%. This is almost a doubling of correct
+C) increases the accuracy to 10.5%. This is almost a doubling of correct
 predictions. These results would probably improve further with
 increasing sample sizes. Using a Naive Bayes predictor further improves
-predictions. These results indicate that a) having knowledge of the
+predictions. Adding further antecedents does not seem to influence the n-gram prediction, but improves the Naive Bayes predictions. 
+These results indicate that a) having knowledge of the
 preceding element allows us to make more accurate predictions than
 expected, so non-random connections allow others to adapt to their
 partner’s actions; b) that having information about more previous
