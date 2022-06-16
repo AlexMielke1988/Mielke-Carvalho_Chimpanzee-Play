@@ -1,4 +1,5 @@
-# Mielke & Carvalho 2021 ‘Chimpanzee play sequences are structured hierarchically as games’
+# Mielke & Carvalho 2022 ‘Chimpanzee play sequences are structured hierarchically as games’
+https://doi.org/10.1101/2022.06.14.496075
 
 ## Abstract
 
