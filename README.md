@@ -1,5 +1,4 @@
-# Mielke & Carvalho 2022 ‘Chimpanzee play sequences are structured hierarchically as games’
-https://doi.org/10.1101/2022.06.14.496075
+# Mielke & Carvalho 2021 ‘Chimpanzee play sequences are structured hierarchically as games’
 
 ## Abstract
 
@@ -650,6 +649,33 @@ become volatile. Transition probabilities of rare elements will
 therefore be interpreted with caution, and elements will be filtered to
 exclude rare or highly volatile transitions.
 
+    # use 'boot_elements()' function
+    boot.probabilities <- boot_elements(
+      elem.bout = elements.bout,
+      antecedent = transitions$antecedent,
+      consequent = transitions$consequent,
+      measure = "prob",
+      trials = 1000,
+      it = 10,
+      cores = 16,
+      ci.range = c(0.025, 0.975),
+      output = "summary",
+      ran.method = 'random'
+      )
+
+    ######### compare randomized and observed
+    transitions$lower.ci <- boot.probabilities$lower.ci
+    transitions$upper.ci <- boot.probabilities$upper.ci
+    transitions$range.ci <- boot.probabilities$range.ci
+    transitions$sd <- boot.probabilities$sd.ci
+    transitions$cv <- boot.probabilities$cv.ci
+
+    ggplot(data = transitions, aes(x = count.antecedent, y = range.ci)) +
+      geom_point(alpha = 0.5) +
+      theme_classic() +
+      ylab("Range Credible Interval") +
+      xlab("Count Element")
+
 <img src="Mielke---Carvalho-Supplementary-1_files/figure-markdown_strict/boot_plot-1.png" alt="Range of conditional transition probabilities for bigrams, plotted against how often the antecedent occurred in the dataset."  />
 <p class="caption">
 Range of conditional transition probabilities for bigrams, plotted
@@ -693,7 +719,7 @@ user will have slightly different results.
       consequent = transitions$consequent,
       observed = transitions$observed.probs,
       it = 10,
-      cores = 10,
+      cores = 16,
       trials = 1000,
       type = "across",
       output = "expected"
@@ -3720,6 +3746,36 @@ This hierarchical structure is an important component of human syntax
 and other action systems, but has not been shown for primate
 interactions.
 
+    loo4 = prediction_loo(
+      elem.bout = elements.bout,
+      it = 10,
+      trials = 100,
+      cores = 8,
+      lvl = 4,
+      out = 20,
+      prediction = 'product',
+      ran.method = 'random'
+    )
+
+    prediction.table <-
+      data.frame(level = seq_along(loo4)-1,
+                 prediction_accuracy =
+                   sapply(loo4, function(x){x$accuracy}),
+                 prediction_accuracy_naive_bayes =
+                   sapply(loo4, function(x){x$naivebayes.accuracy}),
+                 prediction_accuracy_forest =
+                   sapply(loo4, function(x){x$forest.accuracy})
+      )
+
+    kableExtra::kbl(prediction.table,
+          row.names = F,
+          caption = "Prediction accuracy of applied transition probabilities at different levels: level 0 is the prediction based on the simple occurrence probability of each element, level 1 has one antecedent element, level 2 has two antecedents, etc",
+          col.names = c('Level', 'Prediction Accuracy', 'Prediction Accuracy Naive Bayes', 'Prediction Accuracy Random Forest'),
+          digits = 3)
+
+    ## Warning in !is.null(rmarkdown::metadata$output) && rmarkdown::metadata$output
+    ## %in% : 'length(x) = 4 > 1' in coercion to 'logical(1)'
+
 <table>
 <caption>
 Prediction accuracy of applied transition probabilities at different
@@ -3738,6 +3794,9 @@ Prediction Accuracy
 <th style="text-align:right;">
 Prediction Accuracy Naive Bayes
 </th>
+<th style="text-align:right;">
+Prediction Accuracy Random Forest
+</th>
 </tr>
 </thead>
 <tbody>
@@ -3746,10 +3805,13 @@ Prediction Accuracy Naive Bayes
 0
 </td>
 <td style="text-align:right;">
-0.030
+0.031
 </td>
 <td style="text-align:right;">
-0.086
+0.083
+</td>
+<td style="text-align:right;">
+0.083
 </td>
 </tr>
 <tr>
@@ -3757,10 +3819,13 @@ Prediction Accuracy Naive Bayes
 1
 </td>
 <td style="text-align:right;">
-0.057
+0.055
 </td>
 <td style="text-align:right;">
-0.153
+0.193
+</td>
+<td style="text-align:right;">
+0.039
 </td>
 </tr>
 <tr>
@@ -3768,10 +3833,13 @@ Prediction Accuracy Naive Bayes
 2
 </td>
 <td style="text-align:right;">
-0.105
+0.090
 </td>
 <td style="text-align:right;">
-0.247
+0.233
+</td>
+<td style="text-align:right;">
+0.048
 </td>
 </tr>
 <tr>
@@ -3779,29 +3847,31 @@ Prediction Accuracy Naive Bayes
 3
 </td>
 <td style="text-align:right;">
-0.105
+0.079
 </td>
 <td style="text-align:right;">
-0.308
+0.347
+</td>
+<td style="text-align:right;">
+0.046
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+0.080
+</td>
+<td style="text-align:right;">
+0.415
+</td>
+<td style="text-align:right;">
+0.058
 </td>
 </tr>
 </tbody>
 </table>
-
-As we see in Table 3, the null probability of getting a correct
-classification (based only on element occurrence rates) is about 3.0% for the n-gram classifier (which randomly chooses a consequent based on their occurrence probabilities) or 8.6% for the Naive Bayes classifier (which simply chooses the most common element for each prediction).
-Using the conditional probability based on one antecedent (A –&gt; B)
-increases this to 5.7% accuracy, and based on two antecedents (AB –&gt;
-C) increases the accuracy to 10.5%. This is almost a doubling of correct
-predictions. These results would probably improve further with
-increasing sample sizes. Using a Naive Bayes predictor further improves
-predictions. Adding further antecedents does not seem to influence the n-gram prediction, but improves the Naive Bayes predictions. 
-These results indicate that a) having knowledge of the
-preceding element allows us to make more accurate predictions than
-expected, so non-random connections allow others to adapt to their
-partner’s actions; b) that having information about more previous
-elements further improves accuracy, creating the possibility of
-higher-order sequence effects.
 
 ## Element Clusters - Occurrance of Games
 
@@ -3824,11 +3894,35 @@ of one element informs the presence of the other one. Clusters are
 detected using UMAP dimension reduction algorithm and K-means
 clustering.
 
+    element_plot(
+      element = "Feint",
+      antecedent = transitions$antecedent,
+      consequent = transitions$consequent,
+      count.antecedent = transitions$count.antecedent,
+      count.consequent = transitions$count.consequent,
+      observed.probs = transitions$observed.probs,
+      pvalue = transitions$pvalue, 
+      cutoff = 5, 
+      significance = 0.01
+    )$plot
+
 <img src="Mielke---Carvalho-Supplementary-1_files/figure-markdown_strict/element_plot-1.png" alt="Ego Network of Feint, with elements that are likely to precede and follow it"  />
 <p class="caption">
 Ego Network of Feint, with elements that are likely to precede and
 follow it
 </p>
+
+    similar.cluster <- similiarity_clusters(
+      elem.bout = elements.bout,
+      measure = c("prob"),
+      k = NULL,
+      it = 1000,
+      facet = FALSE,
+      level = "bigram",
+      ran.method = 'random',
+      n_epochs = 8000,
+      trials = 1000
+    )
 
     ## Warning: `distinct_()` was deprecated in dplyr 0.7.0.
     ## Please use `distinct()` instead.
@@ -3836,25 +3930,30 @@ follow it
     ## This warning is displayed once every 8 hours.
     ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.
 
+    # similar.cluster$plot.solutions
+    # similar.cluster$silhouette.check
+    # similar.cluster$plot.similarity
+    similar.cluster$dendrogram.plot
+
 <img src="Mielke---Carvalho-Supplementary-1_files/figure-markdown_strict/similarity_plot-1.png" alt="Dendrogram of elements with similar usage statistics"  />
 <p class="caption">
 Dendrogram of elements with similar usage statistics
 </p>
 
-What we observe is a relatively good cluster solution (0.6182128); any
+What we observe is a relatively good cluster solution (0.8396785); any
 solution above 0.3 can be considered to show that there is more
-similarity within than between clusters. There are 11 clusters. These
+similarity within than between clusters. There are 12 clusters. These
 are usually composed of elements that involve similar actions. E.g,
-there is one containing all *push*, *pull*, *hit*, *hold* etc, so
-contact play. Another contains *hanging* from and *climbing* tree,
-*pulling branches*, *bending saplings* etc - play in trees. One contains most
-of the object-related play, *grab-object*, *carry-object* etc. Elements
+there is one containing all *push*, *pull*, *wrestle*, *bite* etc, so
+contact play. Another contains *hanging* and *swinging* of branches,
+*pulling branches*, *climbing* up etc - play in trees. One contains most
+of the object-related play, *tug-of-war*, *wave\_object* etc. Elements
 in a cluster show similar usage patterns, so elements that fall into the
 same cluster can act as ‘synonyms’ - whether individuals *press down*
 the partner or *hold* them might not be important for the progression of
 play. This might also indicate that the coding scheme includes some
 distinctions that are less relevant for the chimpanzees - for example,
-*rolling object* and *kick dirt* differ in the presence of an object, but might be
+*rake ground* and *kick dirt* differ in which limb is used, but might be
 used the same way (to get the partners attention).
 
 ### Transition Networks
@@ -3869,6 +3968,25 @@ directionality. To account for uncertainty, we only include significant
 transitions that occurred at least 5 times. Clusters are represented by
 different colours.
 
+    trans.net <- network_plot(
+      elem.bout = elements.bout,
+      edge.weight = "transition",
+      min.prob = 0,
+      min.count = 5,
+      significance = 0.01,
+      hide_unconnected = T,
+      link = "weighted",
+      clusters = T,
+      plot.bubbles = F,
+      title = "Transition Network Play Elements",
+      remove_loops = T, 
+      cores = 16,
+      plot.layout = 'nicely',
+      it = 2000
+    )
+
+    trans.net$plot
+
 <img src="Mielke---Carvalho-Supplementary-1_files/figure-markdown_strict/network_plot-1.png" alt="Transition Network"  />
 <p class="caption">
 Transition Network
@@ -3877,9 +3995,9 @@ Transition Network
 We can see that, similar to the similarity plot, there are clusters of
 highly connected elements that transition into each other regularly. It
 becomes clear that there are some elements (*hold*,*bipedal*) that have
-high usage probability and are at the centre of clusters. In total, 43.5%
-of transitions occurred within clusters, while 27% would be expected -
-a 1.6 times increase.
+high usage probability and are at the centre of clusters. In total,
+24.6% of transitions occurred within clusters, while 40.1% would be
+expected - a 1.6 times increase.
 
 Below is a table summarising the cluster assignment for each element for
 the similarity and transition networks. The interpretation can be found
@@ -3894,8 +4012,8 @@ Cluster assignment for play elements
 <th style="text-align:left;">
 element
 </th>
-<th style="text-align:right;">
-dendrogram.cluster
+<th style="text-align:left;">
+k.means.cluster
 </th>
 <th style="text-align:right;">
 community
@@ -3907,7 +4025,7 @@ community
 <td style="text-align:left;">
 Approach
 </td>
-<td style="text-align:right;">
+<td style="text-align:left;">
 1
 </td>
 <td style="text-align:right;">
@@ -3916,42 +4034,9 @@ Approach
 </tr>
 <tr>
 <td style="text-align:left;">
-Chase
+Grabobject
 </td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
 <td style="text-align:left;">
-Circletree
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Lead
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Charge
-</td>
-<td style="text-align:right;">
 3
 </td>
 <td style="text-align:right;">
@@ -3962,8 +4047,8 @@ Charge
 <td style="text-align:left;">
 Hitattempt
 </td>
-<td style="text-align:right;">
-3
+<td style="text-align:left;">
+4
 </td>
 <td style="text-align:right;">
 1
@@ -3971,10 +4056,21 @@ Hitattempt
 </tr>
 <tr>
 <td style="text-align:left;">
-Pirouette
+Chase
+</td>
+<td style="text-align:left;">
+8
 </td>
 <td style="text-align:right;">
-7
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Circletree
+</td>
+<td style="text-align:left;">
+8
 </td>
 <td style="text-align:right;">
 1
@@ -3984,7 +4080,7 @@ Pirouette
 <td style="text-align:left;">
 FollowOther
 </td>
-<td style="text-align:right;">
+<td style="text-align:left;">
 8
 </td>
 <td style="text-align:right;">
@@ -3995,8 +4091,19 @@ FollowOther
 <td style="text-align:left;">
 Reach
 </td>
-<td style="text-align:right;">
+<td style="text-align:left;">
 8
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Pirouette
+</td>
+<td style="text-align:left;">
+9
 </td>
 <td style="text-align:right;">
 1
@@ -4006,8 +4113,8 @@ Reach
 <td style="text-align:left;">
 Headshake
 </td>
-<td style="text-align:right;">
-10
+<td style="text-align:left;">
+12
 </td>
 <td style="text-align:right;">
 1
@@ -4015,20 +4122,20 @@ Headshake
 </tr>
 <tr>
 <td style="text-align:left;">
-Armswing
+Pressground
+</td>
+<td style="text-align:left;">
+12
 </td>
 <td style="text-align:right;">
 1
-</td>
-<td style="text-align:right;">
-2
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
 Bipedal
 </td>
-<td style="text-align:right;">
+<td style="text-align:left;">
 1
 </td>
 <td style="text-align:right;">
@@ -4037,54 +4144,10 @@ Bipedal
 </tr>
 <tr>
 <td style="text-align:left;">
-DrumTree
+Armswing
 </td>
-<td style="text-align:right;">
+<td style="text-align:left;">
 1
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Carryobject
-</td>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Grabobject
-</td>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Dropobject
-</td>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Waveobject
-</td>
-<td style="text-align:right;">
-3
 </td>
 <td style="text-align:right;">
 2
@@ -4094,7 +4157,7 @@ Waveobject
 <td style="text-align:left;">
 Armraise
 </td>
-<td style="text-align:right;">
+<td style="text-align:left;">
 3
 </td>
 <td style="text-align:right;">
@@ -4103,10 +4166,32 @@ Armraise
 </tr>
 <tr>
 <td style="text-align:left;">
-Flail
+Carryobject
+</td>
+<td style="text-align:left;">
+3
 </td>
 <td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DrumTree
+</td>
+<td style="text-align:left;">
 3
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Charge
+</td>
+<td style="text-align:left;">
+4
 </td>
 <td style="text-align:right;">
 2
@@ -4116,8 +4201,8 @@ Flail
 <td style="text-align:left;">
 Armwave
 </td>
-<td style="text-align:right;">
-3
+<td style="text-align:left;">
+4
 </td>
 <td style="text-align:right;">
 2
@@ -4127,8 +4212,8 @@ Armwave
 <td style="text-align:left;">
 Swagger
 </td>
-<td style="text-align:right;">
-3
+<td style="text-align:left;">
+4
 </td>
 <td style="text-align:right;">
 2
@@ -4136,9 +4221,31 @@ Swagger
 </tr>
 <tr>
 <td style="text-align:left;">
-Pressground
+Dropobject
+</td>
+<td style="text-align:left;">
+10
 </td>
 <td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Waveobject
+</td>
+<td style="text-align:left;">
+10
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Flail
+</td>
+<td style="text-align:left;">
 10
 </td>
 <td style="text-align:right;">
@@ -4149,8 +4256,8 @@ Pressground
 <td style="text-align:left;">
 Rollobject
 </td>
-<td style="text-align:right;">
-10
+<td style="text-align:left;">
+12
 </td>
 <td style="text-align:right;">
 2
@@ -4158,32 +4265,10 @@ Rollobject
 </tr>
 <tr>
 <td style="text-align:left;">
-Branchpull
-</td>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:right;">
-3
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Bendsapling
-</td>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:right;">
-3
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 Branchshake
 </td>
-<td style="text-align:right;">
-4
+<td style="text-align:left;">
+5
 </td>
 <td style="text-align:right;">
 3
@@ -4193,8 +4278,30 @@ Branchshake
 <td style="text-align:left;">
 Jump
 </td>
+<td style="text-align:left;">
+5
+</td>
 <td style="text-align:right;">
-4
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Branchpull
+</td>
+<td style="text-align:left;">
+5
+</td>
+<td style="text-align:right;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Bendsapling
+</td>
+<td style="text-align:left;">
+5
 </td>
 <td style="text-align:right;">
 3
@@ -4204,8 +4311,8 @@ Jump
 <td style="text-align:left;">
 Embrace
 </td>
-<td style="text-align:right;">
-5
+<td style="text-align:left;">
+6
 </td>
 <td style="text-align:right;">
 4
@@ -4215,41 +4322,8 @@ Embrace
 <td style="text-align:left;">
 Moveother
 </td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
-4
-</td>
-</tr>
-<tr>
 <td style="text-align:left;">
-Trip
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
-4
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-GrabbleWrestle
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
-4
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Pressdown
-</td>
-<td style="text-align:right;">
-5
+6
 </td>
 <td style="text-align:right;">
 4
@@ -4259,8 +4333,41 @@ Pressdown
 <td style="text-align:left;">
 Bite
 </td>
+<td style="text-align:left;">
+6
+</td>
 <td style="text-align:right;">
-5
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Trip
+</td>
+<td style="text-align:left;">
+6
+</td>
+<td style="text-align:right;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GrabbleWrestle
+</td>
+<td style="text-align:left;">
+6
+</td>
+<td style="text-align:right;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Pressdown
+</td>
+<td style="text-align:left;">
+6
 </td>
 <td style="text-align:right;">
 4
@@ -4270,8 +4377,8 @@ Bite
 <td style="text-align:left;">
 Headdown
 </td>
-<td style="text-align:right;">
-5
+<td style="text-align:left;">
+6
 </td>
 <td style="text-align:right;">
 4
@@ -4281,8 +4388,8 @@ Headdown
 <td style="text-align:left;">
 Liedown
 </td>
-<td style="text-align:right;">
-5
+<td style="text-align:left;">
+6
 </td>
 <td style="text-align:right;">
 4
@@ -4292,8 +4399,8 @@ Liedown
 <td style="text-align:left;">
 Mount
 </td>
-<td style="text-align:right;">
-5
+<td style="text-align:left;">
+6
 </td>
 <td style="text-align:right;">
 4
@@ -4303,8 +4410,8 @@ Mount
 <td style="text-align:left;">
 Crouch
 </td>
-<td style="text-align:right;">
-7
+<td style="text-align:left;">
+9
 </td>
 <td style="text-align:right;">
 4
@@ -4314,8 +4421,8 @@ Crouch
 <td style="text-align:left;">
 Hit
 </td>
-<td style="text-align:right;">
-7
+<td style="text-align:left;">
+9
 </td>
 <td style="text-align:right;">
 4
@@ -4325,8 +4432,8 @@ Hit
 <td style="text-align:left;">
 Hold
 </td>
-<td style="text-align:right;">
-7
+<td style="text-align:left;">
+9
 </td>
 <td style="text-align:right;">
 4
@@ -4336,8 +4443,8 @@ Hold
 <td style="text-align:left;">
 Push
 </td>
-<td style="text-align:right;">
-7
+<td style="text-align:left;">
+9
 </td>
 <td style="text-align:right;">
 4
@@ -4347,8 +4454,8 @@ Push
 <td style="text-align:left;">
 Touch
 </td>
-<td style="text-align:right;">
-7
+<td style="text-align:left;">
+9
 </td>
 <td style="text-align:right;">
 4
@@ -4358,8 +4465,8 @@ Touch
 <td style="text-align:left;">
 Pull
 </td>
-<td style="text-align:right;">
-7
+<td style="text-align:left;">
+9
 </td>
 <td style="text-align:right;">
 4
@@ -4369,8 +4476,8 @@ Pull
 <td style="text-align:left;">
 Slapground
 </td>
-<td style="text-align:right;">
-6
+<td style="text-align:left;">
+7
 </td>
 <td style="text-align:right;">
 5
@@ -4380,8 +4487,8 @@ Slapground
 <td style="text-align:left;">
 Stomp
 </td>
-<td style="text-align:right;">
-6
+<td style="text-align:left;">
+7
 </td>
 <td style="text-align:right;">
 5
@@ -4391,8 +4498,8 @@ Stomp
 <td style="text-align:left;">
 Bop
 </td>
-<td style="text-align:right;">
-6
+<td style="text-align:left;">
+7
 </td>
 <td style="text-align:right;">
 5
@@ -4402,8 +4509,8 @@ Bop
 <td style="text-align:left;">
 Bow
 </td>
-<td style="text-align:right;">
-6
+<td style="text-align:left;">
+7
 </td>
 <td style="text-align:right;">
 5
@@ -4413,8 +4520,8 @@ Bow
 <td style="text-align:left;">
 Hideswing
 </td>
-<td style="text-align:right;">
-1
+<td style="text-align:left;">
+2
 </td>
 <td style="text-align:right;">
 6
@@ -4424,8 +4531,8 @@ Hideswing
 <td style="text-align:left;">
 Climb
 </td>
-<td style="text-align:right;">
-4
+<td style="text-align:left;">
+5
 </td>
 <td style="text-align:right;">
 6
@@ -4435,8 +4542,8 @@ Climb
 <td style="text-align:left;">
 Fall
 </td>
-<td style="text-align:right;">
-4
+<td style="text-align:left;">
+5
 </td>
 <td style="text-align:right;">
 6
@@ -4446,8 +4553,8 @@ Fall
 <td style="text-align:left;">
 Swing
 </td>
-<td style="text-align:right;">
-4
+<td style="text-align:left;">
+5
 </td>
 <td style="text-align:right;">
 6
@@ -4457,8 +4564,8 @@ Swing
 <td style="text-align:left;">
 Shakeoff
 </td>
-<td style="text-align:right;">
-7
+<td style="text-align:left;">
+9
 </td>
 <td style="text-align:right;">
 6
@@ -4468,8 +4575,8 @@ Shakeoff
 <td style="text-align:left;">
 Kick
 </td>
-<td style="text-align:right;">
-9
+<td style="text-align:left;">
+11
 </td>
 <td style="text-align:right;">
 6
@@ -4479,8 +4586,8 @@ Kick
 <td style="text-align:left;">
 Hang
 </td>
-<td style="text-align:right;">
-9
+<td style="text-align:left;">
+11
 </td>
 <td style="text-align:right;">
 6
@@ -4488,9 +4595,9 @@ Hang
 </tr>
 <tr>
 <td style="text-align:left;">
-Retreat
+Retreatbackwards
 </td>
-<td style="text-align:right;">
+<td style="text-align:left;">
 1
 </td>
 <td style="text-align:right;">
@@ -4499,10 +4606,21 @@ Retreat
 </tr>
 <tr>
 <td style="text-align:left;">
-Retreatbackwards
+Retreat
+</td>
+<td style="text-align:left;">
+1
 </td>
 <td style="text-align:right;">
-1
+7
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Feint
+</td>
+<td style="text-align:left;">
+2
 </td>
 <td style="text-align:right;">
 7
@@ -4512,18 +4630,7 @@ Retreatbackwards
 <td style="text-align:left;">
 Flee
 </td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-7
-</td>
-</tr>
-<tr>
 <td style="text-align:left;">
-Hide
-</td>
-<td style="text-align:right;">
 2
 </td>
 <td style="text-align:right;">
@@ -4534,7 +4641,7 @@ Hide
 <td style="text-align:left;">
 Armprotect
 </td>
-<td style="text-align:right;">
+<td style="text-align:left;">
 2
 </td>
 <td style="text-align:right;">
@@ -4543,32 +4650,10 @@ Armprotect
 </tr>
 <tr>
 <td style="text-align:left;">
-Feint
+Hide
 </td>
-<td style="text-align:right;">
+<td style="text-align:left;">
 2
-</td>
-<td style="text-align:right;">
-7
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Hitobject
-</td>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-7
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Exploreobject
-</td>
-<td style="text-align:right;">
-3
 </td>
 <td style="text-align:right;">
 7
@@ -4578,8 +4663,8 @@ Exploreobject
 <td style="text-align:left;">
 Circlepartner
 </td>
-<td style="text-align:right;">
-7
+<td style="text-align:left;">
+9
 </td>
 <td style="text-align:right;">
 7
@@ -4589,8 +4674,8 @@ Circlepartner
 <td style="text-align:left;">
 Parry
 </td>
-<td style="text-align:right;">
-7
+<td style="text-align:left;">
+9
 </td>
 <td style="text-align:right;">
 7
@@ -4598,10 +4683,32 @@ Parry
 </tr>
 <tr>
 <td style="text-align:left;">
-Presentbodypart
+Hitobject
+</td>
+<td style="text-align:left;">
+10
 </td>
 <td style="text-align:right;">
-2
+7
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Exploreobject
+</td>
+<td style="text-align:left;">
+10
+</td>
+<td style="text-align:right;">
+7
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Rock
+</td>
+<td style="text-align:left;">
+4
 </td>
 <td style="text-align:right;">
 NA
@@ -4611,8 +4718,8 @@ NA
 <td style="text-align:left;">
 Stareat
 </td>
-<td style="text-align:right;">
-2
+<td style="text-align:left;">
+8
 </td>
 <td style="text-align:right;">
 NA
@@ -4620,10 +4727,10 @@ NA
 </tr>
 <tr>
 <td style="text-align:left;">
-Rock
+Lead
 </td>
-<td style="text-align:right;">
-3
+<td style="text-align:left;">
+8
 </td>
 <td style="text-align:right;">
 NA
@@ -4633,8 +4740,8 @@ NA
 <td style="text-align:left;">
 Jumpon
 </td>
-<td style="text-align:right;">
-9
+<td style="text-align:left;">
+11
 </td>
 <td style="text-align:right;">
 NA
@@ -4644,8 +4751,19 @@ NA
 <td style="text-align:left;">
 Kickdirt
 </td>
+<td style="text-align:left;">
+12
+</td>
 <td style="text-align:right;">
-10
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Presentbodypart
+</td>
+<td style="text-align:left;">
+12
 </td>
 <td style="text-align:right;">
 NA
