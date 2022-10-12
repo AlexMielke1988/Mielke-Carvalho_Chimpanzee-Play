@@ -3808,10 +3808,10 @@ Prediction Accuracy Random Forest
 0.031
 </td>
 <td style="text-align:right;">
-0.083
+0.067
 </td>
 <td style="text-align:right;">
-0.083
+0.067
 </td>
 </tr>
 <tr>
@@ -3822,10 +3822,10 @@ Prediction Accuracy Random Forest
 0.055
 </td>
 <td style="text-align:right;">
-0.193
+0.128
 </td>
 <td style="text-align:right;">
-0.039
+0.051
 </td>
 </tr>
 <tr>
@@ -3836,10 +3836,10 @@ Prediction Accuracy Random Forest
 0.090
 </td>
 <td style="text-align:right;">
-0.233
+0.155
 </td>
 <td style="text-align:right;">
-0.048
+0.035
 </td>
 </tr>
 <tr>
@@ -3850,10 +3850,10 @@ Prediction Accuracy Random Forest
 0.079
 </td>
 <td style="text-align:right;">
-0.347
+0.144
 </td>
 <td style="text-align:right;">
-0.046
+0.038
 </td>
 </tr>
 <tr>
@@ -3864,10 +3864,10 @@ Prediction Accuracy Random Forest
 0.080
 </td>
 <td style="text-align:right;">
-0.415
+0.136
 </td>
 <td style="text-align:right;">
-0.058
+0.046
 </td>
 </tr>
 </tbody>
